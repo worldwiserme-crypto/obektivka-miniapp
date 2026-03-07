@@ -448,8 +448,6 @@
 </div>
 
 <script>
-    const tg = window.Telegram?.WebApp;
-    if(tg) tg.expand();
 
     const SECTIONS = 5;
     let current = 1;
@@ -716,15 +714,22 @@
             relatives: relData,
         };
 
-        if(tg && tg.sendData) {
-            tg.sendData(JSON.stringify(payload));
-        } else {
-            alert('Ma\'lumotlar tayyor! (Test rejimi)\n\n' + JSON.stringify(payload, null, 2));
+        try {
+            const jsonStr = JSON.stringify(payload);
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.sendData) {
+                window.Telegram.WebApp.sendData(jsonStr);
+            } else {
+                alert('Test rejimi: ' + jsonStr.substring(0, 100));
+            }
+        } catch(e) {
+            alert('Xatolik: ' + e.message);
         }
     }
 
     // ── Init ──
-    // Default: 2 ta ish joyi va 2 ta qarindosh namuna
+    const tgApp = window.Telegram && window.Telegram.WebApp;
+    if (tgApp) { tgApp.ready(); tgApp.expand(); }
+
     addWork(); addWork();
     addRelative(); addRelative();
     addLang();
