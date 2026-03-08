@@ -2,7 +2,11 @@
 nixPkgs = ["python311", "nodejs_20"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt", "npm install docx"]
+cmds = [
+    "pip install -r requirements.txt",
+    "npm install docx",
+    "ln -sf $(which node) /usr/local/bin/node || true"
+]
 
 [start]
 cmd = "python bot.py"
