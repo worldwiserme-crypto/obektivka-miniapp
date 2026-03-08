@@ -5,7 +5,7 @@ import os
 from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo, BufferedInputFile
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -54,11 +54,12 @@ async def submit(request):
 
         fullname = data.get("fullname", "obektivka")
         with open(docx_path, "rb") as f:
-            await bot.send_document(
-                tg_id,
-                document=(f"{fullname}.docx", f.read()),
-                caption="✅ <b>Obektivkangiz tayyor!</b>\n📎 Word (.docx) formatida."
-            )
+            file_data = f.read()
+        await bot.send_document(
+            tg_id,
+            document=BufferedInputFile(file_data, filename=f"{fullname}.docx"),
+            caption="✅ <b>Obektivkangiz tayyor!</b>\n📎 Word (.docx) formatida."
+        )
 
         os.remove(docx_path)
         return web.json_response({"ok": True})
