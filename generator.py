@@ -236,7 +236,7 @@ def generate(data: dict, output_path: str):
     row2("Tug’ilgan yili:", bd, "Tug’ilgan joyi:", data.get("birthplace",""))
     row2("Millati:", data.get("nationality","o’zbek"), "Partiyaviyligi:", data.get("party","yo’q"))
     row2("Ma’lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
-    inline2("Ma’lumoti bo’yicha mutaxassisligi:", data.get("speciality","") or "—")
+    inline2("Ma’lumoti bo’Yicha mutaxassisligi:", data.get("speciality","") or "—")
     row2("Ilmiy darajasi:", data.get("science_degree","yo’q"), "Ilmiy unvoni:", data.get("science_title","yo’q"))
     row2("Qaysi chet tillarini biladi:", langs_str or "yo’q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo’q"))
     long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo’q"))
