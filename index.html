@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ma’lumotnoma</title>
+<title>Ma‘lumotnoma</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -27,25 +27,20 @@ textarea{min-height:58px;resize:vertical}
 </style>
 </head>
 <body>
-<h2>📋 Ma’lumotnomani to‘ldirish</h2>
+<h2>&#128203; Ma‘lumotnomani to‘ldirish</h2>
 
-<!-- 1. SHAXSIY -->
 <div class="card">
-  <h3>👤 Shaxsiy ma’lumotlar</h3>
-
-  <label>Rasm (3×4 sm, oxirgi 3 oy ichida olingan) *</label>
+  <h3>&#128100; Shaxsiy ma‘lumotlar</h3>
+  <label>Rasm (3x4 sm, oxirgi 3 oy ichida olingan) *</label>
   <input type="file" id="photo" accept="image/*" style="padding:6px">
   <div id="photoPreview" style="margin-top:6px;display:none">
     <img id="photoImg" style="width:80px;height:107px;object-fit:cover;border:1px solid #ddd;border-radius:4px">
   </div>
-
   <label>To‘liq ism-familiya (FISh) *</label>
   <input type="text" id="fullname" placeholder="Jovliyev Fatxulla Fayzulla o‘g‘li">
-
   <label>Hozirgi ish joyi va lavozimi *</label>
   <input type="text" id="job_year" placeholder="2025-yildan h.v." style="margin-bottom:6px">
   <textarea id="current_job" placeholder="Muassasa nomi va lavozim (to‘liq)"></textarea>
-
   <div class="row">
     <div>
       <label>Tug‘ilgan sanasi *</label>
@@ -56,7 +51,6 @@ textarea{min-height:58px;resize:vertical}
       <input type="text" id="birthplace" placeholder="Toshkent sh., Mirobod t.">
     </div>
   </div>
-
   <div class="row">
     <div>
       <label>Millati</label>
@@ -76,13 +70,11 @@ textarea{min-height:58px;resize:vertical}
   </div>
 </div>
 
-<!-- 2. TA‘LIM -->
 <div class="card">
-  <h3>🎓 Ta’lim</h3>
-
+  <h3>&#127891; Ta‘lim</h3>
   <div class="row">
     <div>
-      <label>Ma’lumoti</label>
+      <label>Ma‘lumoti</label>
       <select id="edu_level">
         <option>oliy</option>
         <option>magistratura</option>
@@ -95,10 +87,8 @@ textarea{min-height:58px;resize:vertical}
       <input type="text" id="speciality" placeholder="Yurist">
     </div>
   </div>
-
   <label>Tamomlagan joyi va yili</label>
   <textarea id="university" placeholder="Toshkent Davlat Yuridik Universiteti, yurist, 2015-yil"></textarea>
-
   <div class="row">
     <div>
       <label>Ilmiy darajasi</label>
@@ -122,55 +112,44 @@ textarea{min-height:58px;resize:vertical}
   </div>
 </div>
 
-<!-- 3. TILLAR VA YUTUQLAR -->
 <div class="card">
-  <h3>🏅 Tillar va Yutuqlar</h3>
-
+  <h3>&#127941; Tillar va Yutuqlar</h3>
   <label>Chet tillari (faqat mukammal biladiganlari)</label>
   <div id="langList"></div>
   <button class="add" id="addLang">+ Til qo‘shish</button>
-
   <label>Harbiy (maxsus) unvoni</label>
   <input type="text" id="military_rank" placeholder="yo‘q">
-
   <label>Davlat mukofotlari va premiyalari</label>
-  <textarea id="awards" placeholder="yo‘q&#10;yoki: 2005 y. «Mehnat shuhrati» ordeni"></textarea>
-
+  <textarea id="awards" placeholder="yo‘q&#10;yoki: 2005 y. &laquo;Mehnat shuhrati&raquo; ordeni"></textarea>
   <label>Idoraviy mukofotlar</label>
-  <textarea id="dept_awards" placeholder="yo‘q&#10;yoki: 2019 y. «Manaviyat fidoyisi» ko‘krak nishoni"></textarea>
-
-  <label>Deputatlik (xalq deputati yoki saylanadigan organ a’zosi)</label>
+  <textarea id="dept_awards" placeholder="yo‘q&#10;yoki: 2019 y. &laquo;Manaviyat fidoyisi&raquo; ko‘krak nishoni"></textarea>
+  <label>Deputatlik (xalq deputati yoki saylanadigan organ a‘zosi)</label>
   <textarea id="deputy" placeholder="yo‘q&#10;yoki: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati"></textarea>
 </div>
 
-<!-- 4. ALOQA -->
 <div class="card">
-  <h3>📞 Aloqa ma’lumotlari</h3>
-
+  <h3>&#128222; Aloqa ma‘lumotlari</h3>
   <label>Doimiy yashash manzili (to‘liq)</label>
   <input type="text" id="address" placeholder="Toshkent shahri, Yunusobod tumani, ...">
-
   <label>Telefon raqam</label>
   <input type="tel" id="phone_me" placeholder="+998901234567">
 </div>
 
-<!-- 5. MEHNAT FAOLIYATI -->
 <div class="card">
-  <h3>💼 Mehnat faoliyati</h3>
+  <h3>&#128188; Mehnat faoliyati</h3>
   <p class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo‘yicha)</p>
   <div id="workList"></div>
   <button class="add" id="addWork">+ Ish joyi qo‘shish</button>
 </div>
 
-<!-- 6. QARINDOSHLAR -->
 <div class="card">
-  <h3>👨‍👩‍👧 Yaqin qarindoshlar</h3>
+  <h3>&#128106; Yaqin qarindoshlar</h3>
   <p class="hint" style="margin-bottom:8px">Ota, ona, aka-ukalar, opa-singillar, turmush o‘rtog‘i, farzandlar, qaynota-qaynona</p>
   <div id="relList"></div>
   <button class="add" id="addRel">+ Qarindosh qo‘shish</button>
 </div>
 
-<button class="btn" id="submitBtn">📤 Yuborish</button>
+<button class="btn" id="submitBtn">&#128228; Yuborish</button>
 
 <script>
 var TG_ID = "__TG_ID__";
@@ -193,11 +172,10 @@ if(window.Telegram && window.Telegram.WebApp){
   window.Telegram.WebApp.expand();
 }
 
-// Til qo‘shish
 document.getElementById("addLang").onclick = function(){
   var d = document.createElement("div");
   d.className = "item";
-  d.innerHTML = '<button class="del" type="button">×</button>'
+  d.innerHTML = '<button class="del" type="button">&times;</button>'
     + '<select><option>ingliz tili</option><option>rus tili</option>'
     + '<option>nemis tili</option><option>fransuz tili</option>'
     + '<option>arab tili</option><option>turk tili</option>'
@@ -206,46 +184,40 @@ document.getElementById("addLang").onclick = function(){
   document.getElementById("langList").appendChild(d);
 };
 
-// Ish joyi qo‘shish
 document.getElementById("addWork").onclick = function(){
   var d = document.createElement("div");
   d.className = "item";
-  d.innerHTML = '<button class="del" type="button">×</button>'
+  d.innerHTML = '<button class="del" type="button">&times;</button>'
     + '<div class="row">'
     + '<input type="text" placeholder="Yildan (1990)">'
     + '<input type="text" placeholder="Yilgacha yoki h.v.">'
     + '</div>'
-    + '<input type="text" placeholder="Tashkilot/muassasa nomi (to\'liq)">'
+    + '<input type="text" placeholder="Tashkilot/muassasa nomi (to‘liq)">'
     + '<input type="text" placeholder="Lavozim">';
   d.querySelector(".del").onclick = function(){ d.remove(); };
   document.getElementById("workList").appendChild(d);
 };
 
-// Qarindosh qo‘shish
 var RELS = ["Otasi","Onasi","Turmush o‘rtog‘i","Xotini","O‘g‘li","Qizi",
             "Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi","Boshqa"];
 
 document.getElementById("addRel").onclick = function(){
-  var opts = RELS.map(function(r){ return '<option>'+r+'</option>'; }).join('');
+  var opts = RELS.map(function(r){ return "<option>"+r+"</option>"; }).join("");
   var d = document.createElement("div");
   d.className = "item";
-  d.innerHTML = '<button class="del" type="button">×</button>'
-    + '<select>' + opts + '</select>'
+  d.innerHTML = '<button class="del" type="button">&times;</button>'
+    + "<select>" + opts + "</select>"
     + '<input type="text" placeholder="Familiyasi, ismi va otasining ismi">'
-    + '<input type="text" placeholder="Tug\'ilgan yili va joyi (1980 yil, Toshkent sh.)">'
-    + '<textarea placeholder="Ish joyi va lavozimi (to\'liq). Pensiyada bo\'lsa — oldingi lavozimi. Vafot etgan bo\'lsa — vafot etgan yili va lavozimi">'
-    + '</textarea>'
-    + '<input type="text" placeholder="Turar joyi (viloyat, tuman, ko\'cha to\'liq)">';
+    + '<input type="text" placeholder="Tug‘ilgan yili va joyi (1980 yil, Toshkent sh.)">'
+    + '<textarea placeholder="Ish joyi va lavozimi (to‘liq). Pensiyada bo‘lsa — oldingi lavozimi. Vafot etgan bo‘lsa — vafot etgan yili va lavozimi"></textarea>'
+    + '<input type="text" placeholder="Turar joyi (viloyat, tuman, ko‘cha to‘liq)">';
   d.querySelector(".del").onclick = function(){ d.remove(); };
   document.getElementById("relList").appendChild(d);
 };
 
-// Default qatorlar
 document.getElementById("addLang").onclick.call();
 document.getElementById("addWork").onclick.call();
-// Default: Otasi
 document.getElementById("addRel").onclick.call();
-// Default: Onasi
 document.getElementById("addRel").onclick.call();
 (function(){
   var items = document.querySelectorAll("#relList .item");
@@ -253,7 +225,6 @@ document.getElementById("addRel").onclick.call();
   if(last) last.querySelector("select").value = "Onasi";
 })();
 
-// Yuborish
 document.getElementById("submitBtn").onclick = async function(){
   var fullname = document.getElementById("fullname").value.trim();
   if(!fullname){ alert("Ism-familiyani kiriting!"); return; }
@@ -267,21 +238,13 @@ document.getElementById("submitBtn").onclick = async function(){
   var langs = [].slice.call(document.querySelectorAll("#langList .item")).map(function(d){
     return d.querySelector("select").value;
   });
-
   var works = [].slice.call(document.querySelectorAll("#workList .item")).map(function(d){
     var ins = d.querySelectorAll("input");
     return { from: ins[0].value, to: ins[1].value, org: ins[2].value, pos: ins[3].value };
   });
-
   var rels = [].slice.call(document.querySelectorAll("#relList .item")).map(function(d){
     var ins = d.querySelectorAll("input, textarea");
-    return {
-      rel:   d.querySelector("select").value,
-      fio:   ins[0].value,
-      birth: ins[1].value,
-      job:   ins[2].value,
-      addr:  ins[3].value
-    };
+    return { rel: d.querySelector("select").value, fio: ins[0].value, birth: ins[1].value, job: ins[2].value, addr: ins[3].value };
   });
 
   var payload = {
@@ -304,36 +267,39 @@ document.getElementById("submitBtn").onclick = async function(){
     departmental_awards: document.getElementById("dept_awards").value || "yo‘q",
     deputy:              document.getElementById("deputy").value || "yo‘q",
     address:             document.getElementById("address").value,
-    phones: {
-      me:     document.getElementById("phone_me").value,
-      father: document.getElementById("phone_father").value,
-      mother: document.getElementById("phone_mother").value
-    },
-    work_history: works,
-    relatives:    rels
+    phones:              { me: document.getElementById("phone_me").value, father: "", mother: "" },
+    work_history:        works,
+    relatives:           rels
   };
 
   try {
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, 60000);
     var res = await fetch("/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tg_id: TG_ID, data: payload })
+      body: JSON.stringify({ tg_id: TG_ID, data: payload }),
+      signal: controller.signal
     });
-    var result = await res.json();
+    clearTimeout(timer);
+    var text = await res.text();
+    var result;
+    try { result = JSON.parse(text); }
+    catch(je) { throw new Error("Server javobi: " + text.substring(0,200)); }
     if(result.ok){
       document.body.innerHTML =
-        '<div style="text-align:center;padding:80px 20px">'
-        + '<div style="font-size:60px">✅</div>'
-        + '<h2 style="margin-top:16px;color:#27ae60;font-size:20px">Yuborildi!</h2>'
-        + '<p style="margin-top:12px;color:#555;font-size:15px">Telegram ga qayting —<br>hujjat keladi.</p>'
-        + '</div>';
+        "<div style='text-align:center;padding:80px 20px'>"
+        + "<div style='font-size:60px'>&#9989;</div>"
+        + "<h2 style='margin-top:16px;color:#27ae60;font-size:20px'>Yuborildi!</h2>"
+        + "<p style='margin-top:12px;color:#555;font-size:15px'>Telegram ga qayting —<br>hujjat keladi.</p>"
+        + "</div>";
     } else {
-      btn.textContent = "📤 Yuborish";
+      btn.textContent = "&#128228; Yuborish";
       btn.disabled = false;
       alert("Xatolik: " + (result.error || "Qayta urining"));
     }
   } catch(e) {
-    btn.textContent = "📤 Yuborish";
+    btn.textContent = "&#128228; Yuborish";
     btn.disabled = false;
     alert("Xato: " + e.message);
   }
