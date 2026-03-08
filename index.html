@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ma‘lumotnoma</title>
+<title>Ma’lumotnoma</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -27,11 +27,11 @@ textarea{min-height:58px;resize:vertical}
 </style>
 </head>
 <body>
-<h2>📋 Ma'lumotnoma to‘ldirish</h2>
+<h2>📋 Ma’lumotnoma to‘ldirish</h2>
 
 <!-- 1. SHAXSIY -->
 <div class="card">
-  <h3>👤 Shaxsiy ma'lumotlar</h3>
+  <h3>👤 Shaxsiy ma’lumotlar</h3>
 
   <label>Rasm (3×4 sm, oxirgi 3 oy ichida olingan) *</label>
   <input type="file" id="photo" accept="image/*" style="padding:6px">
@@ -78,15 +78,15 @@ textarea{min-height:58px;resize:vertical}
 
 <!-- 2. TA‘LIM -->
 <div class="card">
-  <h3>🎓 Ta‘lim</h3>
+  <h3>🎓 Ta’lim</h3>
 
   <div class="row">
     <div>
-      <label>Ma‘lumoti</label>
+      <label>Ma’lumoti</label>
       <select id="edu_level">
         <option>oliy</option>
         <option>magistratura</option>
-        <option>o‘rta maxsus</option>
+        <option>o‘rta-maxsus</option>
         <option>o‘rta</option>
       </select>
     </div>
@@ -116,7 +116,7 @@ textarea{min-height:58px;resize:vertical}
         <option value="yo‘q">Yo‘q</option>
         <option>Professor</option>
         <option>Dotsent</option>
-        <option>Katta ilmiy xodim (dotsent unvoniga tenglashtirilgan)</option>
+        <option>Katta ilmiy xodim</option>
       </select>
     </div>
   </div>
@@ -133,7 +133,7 @@ textarea{min-height:58px;resize:vertical}
   <label>Harbiy (maxsus) unvoni</label>
   <input type="text" id="military_rank" placeholder="yo‘q">
 
-  <label>Davlat mukofotlari va premiyalari</label>
+  <label>Davlat mukofotlari</label>
   <textarea id="awards" placeholder="yo‘q&#10;yoki: 2005 y. «Mehnat shuhrati» ordeni"></textarea>
 
   <label>Idoraviy mukofotlar</label>
@@ -156,21 +156,13 @@ textarea{min-height:58px;resize:vertical}
       <p class="hint">O‘zingizniki</p>
       <input type="tel" id="phone_me" placeholder="+998901234567">
     </div>
-    <div>
-      <p class="hint">Otangizniki</p>
-      <input type="tel" id="phone_father" placeholder="+998__">
-    </div>
-    <div>
-      <p class="hint">Onangizniki</p>
-      <input type="tel" id="phone_mother" placeholder="+998__">
-    </div>
   </div>
 </div>
 
 <!-- 5. MEHNAT FAOLIYATI -->
 <div class="card">
   <h3>💼 Mehnat faoliyati</h3>
-  <p class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo‘Yicha)</p>
+  <p class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo‘yicha)</p>
   <div id="workList"></div>
   <button class="add" id="addWork">+ Ish joyi qo‘shish</button>
 </div>
@@ -245,10 +237,10 @@ document.getElementById("addRel").onclick = function(){
   d.innerHTML = '<button class="del" type="button">×</button>'
     + '<select>' + opts + '</select>'
     + '<input type="text" placeholder="Familiyasi, ismi va otasining ismi">'
-    + '<input type="text" placeholder="Tug\'ilgan yili va joyi (1980 yil, Toshkent sh.)">'
-    + '<textarea placeholder="Ish joyi va lavozimi (to\'liq). Pensiyada bo\'lsa — oldingi lavozimi. Vafot etgan bo\'lsa — vafot etgan yili va lavozimi">'
+    + '<input type="text" placeholder="Tug‘ilgan yili va joyi (1980 yil, Toshkent sh.)">'
+    + '<textarea placeholder="Ish joyi va lavozimi (to‘liq). Pensiyada bo‘lsa — oldingi lavozimi. Vafot etgan bo‘lsa — vafot etgan yili va lavozimi">'
     + '</textarea>'
-    + '<input type="text" placeholder="Turar joyi (viloyat, tuman, ko\'cha to\'liq)">';
+    + '<input type="text" placeholder="Turar joyi (viloyat, tuman, ko‘cha to‘liq)">';
   d.querySelector(".del").onclick = function(){ d.remove(); };
   document.getElementById("relList").appendChild(d);
 };
@@ -334,7 +326,7 @@ document.getElementById("submitBtn").onclick = async function(){
         '<div style="text-align:center;padding:80px 20px">'
         + '<div style="font-size:60px">✅</div>'
         + '<h2 style="margin-top:16px;color:#27ae60;font-size:20px">Yuborildi!</h2>'
-        + '<p style="margin-top:12px;color:#555;font-size:15px">Telegram ga qayting —<br>hujjat keladi.</p>'
+        + '<p style="margin-top:12px;color:#555;font-size:15px">Telegramga qayting —<br>hujjat keladi.</p>'
         + '</div>';
     } else {
       btn.textContent = "📤 Yuborish";
