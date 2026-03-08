@@ -1,173 +1,111 @@
-import base64, io, os
+import base64, io
 from docx import Document
-from docx.shared import Pt, Cm, Emu
+from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml.ns import qn, nsmap
+from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
-from lxml import etree
 
-F  = "Times New Roman"
-FS = Pt(11)
+F   = "Times New Roman"
+FS  = Pt(11)
 F14 = Pt(14)
 
 
-def font(run, bold=False, size=None):
+def _font(run, bold=False, size=None):
     run.font.name = F
     run.font.size = size or FS
     run.font.bold = bold
-    try:
-        rpr = run._element.get_or_add_rPr()
-        rpr.get_or_add_rFonts().set(qn("w:eastAsia"), F)
-    except Exception:
-        pass
 
 
-def add_run(p, text, bold=False, size=None):
+def _run(p, text, bold=False, size=None):
     r = p.add_run(text)
-    font(r, bold=bold, size=size)
+    _font(r, bold=bold, size=size)
     return r
 
 
-def new_para(doc, align=WD_ALIGN_PARAGRAPH.LEFT, before=0, after=0):
-    p = doc.add_paragraph()
+def _para(container, text="", bold=False, size=None,
+          align=WD_ALIGN_PARAGRAPH.LEFT, before=0, after=0, spacing=14):
+    p = container.add_paragraph()
     p.alignment = align
     p.paragraph_format.space_before = Pt(before)
     p.paragraph_format.space_after  = Pt(after)
-    p.paragraph_format.line_spacing = Pt(14)
+    p.paragraph_format.line_spacing = Pt(spacing)
+    if text:
+        _run(p, text, bold=bold, size=size)
     return p
 
 
-def tab_stop(p, pos=5040):
+def _tab_stop(p, pos=4800):
     pPr = p._p.get_or_add_pPr()
     tabs = OxmlElement("w:tabs")
-    tab = OxmlElement("w:tab")
-    tab.set(qn("w:val"), "left")
-    tab.set(qn("w:pos"), str(pos))
-    tabs.append(tab)
+    t = OxmlElement("w:tab")
+    t.set(qn("w:val"), "left")
+    t.set(qn("w:pos"), str(pos))
+    tabs.append(t)
     pPr.append(tabs)
 
 
-def set_borders(cell):
-    tc = cell._tc
-    tcPr = tc.get_or_add_tcPr()
+def _kill_table_borders(tbl):
+    """Jadval va barcha celllardan har qanday borderlarni o'chiradi"""
+    tblEl = tbl._tbl
+    tblPr = tblEl.find(qn("w:tblPr"))
+    if tblPr is None:
+        tblPr = OxmlElement("w:tblPr")
+        tblEl.insert(0, tblPr)
+    for old in tblPr.findall(qn("w:tblBorders")):
+        tblPr.remove(old)
+    tb = OxmlElement("w:tblBorders")
+    for side in ["top","left","bottom","right","insideH","insideV"]:
+        b = OxmlElement(f"w:{side}")
+        b.set(qn("w:val"), "none")
+        b.set(qn("w:sz"), "0")
+        b.set(qn("w:color"), "auto")
+        tb.append(b)
+    tblPr.append(tb)
+    for row in tbl.rows:
+        for cell in row.cells:
+            _cell_no_border(cell)
+
+
+def _cell_borders(cell):
+    tcPr = cell._tc.get_or_add_tcPr()
     for old in tcPr.findall(qn("w:tcBorders")):
         tcPr.remove(old)
-    borders = OxmlElement("w:tcBorders")
-    for side in ["top", "left", "bottom", "right"]:
+    cb = OxmlElement("w:tcBorders")
+    for side in ["top","left","bottom","right"]:
         b = OxmlElement(f"w:{side}")
         b.set(qn("w:val"), "single")
         b.set(qn("w:sz"), "4")
         b.set(qn("w:space"), "0")
         b.set(qn("w:color"), "000000")
-        borders.append(b)
-    tcPr.append(borders)
+        cb.append(b)
+    tcPr.append(cb)
 
 
-def no_border(cell):
-    tc = cell._tc
-    tcPr = tc.get_or_add_tcPr()
+def _cell_no_border(cell):
+    tcPr = cell._tc.get_or_add_tcPr()
     for old in tcPr.findall(qn("w:tcBorders")):
         tcPr.remove(old)
-    borders = OxmlElement("w:tcBorders")
-    for side in ["top", "left", "bottom", "right"]:
+    cb = OxmlElement("w:tcBorders")
+    for side in ["top","left","bottom","right"]:
         b = OxmlElement(f"w:{side}")
         b.set(qn("w:val"), "none")
         b.set(qn("w:sz"), "0")
         b.set(qn("w:color"), "auto")
-        borders.append(b)
-    tcPr.append(borders)
+        cb.append(b)
+    tcPr.append(cb)
 
 
-def cell_para(cell, text, bold=False, center=False):
+def _cell_para(cell, text, bold=False,
+               align=WD_ALIGN_PARAGRAPH.LEFT):
     p = cell.paragraphs[0]
     p.clear()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER if center else WD_ALIGN_PARAGRAPH.LEFT
+    p.alignment = align
     p.paragraph_format.space_before = Pt(1)
     p.paragraph_format.space_after  = Pt(1)
     p.paragraph_format.line_spacing = Pt(13)
     r = p.add_run(text or "—")
-    font(r, bold=bold)
-
-
-def add_floating_photo(doc, para, img_bytes, width_cm=3.0, height_cm=4.0):
-    """Rasmni floating anchor sifatida paragrafga qo'shish"""
-    from docx.oxml.ns import nsmap as doc_nsmap
-
-    # Rasmni doc ga qo'shish
-    pic_part = doc.part.new_pic_inline(img_bytes, width_cm=Cm(width_cm), height_cm=Cm(height_cm))
-
-    # inline -> anchor ga o'zgartirish
-    # Oddiy inline picture qo'shamiz, keyin to'g'ri o'ng burchakka joylashtiramiz
-    run = para.add_run()
-    run._element.append(make_pic_anchor(doc, img_bytes, width_cm, height_cm))
-
-
-def make_pic_anchor(doc, img_bytes, w_cm, h_cm):
-    """Anchored (floating) picture XML yaratish"""
-    from docx.shared import Cm
-    import hashlib
-
-    # Rasmni part ga saqlash
-    image_stream = io.BytesIO(img_bytes)
-    pic_part, rId = doc.part.get_or_add_image(image_stream)
-
-    w_emu = int(Cm(w_cm))
-    h_emu = int(Cm(h_cm))
-
-    # O'ng margin dan offset: sahifa kengligi - o'ng margin - rasm kengligi
-    # chap margin = 3cm, o'ng margin = 1cm, sahifa = 21cm
-    # Rasmning horizontal pozitsiyasi: sahifa o'ngidan 1cm
-    pos_x = int(Cm(21 - 1.0 - w_cm))  # o'ng tomondan
-    pos_y = int(Cm(0.5))               # yuqoridan
-
-    anchor_xml = f'''<wp:anchor distT="0" distB="0" distL="114300" distR="114300"
-        simplePos="0" relativeHeight="251658240" behindDoc="0"
-        locked="0" layoutInCell="1" allowOverlap="1"
-        xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
-  <wp:simplePos x="0" y="0"/>
-  <wp:positionH relativeFrom="page">
-    <wp:posOffset>{pos_x}</wp:posOffset>
-  </wp:positionH>
-  <wp:positionV relativeFrom="page">
-    <wp:posOffset>{pos_y}</wp:posOffset>
-  </wp:positionV>
-  <wp:extent cx="{w_emu}" cy="{h_emu}"/>
-  <wp:effectExtent l="0" t="0" r="0" b="0"/>
-  <wp:wrapSquare wrapText="bothSides"/>
-  <wp:docPr id="1" name="Photo"/>
-  <wp:cNvGraphicFramePr>
-    <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-  </wp:cNvGraphicFramePr>
-  <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-      <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
-        <pic:nvPicPr>
-          <pic:cNvPr id="0" name="Photo"/>
-          <pic:cNvPicPr/>
-        </pic:nvPicPr>
-        <pic:blipFill>
-          <a:blip r:embed="{rId}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
-          <a:stretch><a:fillRect/></a:stretch>
-        </pic:blipFill>
-        <pic:spPr>
-          <a:xfrm><a:off x="0" y="0"/><a:ext cx="{w_emu}" cy="{h_emu}"/></a:xfrm>
-          <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>
-        </pic:spPr>
-      </pic:pic>
-    </a:graphicData>
-  </a:graphic>
-</wp:anchor>'''
-
-    drawing = OxmlElement("w:drawing")
-    drawing.append(etree.fromstring(anchor_xml))
-    return drawing
-
-
-def add_photo_placeholder(doc, para):
-    """Rasm o'rniga to'rtburchak placeholder"""
-    # Jadval orqali o'ng burchakda 3x4 sm quti
-    pass
+    _font(r, bold=bold)
 
 
 def generate(data: dict, output_path: str):
@@ -184,104 +122,119 @@ def generate(data: dict, output_path: str):
     doc.styles["Normal"].font.name = F
     doc.styles["Normal"].font.size = FS
 
-    fullname = data.get("fullname", "")
-    photo_b64 = data.get("photo_base64", "")
+    fullname    = data.get("fullname", "")
+    job_year    = data.get("job_year", "")
+    current_job = data.get("current_job", "")
+    photo_b64   = data.get("photo_base64", "")
 
-    # ── SARLAVHA + ISM + LAVOZIM (chap) | RASM (o'ng) ──
-    # 3 qatorli jadval: [sarlavha | rasm], [bo'sh | ...], [ism |], [lavozim |]
-    tbl = doc.add_table(rows=4, cols=2)
-    tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+    # ═══════════════════════════════════════════════
+    # BLOK 1: SARLAVHA + ISM + LAVOZIM  |  RASM
+    # 1 qatorli, 2 ustunli jadval — borderlar YO'Q
+    # ═══════════════════════════════════════════════
+    tbl = doc.add_table(rows=1, cols=2)
+    # style yo'q — default ishlatiladi
+    _kill_table_borders(tbl)
     tbl.columns[0].width = Cm(13.5)
     tbl.columns[1].width = Cm(3.0)
 
-    # Barcha celllarni no-border
-    for ri in range(4):
-        for ci in range(2):
-            no_border(tbl.cell(ri, ci))
-
-    # O'ng ustun: qator 0-3 merge qilib rasm joyi
+    lc = tbl.cell(0, 0)
     rc = tbl.cell(0, 1)
-    for ri in range(1, 4):
-        rc = rc.merge(tbl.cell(ri, 1))
-    set_borders(rc)
+
+    # Chap cell — border YO'Q
+    _cell_no_border(lc)
+    lc.paragraphs[0].clear()
+
+    # MA'LUMOTNOMA — markazda, 14pt
+    p_title = lc.paragraphs[0]
+    p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_title.paragraph_format.space_before = Pt(0)
+    p_title.paragraph_format.space_after  = Pt(0)
+    p_title.paragraph_format.line_spacing = Pt(16)
+    _run(p_title, "MA'LUMOTNOMA", size=F14)
+
+    # Bo'sh qator
+    pe = lc.add_paragraph()
+    pe.paragraph_format.space_before = Pt(0)
+    pe.paragraph_format.space_after  = Pt(0)
+    pe.paragraph_format.line_spacing = Pt(8)
+
+    # Fullname — markazda, bold, 14pt
+    p_name = lc.add_paragraph()
+    p_name.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_name.paragraph_format.space_before = Pt(0)
+    p_name.paragraph_format.space_after  = Pt(0)
+    p_name.paragraph_format.line_spacing = Pt(16)
+    _run(p_name, fullname, bold=True, size=F14)
+
+    # Lavozim yili
+    if job_year:
+        p_jy = lc.add_paragraph()
+        p_jy.paragraph_format.space_before = Pt(6)
+        p_jy.paragraph_format.space_after  = Pt(0)
+        p_jy.paragraph_format.line_spacing = Pt(14)
+        _run(p_jy, job_year, size=FS)
+
+    # Lavozim nomi
+    if current_job:
+        p_cj = lc.add_paragraph()
+        p_cj.paragraph_format.space_before = Pt(0)
+        p_cj.paragraph_format.space_after  = Pt(0)
+        p_cj.paragraph_format.line_spacing = Pt(14)
+        _run(p_cj, current_job, size=FS)
+
+    # O'ng cell — FAQAT rasm, border YO'Q
+    _cell_no_border(rc)
     rc.paragraphs[0].clear()
     rp = rc.paragraphs[0]
     rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    rp.paragraph_format.space_before = Pt(4)
-    rp.paragraph_format.line_spacing = Pt(12)
+    rp.paragraph_format.space_before = Pt(0)
+    rp.paragraph_format.space_after  = Pt(0)
+    rp.paragraph_format.line_spacing = Pt(14)
 
     if photo_b64:
         try:
             img_bytes = base64.b64decode(photo_b64.split(",")[-1])
             run = rp.add_run()
-            from docx.shared import Cm as DCm
-            run.add_picture(io.BytesIO(img_bytes), width=DCm(2.8), height=DCm(3.8))
-        except Exception as e:
-            for line in ["3×4 sm,", "oxirgi 3 oy", "ichida olingan", "rangli surat"]:
-                add_run(rp, line + "\n", size=Pt(8))
-    else:
-        for line in ["3×4 sm,", "oxirgi 3 oy", "ichida olingan", "rangli surat"]:
-            add_run(rp, line + "\n", size=Pt(8))
+            # width VA height ikkalasini beramiz — aniq 3x4 sm
+            run.add_picture(io.BytesIO(img_bytes), width=Cm(3.0), height=Cm(4.0))
+        except Exception:
+            pass  # rasm yuklanmasa — bo'sh
 
-    # Chap ustun qatorlari
-    # Qator 0: MA'LUMOTNOMA
-    c0 = tbl.cell(0, 0)
-    c0.paragraphs[0].clear()
-    p0 = c0.paragraphs[0]
-    p0.paragraph_format.space_before = Pt(0)
-    p0.paragraph_format.space_after  = Pt(0)
-    p0.paragraph_format.line_spacing = Pt(14)
-    add_run(p0, "MA'LUMOTNOMA", bold=False, size=F14)
+    # ═══════════════════════════════════════════════
+    # BLOK 2: MA'LUMOTLAR
+    # ═══════════════════════════════════════════════
+    C = WD_ALIGN_PARAGRAPH
+    TAB = 4800  # ~8.5 sm
 
-    # Qator 1: bo'sh
-    c1 = tbl.cell(1, 0)
-    c1.paragraphs[0].clear()
-
-    # Qator 2: fullname — markazda, bold, 14pt
-    c2 = tbl.cell(2, 0)
-    c2.paragraphs[0].clear()
-    p2 = c2.paragraphs[0]
-    p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p2.paragraph_format.space_before = Pt(0)
-    p2.paragraph_format.space_after  = Pt(0)
-    p2.paragraph_format.line_spacing = Pt(14)
-    add_run(p2, fullname, bold=True, size=F14)
-
-    # Qator 3: lavozim
-    c3 = tbl.cell(3, 0)
-    c3.paragraphs[0].clear()
-    p3 = c3.paragraphs[0]
-    p3.paragraph_format.space_before = Pt(4)
-    p3.paragraph_format.space_after  = Pt(0)
-    p3.paragraph_format.line_spacing = Pt(14)
-    job_year = data.get("job_year", "")
-    current_job = data.get("current_job", "")
-    if job_year:
-        add_run(p3, job_year, size=FS)
-    if current_job:
-        add_run(p3, "\n" + current_job if job_year else current_job, size=FS)
-
-    # ── 6. MA'LUMOTLAR (label qator + qiymat qator, tab bilan) ──
-    def label_row(l1, l2=""):
-        p = new_para(doc, before=8, after=0)
-        tab_stop(p)
-        add_run(p, l1, bold=True, size=FS)
+    def label_row(l1, l2=None):
+        p = doc.add_paragraph()
+        p.alignment = C.LEFT
+        p.paragraph_format.space_before = Pt(7)
+        p.paragraph_format.space_after  = Pt(0)
+        p.paragraph_format.line_spacing = Pt(14)
         if l2:
-            add_run(p, "\t", size=FS)
-            add_run(p, l2, bold=True, size=FS)
+            _tab_stop(p, TAB)
+        _run(p, l1, bold=True, size=FS)
+        if l2:
+            _run(p, "\t", size=FS)
+            _run(p, l2, bold=True, size=FS)
 
-    def value_row(v1, v2=""):
-        p = new_para(doc, before=0, after=0)
-        tab_stop(p)
-        add_run(p, v1 or "—", size=FS)
+    def value_row(v1, v2=None):
+        p = doc.add_paragraph()
+        p.alignment = C.LEFT
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after  = Pt(0)
+        p.paragraph_format.line_spacing = Pt(14)
         if v2 is not None:
-            add_run(p, "\t", size=FS)
-            add_run(p, v2 or "—", size=FS)
+            _tab_stop(p, TAB)
+        _run(p, v1 or "—", size=FS)
+        if v2 is not None:
+            _run(p, "\t", size=FS)
+            _run(p, v2 or "—", size=FS)
 
-    def label_value_inline(label, val):
-        p = new_para(doc, before=8, after=0)
-        add_run(p, label + " ", bold=True, size=FS)
-        add_run(p, val or "—", size=FS)
+    def long_lv(label, val):
+        label_row(label)
+        value_row(val or "yo'q")
 
     bd = data.get("birthdate", "")
     if bd and "-" in bd:
@@ -292,54 +245,46 @@ def generate(data: dict, output_path: str):
     value_row(bd, data.get("birthplace", ""))
 
     label_row("Millati:", "Partiyaviyligi:")
-    value_row(data.get("nationality", "o'zbek"), data.get("party", "yo'q"))
+    value_row(data.get("nationality","o'zbek"), data.get("party","yo'q"))
 
     label_row("Ma'lumoti:", "Tamomlagan:")
-    value_row(data.get("edu_level", ""), data.get("university", ""))
+    value_row(data.get("edu_level",""), data.get("university",""))
 
-    label_value_inline("Ma'lumoti bo'yicha mutaxassisligi:", data.get("speciality", ""))
+    label_row("Ma'lumoti bo'yicha mutaxassisligi:\t" + (data.get("speciality","") or "—"))
 
     label_row("Ilmiy darajasi:", "Ilmiy unvoni:")
-    value_row(data.get("science_degree", "yo'q"), data.get("science_title", "yo'q"))
+    value_row(data.get("science_degree","yo'q"), data.get("science_title","yo'q"))
 
     langs = data.get("langs", [])
     langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
     label_row("Qaysi chet tillarini biladi:", "Harbiy (maxsus) unvoni:")
-    value_row(langs_str or "yo'q", data.get("military_rank", "yo'q"))
+    value_row(langs_str or "yo'q", data.get("military_rank","yo'q"))
 
-    def long_label_val(label, val):
-        p = new_para(doc, before=8, after=0)
-        add_run(p, label, bold=True, size=FS)
-        p2 = new_para(doc, before=0, after=0)
-        add_run(p2, val or "yo'q", size=FS)
+    long_lv("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):",
+            data.get("awards","yo'q"))
 
-    long_label_val(
-        "Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):",
-        data.get("awards", "yo'q"))
+    long_lv("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):",
+            data.get("departmental_awards","yo'q"))
 
-    long_label_val(
-        "Idoraviy mukofotlar bilan taqdirlangan (qanaqa):",
-        data.get("departmental_awards", "yo'q"))
+    long_lv("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
+            "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
+            data.get("deputy","yo'q"))
 
-    long_label_val(
-        "Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi yoki "
-        "boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
-        data.get("deputy", "yo'q"))
+    long_lv("Doimiy yashash manzili (aniq ko'rsatilsin):",
+            data.get("address",""))
 
-    long_label_val(
-        "Doimiy yashash manzili (aniq ko'rsatilsin):",
-        data.get("address", ""))
-
-    # ── 7. MEHNAT FAOLIYATI ──
-    p = new_para(doc, WD_ALIGN_PARAGRAPH.CENTER, before=10, after=8)
-    add_run(p, "MEHNAT FAOLIYATI", bold=True, size=FS)
+    # ═══════════════════════════════════════════════
+    # BLOK 3: MEHNAT FAOLIYATI
+    # ═══════════════════════════════════════════════
+    _para(doc, "MEHNAT FAOLIYATI", bold=True,
+          align=WD_ALIGN_PARAGRAPH.CENTER, before=10, after=6)
 
     for w in data.get("work_history", []):
         if isinstance(w, dict):
-            f   = w.get("from", "")
-            t   = w.get("to", "")
-            org = w.get("org", "")
-            pos = w.get("pos", "")
+            f   = w.get("from","")
+            t   = w.get("to","")
+            org = w.get("org","")
+            pos = w.get("pos","")
             if f and t:
                 line = f"{f}-{t} yy. - {org}"
             elif f:
@@ -351,8 +296,7 @@ def generate(data: dict, output_path: str):
         else:
             line = str(w)
         if line.strip():
-            p = new_para(doc, before=0, after=1)
-            add_run(p, line, size=FS)
+            _para(doc, line, before=0, after=1)
 
     phones = data.get("phones", {})
     tel = []
@@ -360,41 +304,40 @@ def generate(data: dict, output_path: str):
     if phones.get("father"): tel.append(f"ota: {phones['father']}")
     if phones.get("mother"): tel.append(f"ona: {phones['mother']}")
     if tel:
-        p = new_para(doc, before=10, after=0)
-        add_run(p, "Tel.:  " + "     ".join(tel), bold=True, size=FS)
+        _para(doc, "Tel.:  " + "     ".join(tel), bold=True, before=10)
 
-    # ── 8. SAHIFA 2: QARINDOSHLAR ──
+    # ═══════════════════════════════════════════════
+    # BLOK 4: SAHIFA 2 — QARINDOSHLAR
+    # ═══════════════════════════════════════════════
     doc.add_page_break()
 
-    p = new_para(doc, WD_ALIGN_PARAGRAPH.CENTER, before=0, after=0)
-    add_run(p, f"{fullname}ning yaqin qarindoshlari haqida", bold=True, size=FS)
-
-    p = new_para(doc, WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
-    add_run(p, "MA'LUMOT", bold=True, size=FS)
+    _para(doc, f"{fullname}ning yaqin qarindoshlari haqida",
+          bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=0)
+    _para(doc, "MA'LUMOT",
+          bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
 
     relatives = data.get("relatives", [])
     if relatives:
-        tbl = doc.add_table(rows=1, cols=5)
-        tbl.style = "Table Grid"
-        tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+        rt = doc.add_table(rows=1, cols=5)
+        rt.style = "Table Grid"
+        rt.alignment = WD_TABLE_ALIGNMENT.LEFT
         for i, w in enumerate([Cm(2.6), Cm(4.2), Cm(3.4), Cm(4.0), Cm(3.2)]):
-            tbl.columns[i].width = w
+            rt.columns[i].width = w
 
-        headers = ["Qarindosh-\nligi",
-                   "Familiyasi, ismi\nva otasining ismi",
-                   "Tug'ilgan yili\nva joyi",
-                   "Ish joyi va\nlavozimi",
-                   "Turar joyi"]
-        for i, h in enumerate(headers):
-            c = tbl.cell(0, i)
-            set_borders(c)
-            cell_para(c, h, bold=True, center=True)
+        for i, h in enumerate(["Qarindosh-\nligi",
+                                "Familiyasi, ismi\nva otasining ismi",
+                                "Tug'ilgan yili\nva joyi",
+                                "Ish joyi va\nlavozimi",
+                                "Turar joyi"]):
+            _cell_borders(rt.cell(0, i))
+            _cell_para(rt.cell(0, i), h, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
 
         for rel in relatives:
-            row = tbl.add_row()
+            row = rt.add_row()
             for i, v in enumerate([rel.get("rel",""), rel.get("fio",""),
-                                    rel.get("birth",""), rel.get("job",""), rel.get("addr","")]):
-                set_borders(row.cells[i])
-                cell_para(row.cells[i], v)
+                                    rel.get("birth",""), rel.get("job",""),
+                                    rel.get("addr","")]):
+                _cell_borders(row.cells[i])
+                _cell_para(row.cells[i], v)
 
     doc.save(output_path)
