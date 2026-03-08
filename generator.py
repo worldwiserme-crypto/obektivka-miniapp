@@ -159,17 +159,17 @@ def generate(data: dict, output_path: str):
     p0.paragraph_format.line_spacing = Pt(16)
     _run(p0, "MA'LUMOTNOMA", bold=True, size=F14)
 
-    # ── [1] Bo'sh qator — rasm shu yerga anchor ──
-    p1 = doc.add_paragraph()
-    p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p1.paragraph_format.space_before = Pt(0)
-    p1.paragraph_format.space_after  = Pt(0)
-    p1.paragraph_format.line_spacing = Pt(16)
-
+    # ── [1] Rasm — o'ngda, inline ──
     if photo_b64:
         try:
             img_bytes = base64.b64decode(photo_b64.split(",")[-1])
-            _add_floating_photo(p1, doc, img_bytes, w_cm=3.0, h_cm=4.0)
+            p1 = doc.add_paragraph()
+            p1.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            p1.paragraph_format.space_before = Pt(0)
+            p1.paragraph_format.space_after  = Pt(0)
+            p1.paragraph_format.line_spacing = Pt(1)
+            run = p1.add_run()
+            run.add_picture(io.BytesIO(img_bytes), width=Cm(3.0), height=Cm(4.0))
         except Exception:
             pass
 
