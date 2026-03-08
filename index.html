@@ -1,294 +1,189 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Obektivka</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: sans-serif; background: #f0f2f5; color: #222; padding: 12px; font-size: 14px; }
-h2 { text-align: center; margin: 10px 0 16px; font-size: 17px; color: #1a73e8; }
-h3 { font-size: 14px; color: #1a73e8; background: #e8f0fe; padding: 8px 12px; border-radius: 8px; margin: 16px 0 10px; }
-label { display: block; font-weight: 600; font-size: 12px; color: #555; margin: 10px 0 4px; }
-input, select, textarea {
-  width: 100%; padding: 10px; border: 1.5px solid #ddd;
-  border-radius: 8px; font-size: 14px; background: #fff;
-  color: #222; outline: none;
-}
-input:focus, select:focus, textarea:focus { border-color: #1a73e8; }
-textarea { min-height: 70px; resize: vertical; }
-.row { display: flex; gap: 8px; }
-.row > * { flex: 1; }
-.dyn-item { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 8px; position: relative; }
-.dyn-item .del { position: absolute; top: 6px; right: 8px; background: none; border: none; color: #e74c3c; font-size: 20px; cursor: pointer; }
-.add-btn { width: 100%; padding: 9px; background: none; border: 1.5px dashed #1a73e8; border-radius: 8px; color: #1a73e8; font-weight: 600; font-size: 13px; cursor: pointer; margin-top: 4px; }
-.submit-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; margin-top: 20px; cursor: pointer; }
-.submit-btn:disabled { background: #aaa; }
-.hint { font-size: 11px; color: #888; margin-top: 3px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obektivka Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#f5f7fb; color:#1e1e1e; }
+    .container { max-width: 720px; margin: 0 auto; padding: 14px; }
+    h1 { font-size: 20px; margin: 4px 0 14px; text-align: center; }
+    h2 { font-size: 16px; margin: 18px 0 10px; color: #0d47a1; }
+    label { display: block; font-size: 13px; margin: 8px 0 4px; font-weight: 600; }
+    input, select, textarea, button { width: 100%; font-size: 14px; border-radius: 8px; }
+    input, select, textarea { padding: 10px; border: 1px solid #d4d9e2; background: #fff; }
+    textarea { min-height: 72px; resize: vertical; }
+    .card { background: #fff; border:1px solid #e2e7f0; border-radius: 10px; padding: 12px; margin: 8px 0; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .add { margin-top: 8px; border: 1px dashed #1976d2; color: #1976d2; background: #f0f7ff; padding: 9px; }
+    .remove { margin-top: 8px; border: 1px solid #ef9a9a; color: #b71c1c; background: #ffebee; padding: 8px; }
+    .submit { margin: 18px 0 24px; border: none; background: #2e7d32; color: #fff; padding: 14px; font-weight: 700; }
+    .muted { font-size: 12px; color: #5f6b7a; }
+    @media (max-width:600px){ .row { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>MA'LUMOTNOMA (Obektivka)</h1>
+    <p class="muted">Quyidagi ma'lumotlarni rasmiy hujjat uchun to'ldiring.</p>
 
-<h2>📋 Obektivka to'ldirish</h2>
-
-<h3>1. Shaxsiy ma'lumotlar</h3>
-
-<label>To'liq ism-familiya *</label>
-<input type="text" id="fullname" placeholder="Jovliyev Fatxulla Fayzulla o'g'li">
-
-<div class="row">
-  <div>
-    <label>Tug'ilgan sana *</label>
-    <input type="date" id="birthdate">
-  </div>
-  <div>
-    <label>Tug'ilgan joyi *</label>
-    <input type="text" id="birthplace" placeholder="Toshkent sh., Mirobod t.">
-  </div>
-</div>
-
-<label>Millati</label>
-<input type="text" id="nationality" placeholder="O'zbek">
-
-<label>Partiyaviyligi</label>
-<select id="party">
-  <option>Partiyasiz</option>
-  <option>O'zbekiston Liberal-Demokratik Partiyasi (O'zLiDeP)</option>
-  <option>Milliy Tiklanish Demokratik Partiyasi (MTDP)</option>
-  <option>Xalq Demokratik Partiyasi (XDP)</option>
-  <option>Adolat Sotsiyal-Demokratik Partiyasi</option>
-  <option>Ekologik Partiya</option>
-</select>
-
-<h3>2. Ta'lim va Lavozim</h3>
-
-<label>Hozirgi ish joyi va lavozimi *</label>
-<div class="row">
-  <input type="text" id="job_year" placeholder="2025-yildan h.v." style="max-width:150px;flex:none">
-  <textarea id="current_job" placeholder="Muassasa nomi va lavozim" style="min-height:42px"></textarea>
-</div>
-
-<label>Ma'lumoti</label>
-<select id="edu_level">
-  <option>Oliy</option>
-  <option>Magistratura</option>
-  <option>O'rta maxsus</option>
-  <option>O'rta</option>
-</select>
-
-<label>Tamomlagan joyi va yili</label>
-<textarea id="university" placeholder="Toshkent Davlat Yuridik Universiteti, 2015-yil"></textarea>
-
-<label>Mutaxassisligi</label>
-<input type="text" id="speciality" placeholder="Yurist">
-
-<label>Ilmiy daraja va unvoni</label>
-<select id="science">
-  <option>Yo'q</option>
-  <option value="">Boshqa (quyiga yozing)</option>
-</select>
-<input type="text" id="science_custom" placeholder="Masalan: Iqtisod fanlari doktori (2020)" style="margin-top:6px">
-
-<h3>3. Tillar va Yutuqlar</h3>
-
-<label>Chet tillari</label>
-<div id="langList"></div>
-<button class="add-btn" id="addLangBtn">+ Til qo'shish</button>
-
-<label>Davlat mukofotlari</label>
-<select id="awards">
-  <option>Yo'q</option>
-  <option>"Shuhrat" medali</option>
-  <option>"Do'stlik" ordeni</option>
-  <option>"El-yurt hurmati" ordeni</option>
-  <option>"Mehnat shuhrati" ordeni</option>
-</select>
-<input type="text" id="awards_custom" placeholder="Yoki qo'lda yozing (yil bilan)" style="margin-top:6px">
-
-<label>Deputatlik</label>
-<input type="text" id="deputy" placeholder="Yo'q yoki to'liq ko'rsating">
-
-<h3>4. Aloqa</h3>
-
-<label>Doimiy yashash manzili</label>
-<input type="text" id="address" placeholder="Toshkent sh., Yunusobod t., ...">
-
-<label>Pasport / JShShIR</label>
-<input type="text" id="passport" placeholder="AB1234567 / 30101070012345">
-
-<label>Telefon (o'zingizniki)</label>
-<input type="tel" id="phone_me" placeholder="+998901234567">
-
-<div class="row">
-  <div>
-    <label>Otangizniki</label>
-    <input type="tel" id="phone_father" placeholder="+998__">
-  </div>
-  <div>
-    <label>Onangizniki</label>
-    <input type="tel" id="phone_mother" placeholder="+998__">
-  </div>
-</div>
-
-<h3>5. Mehnat faoliyati</h3>
-<div class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha</div>
-<div id="workList"></div>
-<button class="add-btn" id="addWorkBtn">+ Ish joyi qo'shish</button>
-
-<h3>6. Yaqin qarindoshlar</h3>
-<div id="relList"></div>
-<button class="add-btn" id="addRelBtn">+ Qarindosh qo'shish</button>
-
-<button class="submit-btn" id="submitBtn">📤 Yuborish</button>
-
-<script>
-const TG_ID = null; // bot.py to'ldiradi
-
-// Til qo'shish
-document.getElementById('addLangBtn').addEventListener('click', function() {
-  const d = document.createElement('div');
-  d.className = 'dyn-item';
-  d.innerHTML = `
-    <button class="del" onclick="this.parentElement.remove()">×</button>
-    <select style="margin-bottom:6px">
-      <option>Ingliz tili</option><option>Rus tili</option><option>Nemis tili</option>
-      <option>Fransuz tili</option><option>Arab tili</option><option>Turk tili</option><option>Boshqa</option>
-    </select>
-    <select>
-      <option>O'qiydi va yoza oladi</option>
-      <option>So'zlashuv darajasida</option>
-      <option>Erkin egallagan</option>
-    </select>`;
-  document.getElementById('langList').appendChild(d);
-});
-
-// Ish joyi qo'shish
-document.getElementById('addWorkBtn').addEventListener('click', function() {
-  const d = document.createElement('div');
-  d.className = 'dyn-item';
-  d.innerHTML = `
-    <button class="del" onclick="this.parentElement.remove()">×</button>
-    <div class="row" style="margin-bottom:6px">
-      <input type="text" placeholder="Yildan">
-      <input type="text" placeholder="Yilgacha / h.v.">
+    <h2>Shaxsiy ma'lumotlar</h2>
+    <label>F.I.Sh.</label><input id="full_name" />
+    <div class="row">
+      <div><label>Tug'ilgan sana</label><input id="birth_date" type="date" /></div>
+      <div><label>Tug'ilgan joyi</label><input id="birth_place" /></div>
     </div>
-    <input type="text" placeholder="Muassasa nomi" style="margin-bottom:6px">
-    <input type="text" placeholder="Lavozim">`;
-  document.getElementById('workList').appendChild(d);
-});
+    <div class="row">
+      <div><label>Millati</label><input id="nationality" /></div>
+      <div><label>Partiyaviyligi</label><select id="party_affiliation"><option>Partiyasiz</option><option>O'zLiDeP</option><option>Milliy tiklanish</option><option>Adolat</option><option>XDP</option><option>Ekologik partiya</option></select></div>
+    </div>
+    <label>Ma'lumoti</label><textarea id="education"></textarea>
+    <label>Ish joyi</label><textarea id="workplace"></textarea>
+    <div class="row">
+      <div><label>Ilmiy daraja</label><select id="academic_degree"><option>Yo'q</option><option>Bakalavr</option><option>Magistr</option><option>PhD</option><option>Fan nomzodi</option><option>Fan doktori</option></select></div>
+      <div><label>Deputatlik holati</label><input id="deputation_status" /></div>
+    </div>
+    <label>Mukofotlar</label><textarea id="awards"></textarea>
+    <label>Doimiy manzil</label><textarea id="address"></textarea>
+    <label>Pasport ma'lumotlari</label><textarea id="passport_info"></textarea>
+    <label>Telefon raqamlari</label><textarea id="phone_numbers" placeholder="Masalan: +998901234567"></textarea>
 
-// Qarindosh qo'shish
-const RELS = ["Otasi","Onasi","Turmush o'rtog'i","Xotini","O'g'li","Qizi","Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi"];
-document.getElementById('addRelBtn').addEventListener('click', function() {
-  const opts = RELS.map(r => `<option>${r}</option>`).join('') + '<option>Boshqa</option>';
-  const d = document.createElement('div');
-  d.className = 'dyn-item';
-  d.innerHTML = `
-    <button class="del" onclick="this.parentElement.remove()">×</button>
-    <select style="margin-bottom:6px">${opts}</select>
-    <input type="text" placeholder="F.I.Sh va tug'ilgan yili" style="margin-bottom:6px">
-    <input type="text" placeholder="Ish joyi va lavozimi" style="margin-bottom:6px">
-    <input type="text" placeholder="Yashash manzili">`;
-  document.getElementById('relList').appendChild(d);
-});
+    <h2>Tillar</h2>
+    <div id="languages_list"></div>
+    <button type="button" class="add" id="add_language">+ Til qo'shish</button>
 
-// Yuborish
-document.getElementById('submitBtn').addEventListener('click', async function() {
-  const fullname = document.getElementById('fullname').value.trim();
-  if (!fullname) { alert("Ism-familiyani kiriting!"); return; }
-  if (!document.getElementById('birthdate').value) { alert("Tug'ilgan sanani kiriting!"); return; }
-  if (!document.getElementById('current_job').value.trim()) { alert("Ish joyini kiriting!"); return; }
+    <h2>Mehnat faoliyati</h2>
+    <div id="work_history_list"></div>
+    <button type="button" class="add" id="add_work_history">+ Mehnat faoliyati qo'shish</button>
 
-  const btn = document.getElementById('submitBtn');
-  btn.textContent = '⏳ Yuborilmoqda...';
-  btn.disabled = true;
+    <h2>Oila a'zolari</h2>
+    <div id="family_members_list"></div>
+    <button type="button" class="add" id="add_family_member">+ Oila a'zosi qo'shish</button>
 
-  const langs = [...document.querySelectorAll('#langList .dyn-item')].map(d => {
-    const s = d.querySelectorAll('select');
-    return s[0].value + ' — ' + s[1].value;
-  });
+    <button type="button" class="submit" id="submit_btn">Yuborish</button>
+  </div>
 
-  const works = [...document.querySelectorAll('#workList .dyn-item')].map(d => {
-    const ins = d.querySelectorAll('input');
-    return { from: ins[0].value, to: ins[1].value, org: ins[2].value, pos: ins[3].value };
-  });
+  <script>
+    const TG_ID = null;
 
-  const rels = [...document.querySelectorAll('#relList .dyn-item')].map(d => {
-    const sel = d.querySelector('select').value;
-    const ins = d.querySelectorAll('input');
-    return { rel: sel, fio: ins[0].value, job: ins[1].value, addr: ins[2].value };
-  });
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
 
-  const sciVal = document.getElementById('science_custom').value.trim() ||
-                 document.getElementById('science').value;
-  const awardsVal = document.getElementById('awards_custom').value.trim() ||
-                    document.getElementById('awards').value;
-
-  const payload = {
-    fullname,
-    birthdate:   document.getElementById('birthdate').value,
-    birthplace:  document.getElementById('birthplace').value,
-    nationality: document.getElementById('nationality').value || "O'zbek",
-    party:       document.getElementById('party').value,
-    job_year:    document.getElementById('job_year').value,
-    current_job: document.getElementById('current_job').value,
-    edu_level:   document.getElementById('edu_level').value,
-    university:  document.getElementById('university').value,
-    speciality:  document.getElementById('speciality').value,
-    science:     sciVal,
-    science_degree: sciVal,
-    science_title:  sciVal,
-    langs,
-    awards:      awardsVal,
-    deputy:      document.getElementById('deputy').value || "Yo'q",
-    address:     document.getElementById('address').value,
-    passport:    document.getElementById('passport').value,
-    phones: {
-      me:     document.getElementById('phone_me').value,
-      father: document.getElementById('phone_father').value,
-      mother: document.getElementById('phone_mother').value,
-    },
-    work_history: works,
-    relatives:    rels,
-  };
-
-  try {
-    const res = await fetch('/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tg_id: TG_ID, data: payload })
-    });
-    const result = await res.json();
-    if (result.ok) {
-      document.body.innerHTML = `
-        <div style="text-align:center;padding:60px 20px;">
-          <div style="font-size:60px">✅</div>
-          <h2 style="margin-top:16px;color:#27ae60">Yuborildi!</h2>
-          <p style="margin-top:12px;color:#555">Telegram ga qayting — hujjat keladi.</p>
-        </div>`;
-    } else {
-      btn.textContent = '📤 Yuborish';
-      btn.disabled = false;
-      alert('Xatolik yuz berdi. Qayta urining.');
+    function createDynamicCard(containerId, fields) {
+      const container = document.getElementById(containerId);
+      const card = document.createElement("div");
+      card.className = "card";
+      fields.forEach((f) => {
+        const label = document.createElement("label");
+        label.textContent = f.label;
+        const input = document.createElement(f.type === "textarea" ? "textarea" : "input");
+        input.dataset.key = f.key;
+        if (f.type && f.type !== "textarea") input.type = f.type;
+        card.appendChild(label);
+        card.appendChild(input);
+      });
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "remove";
+      removeBtn.textContent = "O'chirish";
+      removeBtn.addEventListener("click", () => card.remove());
+      card.appendChild(removeBtn);
+      container.appendChild(card);
     }
-  } catch(e) {
-    btn.textContent = '📤 Yuborish';
-    btn.disabled = false;
-    alert('Xatolik: ' + e.message);
-  }
-});
 
-// Default 2 ta ish joyi va 2 ta qarindosh
-document.getElementById('addWorkBtn').click();
-document.getElementById('addWorkBtn').click();
-document.getElementById('addRelBtn').click();
-document.getElementById('addRelBtn').click();
-document.getElementById('addLangBtn').click();
+    function collectDynamic(containerId) {
+      const items = [];
+      const container = document.getElementById(containerId);
+      container.querySelectorAll(".card").forEach((card) => {
+        const item = {};
+        card.querySelectorAll("input, textarea").forEach((el) => {
+          item[el.dataset.key] = el.value.trim();
+        });
+        items.push(item);
+      });
+      return items;
+    }
 
-// Telegram
-const tgApp = window.Telegram && window.Telegram.WebApp;
-if (tgApp) { tgApp.ready(); tgApp.expand(); }
-</script>
+    document.getElementById("add_language").addEventListener("click", () => {
+      createDynamicCard("languages_list", [{ label: "Til", key: "name", type: "text" }, { label: "Darajasi", key: "level", type: "text" }]);
+    });
+
+    document.getElementById("add_work_history").addEventListener("click", () => {
+      createDynamicCard("work_history_list", [
+        { label: "Davr (masalan 2018-2022)", key: "period", type: "text" },
+        { label: "Tashkilot", key: "organization", type: "text" },
+        { label: "Lavozim", key: "position", type: "text" }
+      ]);
+    });
+
+    document.getElementById("add_family_member").addEventListener("click", () => {
+      createDynamicCard("family_members_list", [
+        { label: "Qarindoshligi", key: "relation", type: "text" },
+        { label: "F.I.Sh.", key: "full_name", type: "text" },
+        { label: "Tug'ilgan yili va joyi", key: "birth_info", type: "text" },
+        { label: "Ish joyi va lavozimi", key: "workplace", type: "text" },
+        { label: "Yashash manzili", key: "address", type: "textarea" }
+      ]);
+    });
+
+    document.getElementById("add_language").click();
+    document.getElementById("add_work_history").click();
+    document.getElementById("add_family_member").click();
+
+    document.getElementById("submit_btn").addEventListener("click", async () => {
+      if (TG_ID === null) {
+        alert("Telegram foydalanuvchi ID topilmadi");
+        return;
+      }
+
+      const payload = {
+        tg_id: Number(TG_ID),
+        data: {
+          full_name: document.getElementById("full_name").value.trim(),
+          birth_date: document.getElementById("birth_date").value,
+          birth_place: document.getElementById("birth_place").value.trim(),
+          nationality: document.getElementById("nationality").value.trim(),
+          party_affiliation: document.getElementById("party_affiliation").value,
+          education: document.getElementById("education").value.trim(),
+          workplace: document.getElementById("workplace").value.trim(),
+          academic_degree: document.getElementById("academic_degree").value,
+          awards: document.getElementById("awards").value.trim(),
+          deputation_status: document.getElementById("deputation_status").value.trim(),
+          address: document.getElementById("address").value.trim(),
+          passport_info: document.getElementById("passport_info").value.trim(),
+          phone_numbers: document.getElementById("phone_numbers").value.trim(),
+          languages: collectDynamic("languages_list"),
+          work_history: collectDynamic("work_history_list"),
+          family_members: collectDynamic("family_members_list")
+        }
+      };
+
+      const btn = document.getElementById("submit_btn");
+      btn.disabled = true;
+      btn.textContent = "Yuborilmoqda...";
+
+      try {
+        const response = await fetch('/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        if (result.ok) {
+          alert("Ma'lumot yuborildi. Hujjat Telegram orqali yuboriladi.");
+          tg.close();
+        } else {
+          alert("Xatolik: " + (result.error || "Noma'lum xato"));
+        }
+      } catch (err) {
+        alert("So'rov muvaffaqiyatsiz: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Yuborish";
+      }
+    });
+  </script>
 </body>
 </html>
