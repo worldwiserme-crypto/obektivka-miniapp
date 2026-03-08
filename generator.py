@@ -109,8 +109,8 @@ def generate(data: dict, output_path: str):
     sec.page_width    = Cm(21)
     sec.page_height   = Cm(29.7)
     sec.top_margin    = Cm(1.5)
-    sec.bottom_margin = Cm(1.1)
-    sec.left_margin   = Cm(2.7)
+    sec.bottom_margin = Cm(1.0)
+    sec.left_margin   = Cm(2.0)
     sec.right_margin  = Cm(1.0)
 
     doc.styles["Normal"].font.name = F
@@ -128,7 +128,7 @@ def generate(data: dict, output_path: str):
     langs = data.get("langs", [])
     langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
 
-    # ── 1. MALUMOTNOMA ──
+    # ── 1. MA‘LUMOTNOMA ──
     p0 = doc.add_paragraph()
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
@@ -216,11 +216,9 @@ def generate(data: dict, output_path: str):
         ri[0] += 1
 
     def inline2(label, val):
-        """Label col0, qiymat col1 — bir xil qatorda, 1 qator"""
-        rl = tbl.cell(ri[0], 0)
-        _cp(rl, label, bold=True, before=8)
-        rv = tbl.cell(ri[0], 1)
-        _cp(rv, val or "—", before=5)
+        """Label col0, qiymat col1 — bir xil qatorda"""
+        _cp(tbl.cell(ri[0], 0), label, bold=True, before=8)
+        _cp(tbl.cell(ri[0], 1), val or "—", before=8)
         ri[0] += 1
 
     def long2(label, val):
@@ -235,14 +233,14 @@ def generate(data: dict, output_path: str):
 
     row2("Tug‘ilgan yili:", bd, "Tug‘ilgan joyi:", data.get("birthplace",""))
     row2("Millati:", data.get("nationality","o‘zbek"), "Partiyaviyligi:", data.get("party","yo‘q"))
-    row2("Ma’lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
-    inline2("Ma’lumoti bo‘yicha mutaxassisligi:", data.get("speciality","") or "—")
+    row2("Ma‘lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
+    inline2("Ma‘lumoti bo‘Yicha mutaxassisligi:", data.get("speciality","") or "—")
     row2("Ilmiy darajasi:", data.get("science_degree","yo‘q"), "Ilmiy unvoni:", data.get("science_title","yo‘q"))
     row2("Qaysi chet tillarini biladi:", langs_str or "yo‘q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo‘q"))
     long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo‘q"))
     long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo‘q"))
     long2("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
-          "yoki boshqa saylanadigan organlarning a’zosimi (to‘liq ko‘rsatilishi lozim):", data.get("deputy","yo‘q"))
+          "yoki boshqa saylanadigan organlarning a‘zosimi (to‘liq ko‘rsatilishi lozim):", data.get("deputy","yo‘q"))
     long2("Doimiy yashash manzili (aniq ko‘rsatilsin):", data.get("address",""))
 
     # ── MEHNAT FAOLIYATI ──
@@ -275,7 +273,7 @@ def generate(data: dict, output_path: str):
 
     _para(doc, f"{fullname}ning yaqin qarindoshlari haqida",
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER)
-    _para(doc, "MA’LUMOT",
+    _para(doc, "MA‘LUMOT",
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
 
     relatives = data.get("relatives", [])
@@ -295,10 +293,15 @@ def generate(data: dict, output_path: str):
                        align=WD_ALIGN_PARAGRAPH.CENTER)
         for rel in relatives:
             row = rt.add_row()
-            for i, v in enumerate([rel.get("rel",""), rel.get("fio",""),
-                                    rel.get("birth",""), rel.get("job",""),
-                                    rel.get("addr","")]):
+            vals = [rel.get("rel",""), rel.get("fio",""),
+                    rel.get("birth",""), rel.get("job",""),
+                    rel.get("addr","")]
+            for i, v in enumerate(vals):
                 _cell_borders(row.cells[i])
-                _cell_para(row.cells[i], v)
+                if i == 0:
+                    _cell_para(row.cells[i], v, bold=True,
+                               align=WD_ALIGN_PARAGRAPH.CENTER)
+                else:
+                    _cell_para(row.cells[i], v)
 
     doc.save(output_path)
