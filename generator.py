@@ -151,59 +151,94 @@ def generate(data: dict, output_path: str):
     current_job = data.get("current_job", "")
     photo_b64   = data.get("photo_base64", "")
 
-    # ── [0] MA'LUMOTNOMA — chap, bold EMAS, 14pt ──
-    p0 = doc.add_paragraph()
+    # ── JADVAL: [matn | rasm] — borders YO'Q ──
+    # Chap katta cell: MA'LUMOTNOMA + fullname + lavozim
+    # O'ng kichik cell: rasm 3x4 sm
+    tbl = doc.add_table(rows=1, cols=2)
+    # Jadval borderlarini o'chirish
+    tblEl = tbl._tbl
+    tblPr = tblEl.find(qn("w:tblPr"))
+    if tblPr is None:
+        tblPr = OxmlElement("w:tblPr")
+        tblEl.insert(0, tblPr)
+    tblBord = OxmlElement("w:tblBorders")
+    for side in ["top","left","bottom","right","insideH","insideV"]:
+        b = OxmlElement(f"w:{side}")
+        b.set(qn("w:val"), "none")
+        tblBord.append(b)
+    tblPr.append(tblBord)
+
+    tbl.columns[0].width = Cm(13.5)
+    tbl.columns[1].width = Cm(3.0)
+
+    lc = tbl.cell(0, 0)
+    rc = tbl.cell(0, 1)
+
+    # Har ikki celldan border olib tashlash
+    for cell in [lc, rc]:
+        tcPr = cell._tc.get_or_add_tcPr()
+        tcBord = OxmlElement("w:tcBorders")
+        for side in ["top","left","bottom","right"]:
+            b = OxmlElement(f"w:{side}")
+            b.set(qn("w:val"), "none")
+            tcBord.append(b)
+        tcPr.append(tcBord)
+
+    # ── Chap cell: MA'LUMOTNOMA ──
+    lc.paragraphs[0].clear()
+
+    p0 = lc.paragraphs[0]
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
     p0.paragraph_format.space_after  = Pt(0)
     p0.paragraph_format.line_spacing = Pt(16)
     _run(p0, "MA'LUMOTNOMA", bold=True, size=F14)
 
-    # ── [1] Rasm — o'ngda, inline ──
-    if photo_b64:
-        try:
-            img_bytes = base64.b64decode(photo_b64.split(",")[-1])
-            p1 = doc.add_paragraph()
-            p1.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-            p1.paragraph_format.space_before = Pt(0)
-            p1.paragraph_format.space_after  = Pt(0)
-            p1.paragraph_format.line_spacing = Pt(1)
-            run = p1.add_run()
-            run.add_picture(io.BytesIO(img_bytes), width=Cm(3.0), height=Cm(4.0))
-        except Exception:
-            pass
+    # ── Chap cell: bo'sh qator ──
+    pb = lc.add_paragraph()
+    pb.paragraph_format.space_before = Pt(0)
+    pb.paragraph_format.space_after  = Pt(0)
+    pb.paragraph_format.line_spacing = Pt(8)
 
-    # ── [2] Fullname — markazda, bold, 14pt ──
-    p2 = doc.add_paragraph()
+    # ── Chap cell: fullname ──
+    p2 = lc.add_paragraph()
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p2.paragraph_format.space_before = Pt(0)
     p2.paragraph_format.space_after  = Pt(0)
     p2.paragraph_format.line_spacing = Pt(16)
     _run(p2, fullname, bold=True, size=F14)
 
-    # ── [3] Bo'sh qator ──
-    p3 = doc.add_paragraph()
-    p3.paragraph_format.space_before = Pt(0)
-    p3.paragraph_format.space_after  = Pt(0)
-    p3.paragraph_format.line_spacing = Pt(8)
-
-    # ── [4] Lavozim yili ──
+    # ── Chap cell: lavozim yili ──
     if job_year:
-        p4 = doc.add_paragraph()
-        p4.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p4.paragraph_format.space_before = Pt(0)
+        p4 = lc.add_paragraph()
+        p4.paragraph_format.space_before = Pt(6)
         p4.paragraph_format.space_after  = Pt(0)
         p4.paragraph_format.line_spacing = Pt(14)
         _run(p4, job_year, size=FS)
 
-    # ── [5] Lavozim nomi ──
+    # ── Chap cell: lavozim nomi ──
     if current_job:
-        p5 = doc.add_paragraph()
-        p5.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p5 = lc.add_paragraph()
         p5.paragraph_format.space_before = Pt(0)
         p5.paragraph_format.space_after  = Pt(0)
         p5.paragraph_format.line_spacing = Pt(14)
         _run(p5, current_job, size=FS)
+
+    # ── O'ng cell: rasm ──
+    rc.paragraphs[0].clear()
+    rp = rc.paragraphs[0]
+    rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    rp.paragraph_format.space_before = Pt(0)
+    rp.paragraph_format.space_after  = Pt(0)
+    rp.paragraph_format.line_spacing = None
+
+    if photo_b64:
+        try:
+            img_bytes = base64.b64decode(photo_b64.split(",")[-1])
+            run = rp.add_run()
+            run.add_picture(io.BytesIO(img_bytes), width=Cm(3.0), height=Cm(4.0))
+        except Exception:
+            pass
 
     # ══════════════════════════════════════
     # MA'LUMOTLAR
