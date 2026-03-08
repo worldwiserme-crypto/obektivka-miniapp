@@ -128,13 +128,13 @@ def generate(data: dict, output_path: str):
     langs = data.get("langs", [])
     langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
 
-    # ── 1. MA'LUMOTNOMA ──
+    # ── 1. MA’LUMOTNOMA ──
     p0 = doc.add_paragraph()
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
     p0.paragraph_format.space_after  = Pt(0)
     p0.paragraph_format.line_spacing = Pt(16)
-    _run(p0, "MA'LUMOTNOMA", bold=True, size=F14)
+    _run(p0, "MA’LUMOTNOMA", bold=True, size=F14)
 
     # ── 2. Fullname ──
     p1 = doc.add_paragraph()
@@ -147,19 +147,19 @@ def generate(data: dict, output_path: str):
     # ── 3. JADVAL: 3 ustun ──
     # col0=7.5sm, col1=6.8sm, col2=3.2sm (rasm)
     # Qator 0: lavozim (col0+col1 merge) | rasm (col2, barcha qatorlarga merge)
-    # Qator 1+: ma'lumotlar (col0=label, col1=label2)
+    # Qator 1+: ma’lumotlar (col0=label, col1=label2)
     # Qator 2+: qiymatlar (col0=val1, col1=val2)
 
     # Nechta info qator kerakligini hisoblaymiz
     # har bir "row2" = 2 qator (label + value), long = 2 qator
     # Jami: 1 (lavozim) + 6*2 (row2) + 4*2 (long) = 1+12+8 = 21 qator
-    N_ROWS = 21
+    N_ROWS = 20
 
     tbl = doc.add_table(rows=N_ROWS, cols=3)
     _kill_tbl_borders(tbl)
-    tbl.columns[0].width = Cm(7.5)
-    tbl.columns[1].width = Cm(6.8)
-    tbl.columns[2].width = Cm(3.2)
+    tbl.columns[0].width = Cm(8.0)
+    tbl.columns[1].width = Cm(6.5)
+    tbl.columns[2].width = Cm(3.0)
 
     # Barcha celllardan border olib tashlash
     for row in tbl.rows:
@@ -171,7 +171,7 @@ def generate(data: dict, output_path: str):
     for i in range(1, N_ROWS):
         photo_cell = photo_cell.merge(tbl.cell(i, 2))
 
-    # Rasmni o'ng cellga qo'yish
+    # Rasmni o’ng cellga qo’yish
     photo_cell.paragraphs[0].clear()
     rp = photo_cell.paragraphs[0]
     rp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -215,30 +215,38 @@ def generate(data: dict, output_path: str):
         _cp(tbl.cell(ri[0], 1), v2 or "")
         ri[0] += 1
 
+    def inline2(label, val):
+        """Label col0, qiymat col1 — bir xil qatorda, 1 qator"""
+        rl = tbl.cell(ri[0], 0)
+        _cp(rl, label, bold=True, before=8)
+        rv = tbl.cell(ri[0], 1)
+        _cp(rv, val or "—", before=5)
+        ri[0] += 1
+
     def long2(label, val):
         # Label — col0+col1 merge
         mc = tbl.cell(ri[0], 0).merge(tbl.cell(ri[0], 1))
-        _cp(mc, label, bold=True, before=5)
+        _cp(mc, label, bold=True, before=8)
         ri[0] += 1
         # Qiymat — col0+col1 merge
         mc2 = tbl.cell(ri[0], 0).merge(tbl.cell(ri[0], 1))
         _cp(mc2, val)
         ri[0] += 1
 
-    row2("Tug'ilgan yili:", bd, "Tug'ilgan joyi:", data.get("birthplace",""))
-    row2("Millati:", data.get("nationality","o'zbek"), "Partiyaviyligi:", data.get("party","yo'q"))
-    row2("Ma'lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
-    row2("Ma'lumoti bo'yicha mutaxassisligi:", data.get("speciality","") or "—")
-    row2("Ilmiy darajasi:", data.get("science_degree","yo'q"), "Ilmiy unvoni:", data.get("science_title","yo'q"))
-    row2("Qaysi chet tillarini biladi:", langs_str or "yo'q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo'q"))
-    long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo'q"))
-    long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo'q"))
+    row2("Tug’ilgan yili:", bd, "Tug’ilgan joyi:", data.get("birthplace",""))
+    row2("Millati:", data.get("nationality","o’zbek"), "Partiyaviyligi:", data.get("party","yo’q"))
+    row2("Ma’lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
+    inline2("Ma’lumoti bo’yicha mutaxassisligi:", data.get("speciality","") or "—")
+    row2("Ilmiy darajasi:", data.get("science_degree","yo’q"), "Ilmiy unvoni:", data.get("science_title","yo’q"))
+    row2("Qaysi chet tillarini biladi:", langs_str or "yo’q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo’q"))
+    long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo’q"))
+    long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo’q"))
     long2("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
-          "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):", data.get("deputy","yo'q"))
-    long2("Doimiy yashash manzili (aniq ko'rsatilsin):", data.get("address",""))
+          "yoki boshqa saylanadigan organlarning a’zosimi (to’liq ko’rsatilishi lozim):", data.get("deputy","yo’q"))
+    long2("Doimiy yashash manzili (aniq ko’rsatilsin):", data.get("address",""))
 
     # ── MEHNAT FAOLIYATI ──
-    _para(doc, "MEHNAT FAOLIYATI", bold=True,
+    _para(doc, "MEHNAT FAOLIYATI", bold=True, size=F14,
           align=WD_ALIGN_PARAGRAPH.CENTER, before=10, after=6)
 
     for w in data.get("work_history", []):
@@ -252,7 +260,7 @@ def generate(data: dict, output_path: str):
         else:
             line = str(w)
         if line.strip():
-            _para(doc, line, before=0, after=1)
+            _para(doc, line, before=0, after=4)
 
     phones = data.get("phones", {})
     tel = []
@@ -266,9 +274,9 @@ def generate(data: dict, output_path: str):
     doc.add_page_break()
 
     _para(doc, f"{fullname}ning yaqin qarindoshlari haqida",
-          bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
-    _para(doc, "MA'LUMOT",
-          bold=True, align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
+          bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER)
+    _para(doc, "MA’LUMOT",
+          bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
 
     relatives = data.get("relatives", [])
     if relatives:
@@ -279,7 +287,7 @@ def generate(data: dict, output_path: str):
             rt.columns[i].width = w
         for i, h in enumerate(["Qarindosh-\nligi",
                                 "Familiyasi, ismi\nva otasining ismi",
-                                "Tug'ilgan yili\nva joyi",
+                                "Tug’ilgan yili\nva joyi",
                                 "Ish joyi va\nlavozimi",
                                 "Turar joyi"]):
             _cell_borders(rt.cell(0, i))
