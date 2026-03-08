@@ -128,77 +128,73 @@ def generate(data: dict, output_path: str):
     photo_b64   = data.get("photo_base64", "")
 
     # ═══════════════════════════════════════════════
-    # BLOK 1: SARLAVHA + ISM + LAVOZIM  |  RASM
-    # 1 qatorli, 2 ustunli jadval — borderlar YO'Q
+    # BLOK 1A: MA'LUMOTNOMA — to'liq kenglikda, markazda
     # ═══════════════════════════════════════════════
-    tbl = doc.add_table(rows=1, cols=2)
-    # style yo'q — default ishlatiladi
-    _kill_table_borders(tbl)
-    tbl.columns[0].width = Cm(13.5)
-    tbl.columns[1].width = Cm(3.0)
-
-    lc = tbl.cell(0, 0)
-    rc = tbl.cell(0, 1)
-
-    # Chap cell — border YO'Q
-    _cell_no_border(lc)
-    lc.paragraphs[0].clear()
-
-    # MA'LUMOTNOMA — markazda, 14pt
-    p_title = lc.paragraphs[0]
+    p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_title.paragraph_format.space_before = Pt(0)
     p_title.paragraph_format.space_after  = Pt(0)
     p_title.paragraph_format.line_spacing = Pt(16)
     _run(p_title, "MA'LUMOTNOMA", size=F14)
 
-    # Bo'sh qator
-    pe = lc.add_paragraph()
-    pe.paragraph_format.space_before = Pt(0)
-    pe.paragraph_format.space_after  = Pt(0)
-    pe.paragraph_format.line_spacing = Pt(8)
-
-    # Fullname — markazda, bold, 14pt
-    p_name = lc.add_paragraph()
+    # ═══════════════════════════════════════════════
+    # BLOK 1B: Fullname — to'liq kenglikda, markazda, bold, 14pt
+    # ═══════════════════════════════════════════════
+    p_name = doc.add_paragraph()
     p_name.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_name.paragraph_format.space_before = Pt(0)
+    p_name.paragraph_format.space_before = Pt(2)
     p_name.paragraph_format.space_after  = Pt(0)
     p_name.paragraph_format.line_spacing = Pt(16)
     _run(p_name, fullname, bold=True, size=F14)
 
-    # Lavozim yili
-    if job_year:
-        p_jy = lc.add_paragraph()
-        p_jy.paragraph_format.space_before = Pt(6)
-        p_jy.paragraph_format.space_after  = Pt(0)
-        p_jy.paragraph_format.line_spacing = Pt(14)
-        _run(p_jy, job_year, size=FS)
+    # ═══════════════════════════════════════════════
+    # BLOK 1C: LAVOZIM (chap) | RASM (o'ng)
+    # Jadval: borders YO'Q, faqat mazmun
+    # ═══════════════════════════════════════════════
+    tbl = doc.add_table(rows=1, cols=2)
+    _kill_table_borders(tbl)
+    tbl.columns[0].width = Cm(13.5)
+    tbl.columns[1].width = Cm(3.0)
 
-    # Lavozim nomi
-    if current_job:
-        p_cj = lc.add_paragraph()
-        p_cj.paragraph_format.space_before = Pt(0)
-        p_cj.paragraph_format.space_after  = Pt(0)
-        p_cj.paragraph_format.line_spacing = Pt(14)
-        _run(p_cj, current_job, size=FS)
-
-    # O'ng cell — FAQAT rasm, border YO'Q
+    lc = tbl.cell(0, 0)
+    rc = tbl.cell(0, 1)
+    _cell_no_border(lc)
     _cell_no_border(rc)
+
+    # Chap cell: lavozim yili + nomi
+    lc.paragraphs[0].clear()
+    first = True
+    if job_year:
+        p = lc.paragraphs[0] if first else lc.add_paragraph()
+        first = False
+        p.paragraph_format.space_before = Pt(4)
+        p.paragraph_format.space_after  = Pt(0)
+        p.paragraph_format.line_spacing = Pt(14)
+        _run(p, job_year, size=FS)
+    if current_job:
+        p = lc.paragraphs[0] if first else lc.add_paragraph()
+        first = False
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after  = Pt(0)
+        p.paragraph_format.line_spacing = Pt(14)
+        _run(p, current_job, size=FS)
+
+    # O'ng cell: rasm — to'liq 3x4 sm, hech qanday border yo'q
     rc.paragraphs[0].clear()
     rp = rc.paragraphs[0]
     rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
     rp.paragraph_format.space_before = Pt(0)
     rp.paragraph_format.space_after  = Pt(0)
-    rp.paragraph_format.line_spacing = Pt(14)
+    # line_spacing YO'Q — rasm balandligini cheklamasligi uchun
+    rp.paragraph_format.line_spacing = None
 
     if photo_b64:
         try:
             img_bytes = base64.b64decode(photo_b64.split(",")[-1])
             run = rp.add_run()
-            # width VA height ikkalasini beramiz — aniq 3x4 sm
             run.add_picture(io.BytesIO(img_bytes), width=Cm(3.0), height=Cm(4.0))
         except Exception:
-            pass  # rasm yuklanmasa — bo'sh
+            pass
 
     # ═══════════════════════════════════════════════
     # BLOK 2: MA'LUMOTLAR
