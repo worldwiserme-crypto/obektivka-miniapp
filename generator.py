@@ -128,7 +128,7 @@ def generate(data: dict, output_path: str):
     langs = data.get("langs", [])
     langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
 
-    # ── 1. MA‘LUMOTNOMA ──
+    # ── 1. MALUMOTNOMA ──
     p0 = doc.add_paragraph()
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
