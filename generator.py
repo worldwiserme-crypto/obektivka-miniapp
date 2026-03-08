@@ -1,178 +1,252 @@
 from docx import Document
-from docx.shared import Pt, Cm
+from docx.shared import Pt, Cm, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
+F  = "Times New Roman"
+FS = Pt(11)
 
-def _font(run, bold=False):
-    run.font.name = "Times New Roman"
-    run.font.size = Pt(14)
+
+def _font(run, bold=False, size=None):
+    run.font.name = F
+    run.font.size = size or FS
     run.font.bold = bold
     try:
-        run._element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
+        rpr = run._element.get_or_add_rPr()
+        rFonts = rpr.get_or_add_rFonts()
+        rFonts.set(qn("w:eastAsia"), F)
     except Exception:
         pass
 
 
-def _para(doc, text="", bold=False, center=False, before=0, after=2):
+def _set_border(cell, val="single", sz="4", color="000000"):
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    # Eski tcBorders ni o'chirish
+    for old_borders in tcPr.findall(qn("w:tcBorders")):
+        tcPr.remove(old_borders)
+    tcBorders = OxmlElement("w:tcBorders")
+    for side in ["top", "left", "bottom", "right"]:
+        b = OxmlElement(f"w:{side}")
+        b.set(qn("w:val"), val)
+        b.set(qn("w:sz"), sz)
+        b.set(qn("w:space"), "0")
+        b.set(qn("w:color"), color)
+        tcBorders.append(b)
+    tcPr.append(tcBorders)
+
+
+def _no_border(cell):
+    _set_border(cell, val="none", sz="0", color="FFFFFF")
+
+
+def _cell_p(cell, text, bold=False, center=False, size=None):
+    for p in cell.paragraphs:
+        p.clear()
+    p = cell.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER if center else WD_ALIGN_PARAGRAPH.LEFT
+    p.paragraph_format.space_before = Pt(1)
+    p.paragraph_format.space_after  = Pt(1)
+    p.paragraph_format.line_spacing = Pt(13)
+    r = p.add_run(text or "")
+    _font(r, bold=bold, size=size)
+
+
+def _para(doc, text="", bold=False, center=False, before=0, after=3, size=None):
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER if center else WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_before = Pt(before)
-    p.paragraph_format.space_after = Pt(after)
-    p.paragraph_format.line_spacing = Pt(16)
+    p.paragraph_format.space_after  = Pt(after)
+    p.paragraph_format.line_spacing = Pt(13)
     if text:
         r = p.add_run(text)
-        _font(r, bold)
+        _font(r, bold=bold, size=size)
     return p
 
 
-def _row(doc, label, value):
-    p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(1)
-    p.paragraph_format.space_after = Pt(1)
-    p.paragraph_format.line_spacing = Pt(16)
-    r1 = p.add_run(label + " ")
-    _font(r1, bold=True)
-    r2 = p.add_run(value or "—")
-    _font(r2, bold=False)
+def _info_row(tbl, label1, val1, label2="", val2=""):
+    """2 ustunli info jadvali qatori"""
+    row = tbl.add_row()
+    row.height = Pt(16)
 
+    c0 = row.cells[0]
+    c1 = row.cells[1]
+    _no_border(c0)
+    _no_border(c1)
 
-def _border(cell):
-    tc = cell._tc
-    tcPr = tc.get_or_add_tcPr()
-    for side in ["top", "left", "bottom", "right"]:
-        b = OxmlElement(f"w:{side}")
-        b.set(qn("w:val"), "single")
-        b.set(qn("w:sz"), "4")
-        b.set(qn("w:color"), "000000")
-        tcPr.append(b)
+    # Chap
+    p0 = c0.paragraphs[0]
+    p0.paragraph_format.space_before = Pt(0)
+    p0.paragraph_format.space_after  = Pt(0)
+    p0.paragraph_format.line_spacing = Pt(14)
+    r = p0.add_run(label1 + " "); _font(r, bold=True)
+    r = p0.add_run(val1 or "—"); _font(r)
 
-
-def _cell(cell, text, bold=False, center=False):
-    p = cell.paragraphs[0]
-    p.clear()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER if center else WD_ALIGN_PARAGRAPH.LEFT
-    p.paragraph_format.space_before = Pt(1)
-    p.paragraph_format.space_after = Pt(1)
-    p.paragraph_format.line_spacing = Pt(14)
-    r = p.add_run(text or "—")
-    _font(r, bold)
+    # O'ng
+    if label2:
+        p1 = c1.paragraphs[0]
+        p1.paragraph_format.space_before = Pt(0)
+        p1.paragraph_format.space_after  = Pt(0)
+        p1.paragraph_format.line_spacing = Pt(14)
+        r = p1.add_run(label2 + " "); _font(r, bold=True)
+        r = p1.add_run(val2 or "—"); _font(r)
 
 
 def generate(data: dict, output_path: str):
     doc = Document()
 
     sec = doc.sections[0]
-    sec.page_width  = Cm(21)
-    sec.page_height = Cm(29.7)
-    sec.top_margin    = Cm(1.5)
-    sec.bottom_margin = Cm(1.0)
-    sec.right_margin  = Cm(1.0)
-    sec.left_margin   = Cm(2.0)
+    sec.page_width    = Cm(21)
+    sec.page_height   = Cm(29.7)
+    sec.top_margin    = Cm(2.0)
+    sec.bottom_margin = Cm(2.0)
+    sec.left_margin   = Cm(3.0)
+    sec.right_margin  = Cm(1.5)
 
-    doc.styles["Normal"].font.name = "Times New Roman"
-    doc.styles["Normal"].font.size = Pt(14)
+    doc.styles["Normal"].font.name = F
+    doc.styles["Normal"].font.size = FS
 
-    # Sarlavha
-    _para(doc, "MA'LUMOTNOMA", bold=True, center=True, after=4)
+    # ── SARLAVHA ──
+    _para(doc, "MA'LUMOTNOMA", bold=True, center=True, before=0, after=6)
 
-    # Ism va lavozim
-    _para(doc, data.get("fullname", ""), bold=True, center=True, after=2)
+    # ── ISM + RASM JADVALI ──
+    # 2 ustun: chap=ism+lavozim, o'ng=rasm
+    header_tbl = doc.add_table(rows=1, cols=2)
+    header_tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+    header_tbl.columns[0].width = Cm(13.5)
+    header_tbl.columns[1].width = Cm(3.0)
+
+    lc = header_tbl.cell(0, 0)
+    rc = header_tbl.cell(0, 1)
+    _no_border(lc)
+
+    # Ism
+    lp = lc.paragraphs[0]
+    lp.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    lp.paragraph_format.space_before = Pt(0)
+    lp.paragraph_format.space_after  = Pt(4)
+    lp.paragraph_format.line_spacing = Pt(14)
+    r = lp.add_run(data.get("fullname", "")); _font(r, bold=True)
+
+    # Lavozim
     job = f"{data.get('job_year','')} {data.get('current_job','')}".strip()
-    _para(doc, job, bold=True, after=6)
+    lp2 = lc.add_paragraph()
+    lp2.paragraph_format.space_before = Pt(0)
+    lp2.paragraph_format.space_after  = Pt(0)
+    lp2.paragraph_format.line_spacing = Pt(14)
+    r = lp2.add_run(job); _font(r)
 
-    # Sana formatlash
+    # Rasm joyi — chegara bilan
+    _set_border(rc)
+    rc.width = Cm(3.0)
+    rp = rc.paragraphs[0]
+    rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    rp.paragraph_format.space_before = Pt(2)
+    rp.paragraph_format.space_after  = Pt(2)
+    rp.paragraph_format.line_spacing = Pt(13)
+    for line in ["3×4 sm", "oxirgi 3 oy", "ichida olingan", "rangli surat"]:
+        r = rp.add_run(line + "\n"); _font(r, size=Pt(8))
+
+    _para(doc, "", before=6, after=0)
+
+    # ── 2 USTUNLI MA'LUMOTLAR JADVALI ──
     bd = data.get("birthdate", "")
     if bd and "-" in bd:
         y, m, d = bd.split("-")
         bd = f"{d}.{m}.{y}"
 
-    # Ma'lumotlar
-    _row(doc, "Tug'ilgan yili:", bd)
-    _row(doc, "Tug'ilgan joyi:", data.get("birthplace", ""))
-    _row(doc, "Millati:", data.get("nationality", "O'zbek"))
-    _row(doc, "Partiyaviyligi:", data.get("party", "Partiyasiz"))
-    _row(doc, "Ma'lumoti:", data.get("edu_level", ""))
-    _row(doc, "Tamomlagan joyi va yili:", data.get("university", ""))
-    _row(doc, "Mutaxassisligi:", data.get("speciality", ""))
-    _row(doc, "Ilmiy darajasi:", data.get("science_degree", "Yo'q"))
-    _row(doc, "Ilmiy unvoni:", data.get("science_title", "Yo'q"))
+    info_tbl = doc.add_table(rows=0, cols=2)
+    info_tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+    info_tbl.columns[0].width = Cm(8.0)
+    info_tbl.columns[1].width = Cm(8.5)
 
-    # Tillar
+    _info_row(info_tbl, "Tug'ilgan yili:", bd, "Tug'ilgan joyi:", data.get("birthplace",""))
+    _info_row(info_tbl, "Millati:", data.get("nationality","o'zbek"), "Partiyaviyligi:", data.get("party","yo'q"))
+    _info_row(info_tbl, "Ma'lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
+    _info_row(info_tbl, "Ma'lumoti bo'yicha mutaxassisligi:", data.get("speciality",""))
+    _info_row(info_tbl, "Ilmiy darajasi:", data.get("science_degree","yo'q"), "Ilmiy unvoni:", data.get("science_title","yo'q"))
+
     langs = data.get("langs", [])
-    if isinstance(langs, list):
-        langs_str = ", ".join(langs)
-    else:
-        langs_str = str(langs)
-    _row(doc, "Chet tillari:", langs_str or "Yo'q")
+    langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
+    _info_row(info_tbl, "Qaysi chet tillarini biladi:", langs_str or "yo'q", "Harbiy (maxsus) unvoni:", "yo'q")
 
-    # Mukofotlar
-    _row(doc, "Davlat mukofotlari:", data.get("awards", "Yo'q"))
-    _row(doc, "Idoraviy mukofotlar:", data.get("departmental_awards", "Yo'q"))
-    _row(doc, "Deputatlik:", data.get("deputy", "Yo'q"))
-    _row(doc, "Yashash manzili:", data.get("address", ""))
+    _para(doc, "", before=4, after=0)
+
+    # Uzoq labellar — alohida paragraf
+    def long_row(label, val):
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(2)
+        p.paragraph_format.space_after  = Pt(2)
+        p.paragraph_format.line_spacing = Pt(14)
+        r1 = p.add_run(label + " "); _font(r1, bold=True)
+        r2 = p.add_run(val or "yo'q"); _font(r2)
+
+    long_row("Davlat mukofotlari va preemiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo'q"))
+    long_row("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo'q"))
+    long_row(
+        "Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi yoki boshqa "
+        "saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
+        data.get("deputy","yo'q"))
+    long_row("Doimiy yashash manzili (aniq ko'rsatilsin):", data.get("address",""))
     if data.get("passport"):
-        _row(doc, "Pasport / JShShIR:", data.get("passport", ""))
+        long_row("Pasport / JShShIR:", data.get("passport",""))
 
-    # Telefon
-    phones = data.get("phones", {})
-    tel = []
-    if phones.get("me"):     tel.append(f"O'zi: {phones['me']}")
-    if phones.get("father"): tel.append(f"Otasi: {phones['father']}")
-    if phones.get("mother"): tel.append(f"Onasi: {phones['mother']}")
-    if tel:
-        _row(doc, "Telefon:", "   ".join(tel))
-
-    # Mehnat faoliyati
+    # ── MEHNAT FAOLIYATI ──
     _para(doc, "", before=6, after=0)
-    _para(doc, "MEHNAT FAOLIYATI", bold=True, center=True, before=0, after=4)
+    _para(doc, "MEHNAT FAOLIYATI", bold=True, center=True, before=0, after=6)
 
-    works = data.get("work_history", [])
-    for w in works:
+    for w in data.get("work_history", []):
         if isinstance(w, dict):
-            line = f"{w.get('from','')}–{w.get('to','')}   {w.get('org','')}   {w.get('pos','')}".strip("– ")
+            f, t, o, pos = w.get("from",""), w.get("to",""), w.get("org",""), w.get("pos","")
+            line = f"{f}–{t} yy. – {o}" + (f", {pos}" if pos else "")
         else:
             line = str(w)
-        if line.strip():
+        if line.strip("–- "):
             _para(doc, line, before=1, after=1)
 
-    # Sahifa 2 — Qarindoshlar
+    phones = data.get("phones", {})
+    tel = []
+    if phones.get("me"):     tel.append(phones["me"])
+    if phones.get("father"): tel.append(f"ota: {phones['father']}")
+    if phones.get("mother"): tel.append(f"ona: {phones['mother']}")
+    if tel:
+        _para(doc, "Tel.: " + "   ".join(tel), bold=True, before=8, after=0)
+
+    # ── SAHIFA 2: QARINDOSHLAR ──
     doc.add_page_break()
 
-    _para(doc, f"{data.get('fullname','')}ning yaqin qarindoshlari haqida",
-          bold=True, center=True, after=0)
-    _para(doc, "MA'LUMOT", bold=True, center=True, before=0, after=6)
+    fullname = data.get("fullname", "")
+    _para(doc, f"{fullname}ning yaqin qarindoshlari haqida", bold=True, center=True, before=0, after=0)
+    _para(doc, "MA'LUMOT", bold=True, center=True, before=0, after=8)
 
     relatives = data.get("relatives", [])
     if relatives:
         tbl = doc.add_table(rows=1, cols=5)
-        headers = [
-            "Qarindoshligi",
-            "F.I.Sh va tug'ilgan yili",
-            "Tug'ilgan joyi",
-            "Ish joyi va lavozimi",
-            "Turar joyi"
-        ]
-        widths = [Cm(2.8), Cm(4.0), Cm(3.2), Cm(4.0), Cm(3.2)]
-        for i, w in enumerate(widths):
+        tbl.style = "Table Grid"
+        tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+        for i, w in enumerate([Cm(2.5), Cm(4.0), Cm(3.5), Cm(4.0), Cm(3.0)]):
             tbl.columns[i].width = w
-        for i, h in enumerate(headers):
+
+        for i, h in enumerate([
+            "Qarindosh-\nligi",
+            "Familiyasi, ismi\nva otasining ismi",
+            "Tug'ilgan yili\nva joyi",
+            "Ish joyi va\nlavozimi",
+            "Turar joyi"
+        ]):
             c = tbl.cell(0, i)
-            _border(c)
-            _cell(c, h, bold=True, center=True)
+            _set_border(c)
+            _cell_p(c, h, bold=True, center=True)
 
         for rel in relatives:
             row = tbl.add_row()
-            vals = [
-                rel.get("rel", ""),
-                rel.get("fio", ""),
-                rel.get("birth", ""),
-                rel.get("job", ""),
-                rel.get("addr", ""),
-            ]
-            for i, v in enumerate(vals):
-                _border(row.cells[i])
-                _cell(row.cells[i], v)
+            for i, v in enumerate([
+                rel.get("rel",""), rel.get("fio",""),
+                rel.get("birth",""), rel.get("job",""), rel.get("addr","")
+            ]):
+                _set_border(row.cells[i])
+                _cell_p(row.cells[i], v)
 
     doc.save(output_path)
