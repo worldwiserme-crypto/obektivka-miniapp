@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ma‘lumotnoma</title>
+<title>Ma’lumotnoma</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -124,7 +124,7 @@ textarea{min-height:58px;resize:vertical}
 
 <!-- 3. TILLAR VA YUTUQLAR -->
 <div class="card">
-  <h3>🏅 Tillar va mukofotlar</h3>
+  <h3>🏅 Tillar va Yutuqlar</h3>
 
   <label>Chet tillari (faqat mukammal biladiganlari)</label>
   <div id="langList"></div>
@@ -133,13 +133,13 @@ textarea{min-height:58px;resize:vertical}
   <label>Harbiy (maxsus) unvoni</label>
   <input type="text" id="military_rank" placeholder="yo‘q">
 
-  <label>Davlat mukofotlari</label>
+  <label>Davlat mukofotlari va premiyalari</label>
   <textarea id="awards" placeholder="yo‘q&#10;yoki: 2005 y. «Mehnat shuhrati» ordeni"></textarea>
 
   <label>Idoraviy mukofotlar</label>
   <textarea id="dept_awards" placeholder="yo‘q&#10;yoki: 2019 y. «Manaviyat fidoyisi» ko‘krak nishoni"></textarea>
 
-  <label>Deputatlik (xalq deputati yoki saylanadigan organ a‘zosi)</label>
+  <label>Deputatlik (xalq deputati yoki saylanadigan organ a’zosi)</label>
   <textarea id="deputy" placeholder="yo‘q&#10;yoki: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati"></textarea>
 </div>
 
@@ -150,21 +150,8 @@ textarea{min-height:58px;resize:vertical}
   <label>Doimiy yashash manzili (to‘liq)</label>
   <input type="text" id="address" placeholder="Toshkent shahri, Yunusobod tumani, ...">
 
-  <label>Telefon raqamlar</label>
-  <div class="row">
-    <div>
-      <p class="hint">O‘zingizniki</p>
-      <input type="tel" id="phone_me" placeholder="+998901234567">
-    </div>
-    <div>
-      <p class="hint">Otangizniki</p>
-      <input type="tel" id="phone_father" placeholder="+998__">
-    </div>
-    <div>
-      <p class="hint">Onangizniki</p>
-      <input type="tel" id="phone_mother" placeholder="+998__">
-    </div>
-  </div>
+  <label>Telefon raqam</label>
+  <input type="tel" id="phone_me" placeholder="+998901234567">
 </div>
 
 <!-- 5. MEHNAT FAOLIYATI -->
@@ -256,11 +243,15 @@ document.getElementById("addRel").onclick = function(){
 // Default qatorlar
 document.getElementById("addLang").onclick.call();
 document.getElementById("addWork").onclick.call();
-document.getElementById("addWork").onclick.call();
-document.getElementById("addWork").onclick.call();
+// Default: Otasi
 document.getElementById("addRel").onclick.call();
+// Default: Onasi
 document.getElementById("addRel").onclick.call();
-document.getElementById("addRel").onclick.call();
+(function(){
+  var items = document.querySelectorAll("#relList .item");
+  var last = items[items.length-1];
+  if(last) last.querySelector("select").value = "Onasi";
+})();
 
 // Yuborish
 document.getElementById("submitBtn").onclick = async function(){
