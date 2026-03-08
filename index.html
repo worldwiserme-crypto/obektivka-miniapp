@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Ma'lumotnoma</title>
+<title>Ma‘lumotnoma</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -27,7 +27,7 @@ textarea{min-height:58px;resize:vertical}
 </style>
 </head>
 <body>
-<h2>📋 Ma'lumotnoma to'ldirish</h2>
+<h2>📋 Ma'lumotnoma to‘ldirish</h2>
 
 <!-- 1. SHAXSIY -->
 <div class="card">
@@ -39,20 +39,20 @@ textarea{min-height:58px;resize:vertical}
     <img id="photoImg" style="width:80px;height:107px;object-fit:cover;border:1px solid #ddd;border-radius:4px">
   </div>
 
-  <label>To'liq ism-familiya (FISh) *</label>
-  <input type="text" id="fullname" placeholder="Jovliyev Fatxulla Fayzulla o'g'li">
+  <label>To‘liq ism-familiya (FISh) *</label>
+  <input type="text" id="fullname" placeholder="Jovliyev Fatxulla Fayzulla o‘g‘li">
 
   <label>Hozirgi ish joyi va lavozimi *</label>
   <input type="text" id="job_year" placeholder="2025-yildan h.v." style="margin-bottom:6px">
-  <textarea id="current_job" placeholder="Muassasa nomi va lavozim (to'liq)"></textarea>
+  <textarea id="current_job" placeholder="Muassasa nomi va lavozim (to‘liq)"></textarea>
 
   <div class="row">
     <div>
-      <label>Tug'ilgan sanasi *</label>
+      <label>Tug‘ilgan sanasi *</label>
       <input type="date" id="birthdate">
     </div>
     <div>
-      <label>Tug'ilgan joyi</label>
+      <label>Tug‘ilgan joyi</label>
       <input type="text" id="birthplace" placeholder="Toshkent sh., Mirobod t.">
     </div>
   </div>
@@ -60,13 +60,13 @@ textarea{min-height:58px;resize:vertical}
   <div class="row">
     <div>
       <label>Millati</label>
-      <input type="text" id="nationality" value="o'zbek">
+      <input type="text" id="nationality" value="o‘zbek">
     </div>
     <div>
       <label>Partiyaviyligi</label>
       <select id="party">
-        <option value="yo'q">Yo'q</option>
-        <option>O'zLiDeP</option>
+        <option value="yo‘q">Yo‘q</option>
+        <option>O‘zLiDeP</option>
         <option>MTDP</option>
         <option>XDP</option>
         <option>Adolat</option>
@@ -76,18 +76,18 @@ textarea{min-height:58px;resize:vertical}
   </div>
 </div>
 
-<!-- 2. TA'LIM -->
+<!-- 2. TA‘LIM -->
 <div class="card">
-  <h3>🎓 Ta'lim</h3>
+  <h3>🎓 Ta‘lim</h3>
 
   <div class="row">
     <div>
-      <label>Ma'lumoti</label>
+      <label>Ma‘lumoti</label>
       <select id="edu_level">
         <option>oliy</option>
         <option>magistratura</option>
-        <option>o'rta maxsus</option>
-        <option>o'rta</option>
+        <option>o‘rta maxsus</option>
+        <option>o‘rta</option>
       </select>
     </div>
     <div>
@@ -103,7 +103,7 @@ textarea{min-height:58px;resize:vertical}
     <div>
       <label>Ilmiy darajasi</label>
       <select id="science_degree">
-        <option value="yo'q">Yo'q</option>
+        <option value="yo‘q">Yo‘q</option>
         <option>Falsafa doktori (PhD)</option>
         <option>Fan doktori (DSc)</option>
         <option>Fan nomzodi</option>
@@ -113,7 +113,7 @@ textarea{min-height:58px;resize:vertical}
     <div>
       <label>Ilmiy unvoni</label>
       <select id="science_title">
-        <option value="yo'q">Yo'q</option>
+        <option value="yo‘q">Yo‘q</option>
         <option>Professor</option>
         <option>Dotsent</option>
         <option>Katta ilmiy xodim (dotsent unvoniga tenglashtirilgan)</option>
@@ -128,32 +128,32 @@ textarea{min-height:58px;resize:vertical}
 
   <label>Chet tillari (faqat mukammal biladiganlari)</label>
   <div id="langList"></div>
-  <button class="add" id="addLang">+ Til qo'shish</button>
+  <button class="add" id="addLang">+ Til qo‘shish</button>
 
   <label>Harbiy (maxsus) unvoni</label>
-  <input type="text" id="military_rank" placeholder="yo'q">
+  <input type="text" id="military_rank" placeholder="yo‘q">
 
   <label>Davlat mukofotlari va premiyalari</label>
-  <textarea id="awards" placeholder="yo'q&#10;yoki: 2005 y. «Mehnat shuhrati» ordeni"></textarea>
+  <textarea id="awards" placeholder="yo‘q&#10;yoki: 2005 y. «Mehnat shuhrati» ordeni"></textarea>
 
   <label>Idoraviy mukofotlar</label>
-  <textarea id="dept_awards" placeholder="yo'q&#10;yoki: 2019 y. «Manaviyat fidoyisi» ko'krak nishoni"></textarea>
+  <textarea id="dept_awards" placeholder="yo‘q&#10;yoki: 2019 y. «Manaviyat fidoyisi» ko‘krak nishoni"></textarea>
 
-  <label>Deputatlik (xalq deputati yoki saylanadigan organ a'zosi)</label>
-  <textarea id="deputy" placeholder="yo'q&#10;yoki: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati"></textarea>
+  <label>Deputatlik (xalq deputati yoki saylanadigan organ a‘zosi)</label>
+  <textarea id="deputy" placeholder="yo‘q&#10;yoki: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati"></textarea>
 </div>
 
 <!-- 4. ALOQA -->
 <div class="card">
-  <h3>📞 Aloqa ma'lumotlari</h3>
+  <h3>📞 Aloqa ma‘lumotlari</h3>
 
-  <label>Doimiy yashash manzili (to'liq)</label>
+  <label>Doimiy yashash manzili (to‘liq)</label>
   <input type="text" id="address" placeholder="Toshkent shahri, Yunusobod tumani, ...">
 
   <label>Telefon raqamlar</label>
   <div class="row">
     <div>
-      <p class="hint">O'zingizniki</p>
+      <p class="hint">O‘zingizniki</p>
       <input type="tel" id="phone_me" placeholder="+998901234567">
     </div>
     <div>
@@ -170,17 +170,17 @@ textarea{min-height:58px;resize:vertical}
 <!-- 5. MEHNAT FAOLIYATI -->
 <div class="card">
   <h3>💼 Mehnat faoliyati</h3>
-  <p class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)</p>
+  <p class="hint" style="margin-bottom:8px">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo‘Yicha)</p>
   <div id="workList"></div>
-  <button class="add" id="addWork">+ Ish joyi qo'shish</button>
+  <button class="add" id="addWork">+ Ish joyi qo‘shish</button>
 </div>
 
 <!-- 6. QARINDOSHLAR -->
 <div class="card">
   <h3>👨‍👩‍👧 Yaqin qarindoshlar</h3>
-  <p class="hint" style="margin-bottom:8px">Ota, ona, aka-ukalar, opa-singillar, turmush o'rtog'i, farzandlar, qaynota-qaynona</p>
+  <p class="hint" style="margin-bottom:8px">Ota, ona, aka-ukalar, opa-singillar, turmush o‘rtog‘i, farzandlar, qaynota-qaynona</p>
   <div id="relList"></div>
-  <button class="add" id="addRel">+ Qarindosh qo'shish</button>
+  <button class="add" id="addRel">+ Qarindosh qo‘shish</button>
 </div>
 
 <button class="btn" id="submitBtn">📤 Yuborish</button>
@@ -206,7 +206,7 @@ if(window.Telegram && window.Telegram.WebApp){
   window.Telegram.WebApp.expand();
 }
 
-// Til qo'shish
+// Til qo‘shish
 document.getElementById("addLang").onclick = function(){
   var d = document.createElement("div");
   d.className = "item";
@@ -219,7 +219,7 @@ document.getElementById("addLang").onclick = function(){
   document.getElementById("langList").appendChild(d);
 };
 
-// Ish joyi qo'shish
+// Ish joyi qo‘shish
 document.getElementById("addWork").onclick = function(){
   var d = document.createElement("div");
   d.className = "item";
@@ -234,8 +234,8 @@ document.getElementById("addWork").onclick = function(){
   document.getElementById("workList").appendChild(d);
 };
 
-// Qarindosh qo'shish
-var RELS = ["Otasi","Onasi","Turmush o'rtog'i","Xotini","O'g'li","Qizi",
+// Qarindosh qo‘shish
+var RELS = ["Otasi","Onasi","Turmush o‘rtog‘i","Xotini","O‘g‘li","Qizi",
             "Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi","Boshqa"];
 
 document.getElementById("addRel").onclick = function(){
@@ -266,7 +266,7 @@ document.getElementById("addRel").onclick.call();
 document.getElementById("submitBtn").onclick = async function(){
   var fullname = document.getElementById("fullname").value.trim();
   if(!fullname){ alert("Ism-familiyani kiriting!"); return; }
-  if(!document.getElementById("birthdate").value){ alert("Tug'ilgan sanani kiriting!"); return; }
+  if(!document.getElementById("birthdate").value){ alert("Tug‘ilgan sanani kiriting!"); return; }
   if(!document.getElementById("current_job").value.trim()){ alert("Ish joyini kiriting!"); return; }
 
   var btn = document.getElementById("submitBtn");
@@ -298,20 +298,20 @@ document.getElementById("submitBtn").onclick = async function(){
     fullname:            fullname,
     birthdate:           document.getElementById("birthdate").value,
     birthplace:          document.getElementById("birthplace").value,
-    nationality:         document.getElementById("nationality").value || "o'zbek",
+    nationality:         document.getElementById("nationality").value || "o‘zbek",
     party:               document.getElementById("party").value,
     job_year:            document.getElementById("job_year").value,
     current_job:         document.getElementById("current_job").value,
     edu_level:           document.getElementById("edu_level").value,
     university:          document.getElementById("university").value,
     speciality:          document.getElementById("speciality").value,
-    science_degree:      document.getElementById("science_degree").value || "yo'q",
-    science_title:       document.getElementById("science_title").value || "yo'q",
-    military_rank:       document.getElementById("military_rank").value || "yo'q",
+    science_degree:      document.getElementById("science_degree").value || "yo‘q",
+    science_title:       document.getElementById("science_title").value || "yo‘q",
+    military_rank:       document.getElementById("military_rank").value || "yo‘q",
     langs:               langs,
-    awards:              document.getElementById("awards").value || "yo'q",
-    departmental_awards: document.getElementById("dept_awards").value || "yo'q",
-    deputy:              document.getElementById("deputy").value || "yo'q",
+    awards:              document.getElementById("awards").value || "yo‘q",
+    departmental_awards: document.getElementById("dept_awards").value || "yo‘q",
+    deputy:              document.getElementById("deputy").value || "yo‘q",
     address:             document.getElementById("address").value,
     phones: {
       me:     document.getElementById("phone_me").value,
