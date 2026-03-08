@@ -187,56 +187,79 @@ def generate(data: dict, output_path: str):
     fullname = data.get("fullname", "")
     photo_b64 = data.get("photo_base64", "")
 
-    # ── 1. MA'LUMOTNOMA ──
-    p = new_para(doc, WD_ALIGN_PARAGRAPH.LEFT, before=0, after=0)
-    add_run(p, "MA'LUMOTNOMA", bold=False, size=F14)
+    # ── SARLAVHA + ISM + LAVOZIM (chap) | RASM (o'ng) ──
+    # 3 qatorli jadval: [sarlavha | rasm], [bo'sh | ...], [ism |], [lavozim |]
+    tbl = doc.add_table(rows=4, cols=2)
+    tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
+    tbl.columns[0].width = Cm(13.5)
+    tbl.columns[1].width = Cm(3.0)
 
-    # Rasm: floating anchor
+    # Barcha celllarni no-border
+    for ri in range(4):
+        for ci in range(2):
+            no_border(tbl.cell(ri, ci))
+
+    # O'ng ustun: qator 0-3 merge qilib rasm joyi
+    rc = tbl.cell(0, 1)
+    for ri in range(1, 4):
+        rc = rc.merge(tbl.cell(ri, 1))
+    set_borders(rc)
+    rc.paragraphs[0].clear()
+    rp = rc.paragraphs[0]
+    rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    rp.paragraph_format.space_before = Pt(4)
+    rp.paragraph_format.line_spacing = Pt(12)
+
     if photo_b64:
         try:
             img_bytes = base64.b64decode(photo_b64.split(",")[-1])
-            p._p.append(make_pic_anchor(doc, img_bytes, w_cm=3.0, h_cm=4.0))
+            run = rp.add_run()
+            from docx.shared import Cm as DCm
+            run.add_picture(io.BytesIO(img_bytes), width=DCm(2.8), height=DCm(3.8))
         except Exception as e:
-            pass
+            for line in ["3×4 sm,", "oxirgi 3 oy", "ichida olingan", "rangli surat"]:
+                add_run(rp, line + "\n", size=Pt(8))
     else:
-        # Placeholder: jadval bilan o'ng burchakda
-        # Oddiy text box o'rniga jadval ishlatamiz - sahifa o'ngiga joylashtiramiz
-        tbl = doc.add_table(rows=1, cols=2)
-        tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
-        tbl.columns[0].width = Cm(13.7)
-        tbl.columns[1].width = Cm(3.0)
-        lc = tbl.cell(0, 0)
-        rc = tbl.cell(0, 1)
-        no_border(lc)
-        set_borders(rc)
-        lc.paragraphs[0].clear()
-        rc.paragraphs[0].clear()
-        rp = rc.paragraphs[0]
-        rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        rp.paragraph_format.space_before = Pt(8)
-        rp.paragraph_format.line_spacing = Pt(12)
         for line in ["3×4 sm,", "oxirgi 3 oy", "ichida olingan", "rangli surat"]:
             add_run(rp, line + "\n", size=Pt(8))
 
-    # ── 2. Bo'sh qator (CENTER) ──
-    p2 = new_para(doc, WD_ALIGN_PARAGRAPH.CENTER, before=0, after=0)
+    # Chap ustun qatorlari
+    # Qator 0: MA'LUMOTNOMA
+    c0 = tbl.cell(0, 0)
+    c0.paragraphs[0].clear()
+    p0 = c0.paragraphs[0]
+    p0.paragraph_format.space_before = Pt(0)
+    p0.paragraph_format.space_after  = Pt(0)
+    p0.paragraph_format.line_spacing = Pt(14)
+    add_run(p0, "MA'LUMOTNOMA", bold=False, size=F14)
 
-    # ── 3. Fullname — CENTER, bold, 14pt ──
-    p3 = new_para(doc, WD_ALIGN_PARAGRAPH.CENTER, before=0, after=0)
-    add_run(p3, fullname, bold=True, size=F14)
+    # Qator 1: bo'sh
+    c1 = tbl.cell(1, 0)
+    c1.paragraphs[0].clear()
 
-    # ── 4. Bo'sh qator ──
-    new_para(doc, before=0, after=0)
+    # Qator 2: fullname — markazda, bold, 14pt
+    c2 = tbl.cell(2, 0)
+    c2.paragraphs[0].clear()
+    p2 = c2.paragraphs[0]
+    p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p2.paragraph_format.space_before = Pt(0)
+    p2.paragraph_format.space_after  = Pt(0)
+    p2.paragraph_format.line_spacing = Pt(14)
+    add_run(p2, fullname, bold=True, size=F14)
 
-    # ── 5. Lavozim (chap, 11pt) ──
+    # Qator 3: lavozim
+    c3 = tbl.cell(3, 0)
+    c3.paragraphs[0].clear()
+    p3 = c3.paragraphs[0]
+    p3.paragraph_format.space_before = Pt(4)
+    p3.paragraph_format.space_after  = Pt(0)
+    p3.paragraph_format.line_spacing = Pt(14)
     job_year = data.get("job_year", "")
     current_job = data.get("current_job", "")
     if job_year:
-        p4 = new_para(doc, before=0, after=0)
-        add_run(p4, job_year, size=FS)
+        add_run(p3, job_year, size=FS)
     if current_job:
-        p5 = new_para(doc, before=0, after=0)
-        add_run(p5, current_job, size=FS)
+        add_run(p3, "\n" + current_job if job_year else current_job, size=FS)
 
     # ── 6. MA'LUMOTLAR (label qator + qiymat qator, tab bilan) ──
     def label_row(l1, l2=""):
