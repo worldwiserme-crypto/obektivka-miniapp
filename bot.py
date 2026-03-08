@@ -22,6 +22,9 @@ dp  = Dispatcher()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Node.js PATH ni to'g'irlash
+os.environ["PATH"] = "/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin:" + os.environ.get("PATH", "")
+
 
 def find_file(filename):
     paths = [
