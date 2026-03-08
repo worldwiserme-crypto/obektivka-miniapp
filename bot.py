@@ -44,7 +44,7 @@ async def submit(request):
         if not tg_id:
             return web.json_response({"ok": False, "error": "tg_id yo'q"})
 
-        await bot.send_message(tg_id, "⏳ Hujjat tayyorlanmoqda...")
+        loading_msg = await bot.send_message(tg_id, "⏳ Hujjat tayyorlanmoqda...")
 
         os.makedirs("/tmp/obj", exist_ok=True)
         docx_path = f"/tmp/obj/{tg_id}.docx"
@@ -55,6 +55,9 @@ async def submit(request):
         fullname = data.get("fullname", "obektivka")
         with open(docx_path, "rb") as f:
             file_data = f.read()
+
+        await bot.delete_message(tg_id, loading_msg.message_id)
+
         await bot.send_document(
             tg_id,
             document=BufferedInputFile(file_data, filename=f"{fullname}.docx"),
