@@ -309,7 +309,7 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
     p0.paragraph_format.space_before = Pt(0)
     p0.paragraph_format.space_after  = Pt(0)
     p0.paragraph_format.line_spacing = Pt(16)
-    _run(p0, "MA'LUMOTNOMA", bold=True, size=F14)
+    _run(p0, L("MA'LUMOTNOMA","МАЪЛУМОТНОМА"), bold=True, size=F14)
 
     # ── 2. Fullname ──
     p1 = doc.add_paragraph()
@@ -387,20 +387,40 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
         _cp(mc2, val)
         ri[0] += 1
 
-    row2("Tug'ilgan yili:", bd, "Tug'ilgan joyi:", data.get("birthplace",""))
-    row2("Millati:", data.get("nationality","o'zbek"), "Partiyaviyligi:", data.get("party","yo'q"))
-    row2("Ma'lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
-    inline2("Ma'lumoti bo'yicha mutaxassisligi:", data.get("speciality","") or "—")
-    row2("Ilmiy darajasi:", data.get("science_degree","yo'q"), "Ilmiy unvoni:", data.get("science_title","yo'q"))
-    row2("Qaysi chet tillarini biladi:", langs_str or "yo'q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo'q"))
-    long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo'q"))
-    long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo'q"))
-    long2("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
-          "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):", data.get("deputy","yo'q"))
-    long2("Doimiy yashash manzili (aniq ko'rsatilsin):", data.get("address",""))
+    IS_CYR = script == "cyr"
+    YOQ = "йўқ" if IS_CYR else "yo'q"
+
+    def L(lat, cyr): return cyr if IS_CYR else lat
+
+    row2(L("Tug'ilgan yili:","Туғилган йили:"), bd,
+         L("Tug'ilgan joyi:","Туғилган жойи:"), data.get("birthplace",""))
+    row2(L("Millati:","Миллати:"), data.get("nationality","o'zbek"),
+         L("Partiyaviyligi:","Партиявийлиги:"), data.get("party", YOQ))
+    row2(L("Ma'lumoti:","Маълумоти:"), data.get("edu_level",""),
+         L("Tamomlagan:","Тамомлаган:"), data.get("university",""))
+    inline2(L("Ma'lumoti bo'yicha mutaxassisligi:","Маълумоти бўйича мутахассислиги:"),
+            data.get("speciality","") or "—")
+    row2(L("Ilmiy darajasi:","Илмий даражаси:"), data.get("science_degree", YOQ),
+         L("Ilmiy unvoni:","Илмий унвони:"), data.get("science_title", YOQ))
+    row2(L("Qaysi chet tillarini biladi:","Қайси чет тилларини билади:"), langs_str or YOQ,
+         L("Harbiy (maxsus) unvoni:","Ҳарбий (махсус) унвони:"), data.get("military_rank", YOQ))
+    long2(L("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):",
+             "Давлат мукофотлари ва мукофотлари билан тақдирланган (қанақа):"),
+          data.get("awards", YOQ))
+    long2(L("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):",
+             "Идоравий мукофотлар билан тақдирланган (қанақа):"),
+          data.get("departmental_awards", YOQ))
+    long2(L("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
+            "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
+            "Халқ депутатлари, республика, вилоят, шаҳар ва туман Кенгаши депутатими "
+            "ёки бошқа сайланадиган органларнинг аъзосими (тўлиқ кўрсатилиши лозим):"),
+          data.get("deputy", YOQ))
+    long2(L("Doimiy yashash manzili (aniq ko'rsatilsin):",
+             "Доимий яшаш манзили (аниқ кўрсатилсин):"),
+          data.get("address",""))
 
     # ── MEHNAT FAOLIYATI ──
-    _para(doc, "MEHNAT FAOLIYATI", bold=True, size=F14,
+    _para(doc, L("MEHNAT FAOLIYATI","МЕҲНАТ ФАОЛИЯТИ"), bold=True, size=F14,
           align=WD_ALIGN_PARAGRAPH.CENTER, before=10, after=6)
 
     for w in data.get("work_history", []):
@@ -422,14 +442,14 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
     if phones.get("father"): tel.append(f"ota: {phones['father']}")
     if phones.get("mother"): tel.append(f"ona: {phones['mother']}")
     if tel:
-        _para(doc, "Tel.:  " + "     ".join(tel), bold=True, before=10)
+        _para(doc, L("Tel.: ","Тел.: ") + "     ".join(tel), bold=True, before=10)
 
     # ── SAHIFA 2: QARINDOSHLAR ──
     doc.add_page_break()
 
-    _para(doc, f"{fullname}ning yaqin qarindoshlari haqida",
+    _para(doc, fullname + L("ning yaqin qarindoshlari haqida","нинг яқин қариндошлари ҳақида"),
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER)
-    _para(doc, "MA'LUMOT",
+    _para(doc, L("MA'LUMOT","МАЪЛУМОТ"),
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
 
     relatives = data.get("relatives", [])
@@ -439,11 +459,12 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
         rt.alignment = WD_TABLE_ALIGNMENT.LEFT
         for i, w in enumerate([Cm(2.6), Cm(4.2), Cm(3.4), Cm(4.0), Cm(3.2)]):
             rt.columns[i].width = w
-        for i, h in enumerate(["Qarindosh-\nligi",
-                                "Familiyasi, ismi\nva otasining ismi",
-                                "Tug'ilgan yili\nva joyi",
-                                "Ish joyi va\nlavozimi",
-                                "Turar joyi"]):
+        headers_lat = ["Qarindosh-\nligi","Familiyasi, ismi\nva otasining ismi",
+                       "Tug'ilgan yili\nva joyi","Ish joyi va\nlavozimi","Turar joyi"]
+        headers_cyr = ["Қариндош-\nлиги","Фамилияси, исми\nва отасининг исми",
+                       "Туғилган йили\nва жойи","Иш жойи ва\nлавозими","Турар жойи"]
+        headers = headers_cyr if IS_CYR else headers_lat
+        for i, h in enumerate(headers):
             _cell_borders(rt.cell(0, i))
             _cell_para(rt.cell(0, i), h, bold=True,
                        align=WD_ALIGN_PARAGRAPH.CENTER)
