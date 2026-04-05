@@ -20,8 +20,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);color:var(--slate);font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 button{font-family:var(--font);cursor:pointer}
-
-/* ═══ HEADER ═══ */
 .hdr{position:sticky;top:0;z-index:90;background:var(--card);border-bottom:1px solid var(--s2);padding:14px 16px 12px}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .hdr-logo{display:flex;align-items:center;gap:8px}
@@ -30,25 +28,17 @@ button{font-family:var(--font);cursor:pointer}
 .hdr-lang{display:flex;border:1.5px solid var(--s2);border-radius:8px;overflow:hidden}
 .hdr-lang button{padding:6px 12px;border:none;background:var(--s0);font-size:11px;font-weight:700;color:var(--s5);transition:all .15s}
 .hdr-lang button.on{background:var(--pri);color:#fff}
-
-/* Progress */
 .prog{display:flex;gap:3px;height:4px;border-radius:2px;overflow:hidden}
 .prog-seg{flex:1;background:var(--s2);border-radius:2px;transition:background .4s ease}
 .prog-seg.done{background:var(--ok)}
 .prog-seg.cur{background:var(--pri)}
-
-/* ═══ TOAST ═══ */
 .toast-wrap{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none;width:calc(100% - 32px);max-width:400px}
 .toast{padding:12px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;animation:slideIn .3s ease;margin-bottom:6px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
 .toast.err{background:var(--err);color:#fff}
 .toast.ok{background:var(--ok);color:#fff}
 .toast.info{background:var(--slate);color:#fff}
 @keyframes slideIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══ CONTENT ═══ */
 .cnt{padding:12px 16px 120px}
-
-/* ═══ ACCORDION ═══ */
 .acc{background:var(--card);border-radius:var(--r);margin-bottom:10px;border:1.5px solid var(--s2);overflow:hidden;transition:border-color .2s}
 .acc.open{border-color:var(--pri)}
 .acc-head{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
@@ -62,8 +52,6 @@ button{font-family:var(--font);cursor:pointer}
 .acc.open .acc-arrow{transform:rotate(180deg);color:var(--pri)}
 .acc-body{display:none;padding:0 16px 16px;border-top:1px solid var(--s2)}
 .acc.open .acc-body{display:block}
-
-/* ═══ FORM ═══ */
 .fg{margin-top:14px}
 .fg:first-child{margin-top:12px}
 .fl{display:block;font-size:12px;font-weight:700;color:var(--s7);margin-bottom:4px}
@@ -75,13 +63,9 @@ textarea.fi{min-height:64px;resize:vertical}
 select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-
 .eg-hint{font-size:11px;color:var(--s5);margin-bottom:5px;line-height:1.5;font-style:italic;}
-/* Hint */
 .ht{display:flex;align-items:flex-start;gap:5px;margin-top:4px;font-size:11px;color:var(--s4);line-height:1.4}
 .ht i{font-style:normal;width:16px;height:16px;min-width:16px;border-radius:50%;background:var(--acc);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
-
-/* Photo */
 .photo-area{display:flex;align-items:center;gap:12px;margin-top:8px}
 .photo-thumb{width:60px;height:80px;border-radius:8px;border:2px dashed var(--s3);background:var(--s1);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;transition:border-color .2s}
 .photo-thumb.has{border-style:solid;border-color:var(--pri)}
@@ -91,14 +75,10 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 .photo-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--s2);border-radius:var(--rs);background:var(--card);font-size:12px;font-weight:600;color:var(--s7);transition:all .15s}
 .photo-btn:active{background:var(--s1)}
 .photo-note{font-size:11px;color:var(--s4);margin-top:4px}
-
-/* Chips */
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--s2);background:var(--card);font-size:12px;font-weight:600;color:var(--s7);transition:all .15s}
 .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
 .chip:active{transform:scale(.96)}
-
-/* Dynamic list */
 .dli{background:var(--s0);border:1px solid var(--s2);border-radius:var(--rs);padding:10px 12px;margin-top:6px;position:relative;animation:fadeUp .2s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .dli-x{position:absolute;top:6px;right:8px;width:22px;height:22px;border-radius:50%;border:none;background:var(--err-l);color:var(--err);font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:700}
@@ -106,28 +86,17 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 .dli .fi{background:#fff;margin-top:6px}
 .dli .fi:first-of-type{margin-top:0}
 .dli .fl{margin-top:8px;margin-bottom:3px}
-
-/* Add btn */
 .ab{width:100%;padding:10px;border:1.5px dashed var(--s3);border-radius:var(--rs);background:transparent;font-size:12px;font-weight:700;color:var(--pri);margin-top:8px;transition:all .15s}
 .ab:active{background:var(--pri-xl);border-color:var(--pri)}
-
-/* Saved work items */
 .swi{display:flex;align-items:flex-start;gap:8px;background:var(--ok-l);border:1px solid #a7f3d0;border-radius:var(--rs);padding:10px 12px;margin-top:6px;font-size:13px;line-height:1.4;animation:fadeUp .2s ease}
 .swi-body{flex:1;min-width:0}
 .swi-body strong{font-weight:700;color:var(--ok);display:block;font-size:12px}
 .swi-del{width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,.06);color:var(--err);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-
-/* Relative card */
 .rl{background:var(--s0);border:1px solid var(--s2);border-radius:var(--rs);padding:12px;margin-top:8px;animation:fadeUp .2s ease}
 .rl-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .rl-tag{font-size:11px;font-weight:700;color:var(--pri);background:var(--pri-l);padding:3px 10px;border-radius:12px}
-
-/* Remove last */
 .rm-btn{width:100%;padding:10px;border:1.5px solid var(--err);border-radius:var(--rs);background:var(--err-l);font-size:12px;font-weight:700;color:var(--err);margin-top:6px;transition:all .15s}
 .rm-btn:active{background:var(--err);color:#fff}
-
-
-/* ═══ ALIFBO MODAL ═══ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-box{background:var(--card);border-radius:var(--r) var(--r) 0 0;padding:24px 20px 32px;width:100%;max-width:480px;animation:slideUp .25s ease}
@@ -138,8 +107,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 .modal-btn{padding:14px;border-radius:var(--r);border:2px solid var(--s2);background:var(--s0);font-family:var(--font);font-size:14px;font-weight:700;color:var(--slate);cursor:pointer;transition:all .15s;text-align:center}
 .modal-btn:hover{border-color:var(--pri);background:var(--pri-xl);color:var(--pri)}
 .modal-btn.cyr{font-size:15px}
-
-/* ═══ FOOTER CTA ═══ */
 .foot{position:fixed;bottom:0;left:0;right:0;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:80}
 .foot-inner{display:flex;gap:8px}
 .foot-back{padding:14px 18px;border-radius:var(--r);border:1.5px solid var(--s2);background:var(--card);font-size:14px;font-weight:700;color:var(--s7);flex-shrink:0}
@@ -148,27 +115,18 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 .foot-next:active{transform:scale(.98)}
 .foot-next:disabled{background:var(--s4);box-shadow:none}
 .foot-next.submit{background:linear-gradient(135deg,var(--ok),#059669)}
-
-/* Success */
 .suc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:85vh;padding:40px 24px;text-align:center}
 .suc-icon{width:72px;height:72px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
 .suc-icon svg{width:36px;height:36px;color:#fff}
 @keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.1)}100%{transform:scale(1)}}
 .suc h2{font-size:22px;font-weight:800;color:var(--slate);margin-bottom:6px}
 .suc p{font-size:15px;color:var(--s5);line-height:1.5}
-
-/* Status badge */
 .status-row{display:flex;gap:6px;margin-top:4px}
 .status-badge{flex:1;padding:8px;border-radius:var(--rs);border:1.5px solid var(--s2);text-align:center;font-size:12px;font-weight:700;color:var(--s5);background:var(--card);transition:all .15s}
 .status-badge.on{border-color:var(--pri);background:var(--pri-xl);color:var(--pri)}
-
-/* ═══ QUICK PICK ═══ */
-/* Phone prefix */
 .phone-wrap{display:flex;gap:0;align-items:stretch}
 .phone-prefix{padding:10px 10px 10px 12px;border:1.5px solid var(--s2);border-right:none;border-radius:var(--rs) 0 0 var(--rs);background:var(--s1);font-size:14px;font-weight:700;color:var(--s7);display:flex;align-items:center;flex-shrink:0;letter-spacing:.3px}
 .phone-wrap .fi{border-radius:0 var(--rs) var(--rs) 0;flex:1}
-
-/* Year pills */
 .yr-row{display:flex;gap:4px;margin-top:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none}
 .yr-row::-webkit-scrollbar{display:none}
 .yr-pill{padding:5px 10px;border-radius:8px;border:1.5px solid var(--s2);background:var(--card);font-family:var(--font);font-size:12px;font-weight:700;color:var(--s5);cursor:pointer;flex-shrink:0;transition:all .12s}
@@ -177,7 +135,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 </head>
 <body>
 
-<!-- ═══ STICKY HEADER ═══ -->
 <header class="hdr" id="hdr">
   <div class="hdr-top">
     <div class="hdr-logo">
@@ -197,40 +154,38 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
   </div>
 </header>
 
-<!-- Toast container -->
 <div class="toast-wrap" id="toastWrap"></div>
 
 <main class="cnt">
 
-  <!-- ═══ 1. SHAXSIY ═══ -->
+  <!-- 1. SHAXSIY -->
   <section class="acc open" id="sec0">
     <div class="acc-head" onclick="toggleSec(0)">
       <div class="acc-num">1</div>
       <div class="acc-info">
-        <div class="acc-title" id="sec0-title" data-i18n="sec0-title">Shaxsiy ma'lumotlar</div>
-        <div class="acc-sub" id="sec0-sub" data-i18n="sec0-sub">Ism, telefon, tug'ilgan sana</div>
+        <div class="acc-title" data-i18n="sec0-title">Shaxsiy ma'lumotlar</div>
+        <div class="acc-sub" data-i18n="sec0-sub">Ism, telefon, tug'ilgan sana</div>
       </div>
       <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="acc-body">
 
       <div class="fg">
-        <label class="fl" for="f_name" id="lbl-name" data-i18n="lbl-name">To'liq F.I.Sh<span class="rq">*</span></label>
-        <input class="fi" type="text" id="f_name" data-i18n-ph="ph-name" data-lat-ph="Familiya Ism Sharif" data-cyr-ph="Фамилия Исм Шариф" placeholder="Familiya Ism Sharif" maxlength="200" data-field="fullname">
+        <label class="fl" for="f_name" data-i18n="lbl-name">To'liq F.I.Sh<span class="rq">*</span></label>
+        <input class="fi" type="text" id="f_name" data-i18n-ph="ph-name" placeholder="Familiya Ism Sharif" maxlength="200">
         <div class="ht"><i>i</i><span data-i18n="ht-passport">Pasportdagi kabi to'liq yozing</span></div>
       </div>
 
       <div class="fg">
-        <label class="fl" for="f_phone" id="lbl-phone" data-i18n="lbl-phone">Telefon raqam<span class="rq">*</span></label>
+        <label class="fl" for="f_phone" data-i18n="lbl-phone">Telefon raqam<span class="rq">*</span></label>
         <div class="phone-wrap">
           <span class="phone-prefix">+998</span>
-          <input class="fi" type="tel" id="f_phone" data-i18n-ph="ph-phone" placeholder="90 123 45 67" maxlength="12" data-field="phone" oninput="limitPhone(this,event)" onblur="fmtPhone(this)">
+          <input class="fi" type="tel" id="f_phone" placeholder="90 123 45 67" maxlength="12" oninput="limitPhone(this,event)" onblur="fmtPhone(this)">
         </div>
       </div>
 
-      <!-- Photo upload -->
       <div class="fg">
-        <label class="fl" id="lbl-photo" data-i18n="lbl-photo">Rasm (3×4)</label>
+        <label class="fl" data-i18n="lbl-photo">Rasm (3×4)</label>
         <div class="photo-area">
           <div class="photo-thumb" id="pThumb">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--s4)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -239,7 +194,7 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
             <input type="file" id="f_photo" accept="image/*">
             <button type="button" class="photo-btn" onclick="document.getElementById('f_photo').click()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Rasm tanlash
+              <span data-i18n="btn-photo">Rasm tanlash</span>
             </button>
             <div class="photo-note">Max 5 MB • JPG, PNG</div>
           </div>
@@ -248,51 +203,50 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 
       <div class="row2">
         <div class="fg">
-          <label class="fl" for="f_bdate" id="lbl-bdate" data-i18n="lbl-bdate">Tug'ilgan sana<span class="rq">*</span></label>
-          <input class="fi" type="date" id="f_bdate" data-field="birthdate">
+          <label class="fl" for="f_bdate" data-i18n="lbl-bdate">Tug'ilgan sana<span class="rq">*</span></label>
+          <input class="fi" type="date" id="f_bdate">
         </div>
         <div class="fg">
-          <label class="fl" for="f_bplace" id="lbl-bplace" data-i18n="lbl-bplace">Tug'ilgan joyi</label>
-          <input class="fi" type="text" id="f_bplace" data-i18n-ph="ph-bplace" data-lat-ph="Viloyat, tuman" data-cyr-ph="Вилоят, туман" placeholder="Viloyat, tuman" maxlength="200" data-field="birthplace">
+          <label class="fl" for="f_bplace" data-i18n="lbl-bplace">Tug'ilgan joyi</label>
+          <input class="fi" type="text" id="f_bplace" data-i18n-ph="ph-bplace" placeholder="Viloyat, tuman" maxlength="200">
           <div class="ht"><i>i</i><span data-i18n="ht-bplace">Masalan: Andijon viloyati, Asaka tumani</span></div>
         </div>
       </div>
 
       <div class="row2">
         <div class="fg">
-          <label class="fl" id="lbl-nat" data-i18n="lbl-nat" for="f_nat">Millati</label>
-          <input class="fi" type="text" id="f_nat" data-i18n-ph="ph-nat" value="o'zbek" maxlength="50" data-field="nationality" data-lat-ph="Masalan: o'zbek, rus, tojik" data-cyr-ph="Масалан: ўзбек, рус, тожик" placeholder="Masalan: o'zbek, rus, tojik">
+          <label class="fl" for="f_nat" data-i18n="lbl-nat">Millati</label>
+          <input class="fi" type="text" id="f_nat" data-i18n-ph="ph-nat" value="o'zbek" maxlength="50" placeholder="Masalan: o'zbek, rus, tojik">
         </div>
         <div class="fg">
-          <label class="fl" for="f_party" id="lbl-party" data-i18n="lbl-party">Partiyaviyligi</label>
-          <select class="fi" id="f_party" data-field="party" style="width:100%">
+          <label class="fl" for="f_party" data-i18n="lbl-party">Partiyaviyligi</label>
+          <select class="fi" id="f_party" style="width:100%">
             <option value="yo'q">Yo'q</option>
-            <option value="Oʻzbekiston Xalq demokratik partiyasi a'zosi">Oʻzbekiston Xalq demokratik partiyasi a'zosi</option>
-            <option value="Oʻzbekiston Liberal demokratik partiyasi a'zosi">Oʻzbekiston Liberal demokratik partiyasi a'zosi</option>
-            <option value="Oʻzbekiston Milliy tiklanish demokratik partiyasi a'zosi">Oʻzbekiston Milliy tiklanish demokratik partiyasi a'zosi</option>
-            <option value="Oʻzbekiston Adolat sotsial demokratik partiyasi a'zosi">Oʻzbekiston Adolat sotsial demokratik partiyasi a'zosi</option>
-            <option value="Oʻzbekiston ekologik harakati a'zosi">Oʻzbekiston ekologik harakati a'zosi</option>
+            <option value="O'zbekiston Xalq demokratik partiyasi a'zosi">O'zbekiston Xalq demokratik partiyasi a'zosi</option>
+            <option value="O'zbekiston Liberal demokratik partiyasi a'zosi">O'zbekiston Liberal demokratik partiyasi a'zosi</option>
+            <option value="O'zbekiston Milliy tiklanish demokratik partiyasi a'zosi">O'zbekiston Milliy tiklanish demokratik partiyasi a'zosi</option>
+            <option value="O'zbekiston Adolat sotsial demokratik partiyasi a'zosi">O'zbekiston Adolat sotsial demokratik partiyasi a'zosi</option>
+            <option value="O'zbekiston ekologik harakati a'zosi">O'zbekiston ekologik harakati a'zosi</option>
           </select>
-          <div class="ht" id="ht-party" style="margin-top:5px"><i>i</i>Qaysi partiya a'zosi?</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══ 2. TA'LIM ═══ -->
+  <!-- 2. TA'LIM -->
   <section class="acc" id="sec1">
     <div class="acc-head" onclick="toggleSec(1)">
       <div class="acc-num">2</div>
       <div class="acc-info">
-        <div class="acc-title" id="sec1-title" data-i18n="sec1-title">Ta'lim va ilmiy faoliyat</div>
-        <div class="acc-sub" id="sec1-sub" data-i18n="sec1-sub">Diplom, mutaxassislik, tillar</div>
+        <div class="acc-title" data-i18n="sec1-title">Ta'lim va ilmiy faoliyat</div>
+        <div class="acc-sub" data-i18n="sec1-sub">Diplom, mutaxassislik, tillar</div>
       </div>
       <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="acc-body">
       <div class="fg">
-        <label class="fl" for="f_edu" id="lbl-edu" data-i18n="lbl-edu">Ma'lumoti</label>
-        <select class="fi" id="f_edu" data-field="edu_level" onchange="showEduHint()">
+        <label class="fl" for="f_edu" data-i18n="lbl-edu">Ma'lumoti</label>
+        <select class="fi" id="f_edu" onchange="showEduHint()">
           <option value="">— Tanlang —</option>
           <option value="Oliy">Oliy</option>
           <option value="Tugallanmagan oliy">Tugallanmagan oliy</option>
@@ -300,104 +254,107 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
           <option value="O'rta">O'rta</option>
           <option value="Tayanch o'rta">Tayanch o'rta</option>
         </select>
-        <div class="ht" id="eduHint" style="display:none;margin-top:6px;background:var(--pri-xl);border:1px solid var(--pri-l);border-radius:var(--rs);padding:8px 10px;color:var(--s7);font-size:12px;line-height:1.5"><i>i</i><span id="eduHintText"></span></div>
+        <div id="eduHint" style="display:none;margin-top:6px;background:var(--pri-xl);border:1px solid var(--pri-l);border-radius:var(--rs);padding:8px 10px;color:var(--s7);font-size:12px;line-height:1.5;display:none;align-items:flex-start;gap:5px"><i style="font-style:normal;width:16px;height:16px;min-width:16px;border-radius:50%;background:var(--acc);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px">i</i><span id="eduHintText"></span></div>
       </div>
       <div class="fg">
-        <label class="fl" for="f_uni" id="lbl-uni" data-i18n="lbl-uni">Tamomlagan joyi va yili</label>
+        <label class="fl" for="f_uni" data-i18n="lbl-uni">Tamomlagan joyi va yili</label>
         <div class="eg-hint" data-i18n="ht-uni">Masalan: 1982 y. Toshkent davlat universiteti (kunduzgi). Bir nechta bo'lsa, barchasini yozing.</div>
-        <textarea class="fi" id="f_uni" data-i18n-ph="ph-uni" maxlength="500" data-field="university" data-lat-ph="1982 y. Toshkent davlat universiteti (kunduzgi)" data-cyr-ph="1982 й. Тошкент давлат университети (кундузги)" placeholder="1982 y. Toshkent davlat universiteti (kunduzgi)"></textarea>
+        <textarea class="fi" id="f_uni" data-i18n-ph="ph-uni" maxlength="500" placeholder="1982 y. Toshkent davlat universiteti (kunduzgi)"></textarea>
       </div>
       <div class="fg">
-        <label class="fl" for="f_spec" id="lbl-spec" data-i18n="lbl-spec">Mutaxassisligi</label>
+        <label class="fl" for="f_spec" data-i18n="lbl-spec">Mutaxassisligi</label>
         <div class="eg-hint" data-i18n="ht-spec">Masalan: Yurist, Iqtisodchi (diplom bo'yicha)</div>
-        <input class="fi" type="text" id="f_spec" data-i18n-ph="ph-spec" maxlength="200" data-field="speciality" data-lat-ph="Masalan: Yurist, Iqtisodchi" data-cyr-ph="Масалан: Юрист, Иқтисодчи" placeholder="Masalan: Yurist, Iqtisodchi">
+        <input class="fi" type="text" id="f_spec" data-i18n-ph="ph-spec" maxlength="200" placeholder="Masalan: Yurist, Iqtisodchi">
       </div>
 
       <div class="fg">
-        <label class="fl" id="lbl-lang" data-i18n="lbl-lang">Chet tillari</label>
+        <label class="fl" data-i18n="lbl-lang">Chet tillari</label>
         <div id="langList"></div>
-        <button class="ab" type="button" id="btn-addlang" data-i18n="btn-addlang" onclick="addLang()">+ Til qo'shish</button>
+        <button class="ab" type="button" data-i18n="btn-addlang" onclick="addLang()">+ Til qo'shish</button>
         <div class="ht" style="margin-top:6px"><i>i</i><span data-i18n="ht-lang">Faqat yaxshi biladigan tillaringizni qo'shing</span></div>
       </div>
 
       <div class="row2">
         <div class="fg">
-          <label class="fl" for="f_sdeg" id="lbl-sdeg" data-i18n="lbl-sdeg">Ilmiy darajasi</label>
-          <select class="fi" id="f_sdeg" data-field="science_degree" onchange="toggleSdegInput()">
+          <label class="fl" for="f_sdeg" data-i18n="lbl-sdeg">Ilmiy darajasi</label>
+          <select class="fi" id="f_sdeg" onchange="toggleSdegInput()">
             <option value="yo'q" selected>Yo'q</option>
             <option value="Falsafa doktori (PhD) / Fan nomzodi">Falsafa doktori (PhD) / Fan nomzodi</option>
             <option value="Fan doktori (DSc)">Fan doktori (DSc)</option>
           </select>
           <div id="sdegFanWrap" style="display:none;margin-top:8px">
-            <label class="fl" for="f_sdeg_fan" id="lbl-sdeg-fan" data-i18n="lbl-sdeg-fan">Qaysi fan bo'yicha?</label>
+            <label class="fl" for="f_sdeg_fan" data-i18n="lbl-sdeg-fan">Qaysi fan bo'yicha?</label>
             <input class="fi" type="text" id="f_sdeg_fan" data-i18n-ph="ph-sdeg-fan" placeholder="Masalan: Iqtisod fanlari" maxlength="200">
           </div>
         </div>
         <div class="fg">
-          <label class="fl" for="f_stit" id="lbl-stit" data-i18n="lbl-stit">Ilmiy unvoni</label>
-          <select class="fi" id="f_stit" data-field="science_title">
-            <option value="yo'q">Yo'q</option><option>Professor</option><option>Dotsent</option><option>Katta ilmiy xodim</option>
+          <label class="fl" for="f_stit" data-i18n="lbl-stit">Ilmiy unvoni</label>
+          <select class="fi" id="f_stit">
+            <option value="yo'q">Yo'q</option>
+            <option value="Professor">Professor</option>
+            <option value="Dotsent">Dotsent</option>
+            <option value="Katta ilmiy xodim">Katta ilmiy xodim</option>
           </select>
         </div>
       </div>
 
       <div class="fg">
-        <label class="fl" for="f_mil" id="lbl-mil" data-i18n="lbl-mil">Harbiy unvoni</label>
-        <input class="fi" type="text" id="f_mil" data-lat-ph="yo'q" data-cyr-ph="йўқ" value="yo'q" maxlength="200" data-field="military_rank">
+        <label class="fl" for="f_mil" data-i18n="lbl-mil">Harbiy unvoni</label>
+        <input class="fi" type="text" id="f_mil" value="yo'q" maxlength="200">
         <div class="ht"><i>i</i><span data-i18n="ht-mil">Harbiy (maxsus) unvoni faqat harbiy va huquqni muhofaza qilish idoralari xodimlari uchun ko'rsatiladi.</span></div>
       </div>
       <div class="fg">
-        <label class="fl" for="f_awards" id="lbl-awards" data-i18n="lbl-awards">Davlat mukofotlari</label>
-        <div class="eg-hint" data-i18n="ht-awards">Masalan: 2005 y. «Mehnat shuhrati» ordeni. Agar yo'q bo'lsa — yo'q deb yozing.</div>
-        <textarea class="fi" id="f_awards" data-i18n-ph="ph-awards" maxlength="1000" data-field="awards" data-lat-ph="yo'q" data-cyr-ph="йўқ" placeholder="yo'q"></textarea>
+        <label class="fl" for="f_awards" data-i18n="lbl-awards">Davlat mukofotlari</label>
+        <div class="eg-hint" data-i18n="ht-awards">Masalan: 2005 y. «Mehnat shuhrati» ordeni.</div>
+        <textarea class="fi" id="f_awards" data-i18n-ph="ph-yoq" maxlength="1000" placeholder="yo'q"></textarea>
       </div>
       <div class="fg">
-        <label class="fl" for="f_dept_awards" id="lbl-dawards" data-i18n="lbl-dawards">Idoraviy mukofotlar</label>
-        <div class="eg-hint" data-i18n="ht-dawards">Masalan: 2019 y. «Manaviyat fidoyisi» ko'krak nishoni. Agar yo'q bo'lsa — yo'q deb yozing.</div>
-        <textarea class="fi" id="f_dept_awards" data-i18n-ph="ph-awards" maxlength="1000" data-field="departmental_awards" data-lat-ph="yo'q" data-cyr-ph="йўқ" placeholder="yo'q"></textarea>
+        <label class="fl" for="f_dept_awards" data-i18n="lbl-dawards">Idoraviy mukofotlar</label>
+        <div class="eg-hint" data-i18n="ht-dawards">Masalan: 2019 y. «Ma'naviyat fidoyisi» ko'krak nishoni.</div>
+        <textarea class="fi" id="f_dept_awards" data-i18n-ph="ph-yoq" maxlength="1000" placeholder="yo'q"></textarea>
       </div>
       <div class="fg">
-        <label class="fl" id="lbl-deputy" data-i18n="lbl-deputy">Deputatlik / saylanadigan organ a'zoligi</label>
-        <div class="eg-hint" data-i18n="ht-deputy">Xalq deputatlari respublika, viloyat, shahar va tuman Kengashi deputatimi yoki boshqa saylanadigan organlarning a'zosimi — to'liq ko'rsatilishi lozim. Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.</div>
-        <textarea class="fi" id="f_deputy" data-i18n-ph="ph-deputy" maxlength="1000" data-field="deputy" data-lat-ph="yo'q" data-cyr-ph="йўқ" placeholder="yo'q"></textarea>
+        <label class="fl" data-i18n="lbl-deputy">Deputatlik / saylanadigan organ a'zoligi</label>
+        <div class="eg-hint" data-i18n="ht-deputy">Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.</div>
+        <textarea class="fi" id="f_deputy" data-i18n-ph="ph-yoq" maxlength="1000" placeholder="yo'q"></textarea>
       </div>
     </div>
   </section>
 
-  <!-- ═══ 3. MEHNAT ═══ -->
+  <!-- 3. MEHNAT -->
   <section class="acc" id="sec2">
     <div class="acc-head" onclick="toggleSec(2)">
       <div class="acc-num">3</div>
       <div class="acc-info">
-        <div class="acc-title" id="sec2-title" data-i18n="sec2-title">Mehnat faoliyati</div>
-        <div class="acc-sub" id="sec2-sub" data-i18n="sec2-sub">Amaldagi va oldingi ish joylari</div>
+        <div class="acc-title" data-i18n="sec2-title">Mehnat faoliyati</div>
+        <div class="acc-sub" data-i18n="sec2-sub">Amaldagi va oldingi ish joylari</div>
       </div>
       <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="acc-body">
       <div class="eg-hint" style="margin-top:10px" data-i18n="ht-work">Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)</div>
       <div id="workBlocks"></div>
-      <button class="ab" type="button" id="btn-addwork" data-i18n="btn-addwork" onclick="addWorkBlock()" style="margin-top:8px">+ Yangi davrni qo'shish</button>
+      <button class="ab" type="button" data-i18n="btn-addwork" onclick="addWorkBlock()" style="margin-top:8px">+ Yangi davrni qo'shish</button>
     </div>
   </section>
 
-  <!-- ═══ 4. QARINDOSHLAR ═══ -->
+  <!-- 4. OILA -->
   <section class="acc" id="sec3">
     <div class="acc-head" onclick="toggleSec(3)">
       <div class="acc-num">4</div>
       <div class="acc-info">
-        <div class="acc-title" id="sec3-title" data-i18n="sec3-title">Oila va manzil</div>
-        <div class="acc-sub" id="sec3-sub" data-i18n="sec3-sub">Yaqin qarindoshlar, turar joyi</div>
+        <div class="acc-title" data-i18n="sec3-title">Oila va manzil</div>
+        <div class="acc-sub" data-i18n="sec3-sub">Yaqin qarindoshlar, turar joyi</div>
       </div>
       <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="acc-body">
       <div id="relList" style="margin-top:10px"></div>
-      <button class="ab" type="button" id="btn-addrel" data-i18n="btn-addrel" onclick="addRelCard()">+ Qarindosh qo'shish</button>
+      <button class="ab" type="button" data-i18n="btn-addrel" onclick="addRelCard()">+ Qarindosh qo'shish</button>
 
       <div class="fg" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--s2)">
-        <label class="fl" for="f_addr" id="lbl-addr" data-i18n="lbl-addr">Doimiy yashash manzili<span class="rq">*</span></label>
-        <input class="fi" type="text" id="f_addr" data-i18n-ph="ph-addr" data-lat-ph="Viloyat, tuman, ko'cha, uy" data-cyr-ph="Вилоят, туман, кўча, уй" placeholder="Viloyat, tuman, ko'cha, uy" maxlength="300" data-field="address">
+        <label class="fl" for="f_addr" data-i18n="lbl-addr">Doimiy yashash manzili<span class="rq">*</span></label>
+        <input class="fi" type="text" id="f_addr" data-i18n-ph="ph-addr" placeholder="Viloyat, tuman, ko'cha, uy" maxlength="300">
         <div class="ht"><i>i</i><span data-i18n="ht-propiska">Propiska bo'yicha to'liq manzilni yozing</span></div>
       </div>
     </div>
@@ -405,24 +362,19 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 
 </main>
 
-
-<!-- ═══ ALIFBO TANLASH MODALI ═══ -->
+<!-- MODAL -->
 <div id="scriptModal" class="modal-overlay" style="display:none">
   <div class="modal-box">
-    <div class="modal-title" id="modal-title" data-i18n="modal-title">Qaysi alifboda yuklab olasiz?</div>
-    <div class="modal-sub" id="modal-sub" data-i18n="modal-sub">Hujjat tanlangan alifboda tayyorlanadi</div>
+    <div class="modal-title" data-i18n="modal-title">Qaysi alifboda yuklab olasiz?</div>
+    <div class="modal-sub" data-i18n="modal-sub">Hujjat tanlangan alifboda tayyorlanadi</div>
     <div class="modal-btns">
-      <button class="modal-btn" onclick="submitWithScript('lat')">
-        🇺🇿 Lotin yozuvida
-      </button>
-      <button class="modal-btn cyr" onclick="submitWithScript('cyr')">
-        🇷🇺 Кирилл ёзувида
-      </button>
+      <button class="modal-btn" onclick="submitWithScript('lat')">🇺🇿 Lotin yozuvida</button>
+      <button class="modal-btn cyr" onclick="submitWithScript('cyr')">🇷🇺 Кирилл ёзувида</button>
     </div>
   </div>
 </div>
 
-<!-- ═══ FOOTER ═══ -->
+<!-- FOOTER -->
 <div class="foot" id="foot">
   <div class="foot-inner">
     <button class="foot-back" id="footBack" onclick="prevSec()" style="display:none">←</button>
@@ -431,79 +383,50 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 </div>
 
 <script>
-/* ═══ GLOBALS ═══ */
 var TG_ID="__TG_ID__",photoBase64="",MAX_PHOTO=5*1024*1024,curSec=0,totalSec=4;
-var savedWorks=[],isSubmitting=false;
+var savedWorks=[],isSubmitting=false,currentLang='lat';
 var initData="";
 if(window.Telegram&&window.Telegram.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();initData=window.Telegram.WebApp.initData||"";}
 
 /* ═══ TOAST ═══ */
 function toast(msg,type){
-  var t=document.createElement("div");t.className="toast "+(type||"info");
-  t.textContent=msg;
-  document.getElementById("toastWrap").appendChild(t);
+  var tw=document.getElementById("toastWrap");
+  var t=document.createElement("div");t.className="toast "+(type||"info");t.textContent=msg;tw.appendChild(t);
   setTimeout(function(){t.style.opacity="0";t.style.transform="translateY(-8px)";t.style.transition="all .3s";setTimeout(function(){t.remove()},300)},2800);
 }
 
-/* ═══ ACCORDION NAV ═══ */
+/* ═══ ACCORDION ═══ */
 function toggleSec(n){
-  if(n===curSec){/* close/open toggle */
-    document.getElementById("sec"+n).classList.toggle("open");
-    return;
-  }
-  /* validate current before moving forward */
-  if(n>curSec && !validateSec(curSec))return;
+  if(n===curSec){document.getElementById("sec"+n).classList.toggle("open");return;}
+  if(n>curSec&&!validateSec(curSec))return;
   openSec(n);
 }
-
 function openSec(n){
   for(var i=0;i<totalSec;i++){
     var el=document.getElementById("sec"+i);
     el.classList.remove("open");
-    if(i<n)el.classList.add("done-sec"); else el.classList.remove("done-sec");
+    if(i<n)el.classList.add("done-sec");else el.classList.remove("done-sec");
   }
   document.getElementById("sec"+n).classList.add("open");
-  curSec=n;
-  updateProgress();
-  updateFooter();
+  curSec=n;updateProgress();updateFooter();
   setTimeout(function(){document.getElementById("sec"+n).scrollIntoView({behavior:"smooth",block:"start"})},100);
 }
-
 function nextSec(){
-  if(curSec===totalSec-1){
-    if(!validateSec(curSec))return;
-    document.getElementById("scriptModal").style.display="flex";
-    return;
-  }
+  if(curSec===totalSec-1){if(!validateSec(curSec))return;document.getElementById("scriptModal").style.display="flex";return;}
   if(!validateSec(curSec))return;
   openSec(curSec+1);
 }
-function submitWithScript(script){
-  document.getElementById("scriptModal").style.display="none";
-  submitForm(script);
-}
-/* Modal tashqarisiga bossam yopilsin */
-document.addEventListener("click", function(e){
-  var modal=document.getElementById("scriptModal");
-  if(modal && e.target===modal) modal.style.display="none";
-});
+function submitWithScript(script){document.getElementById("scriptModal").style.display="none";submitForm(script);}
+document.addEventListener("click",function(e){var m=document.getElementById("scriptModal");if(m&&e.target===m)m.style.display="none";});
 function prevSec(){if(curSec>0)openSec(curSec-1);}
-
 function updateProgress(){
-  var segs=document.querySelectorAll(".prog-seg");
-  segs.forEach(function(s,i){s.classList.remove("done","cur");if(i<curSec)s.classList.add("done");if(i===curSec)s.classList.add("cur");});
+  document.querySelectorAll(".prog-seg").forEach(function(s,i){s.classList.remove("done","cur");if(i<curSec)s.classList.add("done");if(i===curSec)s.classList.add("cur");});
 }
 function updateFooter(){
-  var back=document.getElementById("footBack");
-  var next=document.getElementById("footNext");
+  var back=document.getElementById("footBack"),next=document.getElementById("footNext");
   back.style.display=curSec===0?"none":"block";
-  if(curSec===totalSec-1){
-    next.textContent=currentLang==='cyr'?"📤 Юбориш":"📤 Yuborish";
-    next.classList.add("submit");
-  }else{
-    next.textContent=currentLang==='cyr'?"Давом этиш →":"Davom etish →";
-    next.classList.remove("submit");
-  }
+  if(curSec===totalSec-1){next.textContent=currentLang==='cyr'?"📤 Юбориш":"📤 Yuborish";next.classList.add("submit");}
+  else{next.textContent=currentLang==='cyr'?"Давом этиш →":"Davom etish →";next.classList.remove("submit");}
 }
 
 /* ═══ VALIDATION ═══ */
@@ -518,112 +441,111 @@ function validateSec(n){
   }
   return true;
 }
-function shake(id){
-  var el=document.getElementById(id);
-  el.classList.add("has-err");
-  el.focus();
-  setTimeout(function(){el.classList.remove("has-err")},2000);
-}
+function shake(id){var el=document.getElementById(id);el.classList.add("has-err");el.focus();setTimeout(function(){el.classList.remove("has-err")},2000);}
 function gv(id){return(document.getElementById(id).value||"").trim();}
 
-/* ═══ LANG TOGGLE ═══ */
-var currentLang='lat';
-
+/* ═══ I18N ═══ */
 var T={
-  /* ── UI elementlari ── */
-  "hdr-title":    {l:"Ma'lumotnoma",            c:"Маълумотнома"},
-  "sec0-title":   {l:"Shaxsiy ma'lumotlar",     c:"Шахсий маълумотлар"},
-  "sec0-sub":     {l:"Ism, telefon, tug'ilgan sana", c:"Исм, телефон, туғилган сана"},
-  "sec1-title":   {l:"Ta'lim va ilmiy faoliyat",c:"Таълим ва илмий фаолият"},
-  "sec1-sub":     {l:"Diplom, mutaxassislik, tillar",c:"Диплом, мутахассислик, тиллар"},
-  "sec2-title":   {l:"Mehnat faoliyati",         c:"Меҳнат фаолияти"},
-  "sec2-sub":     {l:"Amaldagi va oldingi ish joylari",c:"Амалдаги ва олдинги иш жойлари"},
-  "sec3-title":   {l:"Oila va manzil",           c:"Оила ва манзил"},
-  "sec3-sub":     {l:"Yaqin qarindoshlar, turar joyi",c:"Яқин қариндошлар, турар жойи"},
-  /* ── Labellar ── */
-  "lbl-name":     {l:"To'liq F.I.Sh",            c:"Тўлиқ Ф.И.Ш"},
-  "lbl-phone":    {l:"Telefon raqam",             c:"Телефон рақам"},
-  "lbl-photo":    {l:"Rasm (3\u00d74)",           c:"Расм (3\u00d74)"},
-  "lbl-bdate":    {l:"Tug'ilgan sana",            c:"Туғилган сана"},
-  "lbl-bplace":   {l:"Tug'ilgan joyi",            c:"Туғилган жойи"},
-  "lbl-nat":      {l:"Millati",                   c:"Миллати"},
-  "lbl-party":    {l:"Partiyaviyligi",             c:"Партиявийлиги"},
-  "lbl-edu":      {l:"Ma'lumoti",                 c:"Маълумоти"},
-  "lbl-uni":      {l:"Tamomlagan joyi va yili",   c:"Тамомлаган жойи ва йили"},
-  "lbl-spec":     {l:"Mutaxassisligi",             c:"Мутахассислиги"},
-  "lbl-lang":     {l:"Chet tillari",              c:"Чет тиллари"},
-  "lbl-sdeg":     {l:"Ilmiy darajasi",            c:"Илмий даражаси"},
-  "lbl-sdeg-fan": {l:"Qaysi fan bo'yicha?",       c:"Қайси фан бўйича?"},
-  "lbl-stit":     {l:"Ilmiy unvoni",              c:"Илмий унвони"},
-  "lbl-mil":      {l:"Harbiy unvoni",             c:"Ҳарбий унвони"},
-  "lbl-awards":   {l:"Davlat mukofotlari",        c:"Давлат мукофотлари"},
-  "lbl-dawards":  {l:"Idoraviy mukofotlar",       c:"Идоравий мукофотлар"},
-  "lbl-deputy":   {l:"Deputatlik / saylanadigan organ a'zoligi",c:"Депутатлик / сайланадиган орган аъзолиги"},
-  "lbl-addr":     {l:"Doimiy yashash manzili",    c:"Доимий яшаш манзили"},
-  /* ── Tugmalar ── */
-  "btn-addwork":  {l:"+ Yangi davrni qo'shish",  c:"+ Янги даврни қўшиш"},
-  "btn-addrel":   {l:"+ Qarindosh qo'shish",      c:"+ Қариндош қўшиш"},
-  "btn-addlang":  {l:"+ Til qo'shish",            c:"+ Тил қўшиш"},
-  /* ── Hintlar (data-i18n) ── */
-  "ht-passport":  {l:"Pasportdagi kabi to'liq yozing",         c:"Паспортдаги каби тўлиқ ёзинг"},
-  "ht-bplace":    {l:"Masalan: Andijon viloyati, Asaka tumani",c:"Масалан: Андижон вилояти, Асака тумани"},
-  "ht-edu":       {l:"Oxirgi tamomlagan ta'lim darajangiz",    c:"Охирги тамомлаган таълим даражангиз"},
-  "ht-uni":       {l:"1982 y. Toshkent davlat universiteti (kunduzgi). Bir nechta bo'lsa, barchasini yozing.",c:"1982 й. Тошкент давлат университети (кундузги). Бир нечта бўлса, барчасини ёзинг."},
-  "ht-spec":      {l:"Masalan: Yurist, Iqtisodchi (diplom bo'yicha)",c:"Масалан: Юрист, Иқтисодчи (диплом бўйича)"},
-  "ht-lang":      {l:"Faqat yaxshi biladigan tillaringizni qo'shing",c:"Фақат яхши биладиган тилларингизни қўшинг"},
-  "ht-mil":       {l:"Harbiy (maxsus) unvoni faqat harbiy va huquqni muhofaza qilish idoralari xodimlari uchun ko'rsatiladi.",c:"Ҳарбий (махсус) унвони фақат ҳарбий ва ҳуқуқни муҳофаза қилиш идоралари ходимлари учун кўрсатилади."},
-  "ht-awards":    {l:"Masalan: 2005 y. \u00abMehnat shuhrati\u00bb ordeni. Agar yo'q bo'lsa \u2014 yo'q deb yozing.",c:"Масалан: 2005 й. \u00abМеҳнат шуҳрати\u00bb ордени. Агар йўқ бўлса \u2014 йўқ деб ёзинг."},
-  "ht-dawards":   {l:"Masalan: 2019 y. \u00abMaNaviyat fidoyisi\u00bb ko'krak nishoni. Agar yo'q bo'lsa \u2014 yo'q deb yozing.",c:"Масалан: 2019 й. \u00abМаънавият фидойиси\u00bb кўкрак нишони. Агар йўқ бўлса \u2014 йўқ деб ёзинг."},
-  "ht-deputy":    {l:"Xalq deputatlari respublika, viloyat, shahar va tuman Kengashi deputatimi yoki boshqa saylanadigan organlarning a'zosimi \u2014 to'liq ko'rsatilishi lozim. Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.",c:"Халқ депутатлари республика, вилоят, шаҳар ва туман Кенгаши депутатими ёки бошқа сайланадиган органларнинг аъзосими \u2014 тўлиқ кўрсатилиши лозим. Масалан: 2020 й. - ҳ.в. - Халқ депутатлари Тошкент вилояти Кенгаши депутати."},
-  "ht-propiska":  {l:"Propiska bo'yicha to'liq manzilni yozing",c:"Прописка бўйича тўлиқ манзилни ёзинг"},
-  "ht-work":      {l:"Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)",c:"Биринчи иш жойидан бугунги кунгача (меҳнат дафтарчаси бўйича)"},
-  /* ── Placeholderlar (data-i18n-ph) ── */
-  "ph-name":      {l:"Familiya Ism Sharif",         c:"Фамилия Исм Шариф"},
-  "ph-phone":     {l:"90 123 45 67",                c:"90 123 45 67"},
-  "ph-bplace":    {l:"Viloyat, tuman",              c:"Вилоят, туман"},
-  "ph-nat":       {l:"Masalan: o'zbek, rus, tojik", c:"Масалан: ўзбек, рус, тожик"},
-  "ph-uni":       {l:"1982 y. Toshkent davlat universiteti (kunduzgi)",c:"1982 й. Тошкент давлат университети (кундузги)"},
-  "ph-spec":      {l:"Masalan: Yurist, Iqtisodchi", c:"Масалан: Юрист, Иқтисодчи"},
-  "ph-sdeg-fan":  {l:"Masalan: Iqtisod fanlari",    c:"Масалан: Иқтисод фанлари"},
-  "ph-awards":    {l:"yo'q",                        c:"йўқ"},
-  "ph-deputy":    {l:"yo'q",                        c:"йўқ"},
-  "ph-addr":      {l:"Viloyat, tuman, ko'cha, uy",  c:"Вилоят, туман, кўча, уй"},
-  /* ── Dinamik blok labellar (addWorkBlock, addRelCard) ── */
-  "work-from":    {l:"Boshlanish yili",   c:"Бошланиш йили"},
-  "work-to":      {l:"Tugash yili",       c:"Тугаш йили"},
-  "work-hv":      {l:"Hozirgi vaqtgacha",c:"Ҳозирги вақтгача"},
-  "work-desc":    {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
-  "work-ph":      {l:"Masalan: Toshkent davlat universiteti talabasi",c:"Масалан: Тошкент давлат университети талабаси"},
-  "rel-deg":      {l:"Qarindoshlik darajasi",c:"Қариндошлик даражаси"},
-  "rel-fio":      {l:"F.I.Sh.",            c:"Ф.И.Ш."},
-  "rel-fio-ph":   {l:"Pasport asosida kiriting",c:"Паспорт асосида киритинг"},
-  "rel-byear":    {l:"Tug'ilgan yili",     c:"Туғилган йили"},
-  "rel-byear-ph": {l:"1935",               c:"1935"},
-  "rel-bplace":   {l:"Tug'ilgan joyi",     c:"Туғилган жойи"},
+  "hdr-title":   {l:"Ma'lumotnoma",              c:"Маълумотнома"},
+  "sec0-title":  {l:"Shaxsiy ma'lumotlar",        c:"Шахсий маълумотлар"},
+  "sec0-sub":    {l:"Ism, telefon, tug'ilgan sana",c:"Исм, телефон, туғилган сана"},
+  "sec1-title":  {l:"Ta'lim va ilmiy faoliyat",   c:"Таълим ва илмий фаолият"},
+  "sec1-sub":    {l:"Diplom, mutaxassislik, tillar",c:"Диплом, мутахассислик, тиллар"},
+  "sec2-title":  {l:"Mehnat faoliyati",            c:"Меҳнат фаолияти"},
+  "sec2-sub":    {l:"Amaldagi va oldingi ish joylari",c:"Амалдаги ва олдинги иш жойлари"},
+  "sec3-title":  {l:"Oila va manzil",              c:"Оила ва манзил"},
+  "sec3-sub":    {l:"Yaqin qarindoshlar, turar joyi",c:"Яқин қариндошлар, турар жойи"},
+  "lbl-name":    {l:"To'liq F.I.Sh",              c:"Тўлиқ Ф.И.Ш"},
+  "lbl-phone":   {l:"Telefon raqam",               c:"Телефон рақам"},
+  "lbl-photo":   {l:"Rasm (3×4)",                  c:"Расм (3×4)"},
+  "btn-photo":   {l:"Rasm tanlash",                c:"Расм танлаш"},
+  "lbl-bdate":   {l:"Tug'ilgan sana",              c:"Туғилган сана"},
+  "lbl-bplace":  {l:"Tug'ilgan joyi",              c:"Туғилган жойи"},
+  "lbl-nat":     {l:"Millati",                     c:"Миллати"},
+  "lbl-party":   {l:"Partiyaviyligi",               c:"Партиявийлиги"},
+  "lbl-edu":     {l:"Ma'lumoti",                   c:"Маълумоти"},
+  "lbl-uni":     {l:"Tamomlagan joyi va yili",     c:"Тамомлаган жойи ва йили"},
+  "lbl-spec":    {l:"Mutaxassisligi",               c:"Мутахассислиги"},
+  "lbl-lang":    {l:"Chet tillari",                c:"Чет тиллари"},
+  "lbl-sdeg":    {l:"Ilmiy darajasi",              c:"Илмий даражаси"},
+  "lbl-sdeg-fan":{l:"Qaysi fan bo'yicha?",         c:"Қайси фан бўйича?"},
+  "lbl-stit":    {l:"Ilmiy unvoni",                c:"Илмий унвони"},
+  "lbl-mil":     {l:"Harbiy unvoni",               c:"Ҳарбий унвони"},
+  "lbl-awards":  {l:"Davlat mukofotlari",          c:"Давлат мукофотлари"},
+  "lbl-dawards": {l:"Idoraviy mukofotlar",          c:"Идоравий мукофотлар"},
+  "lbl-deputy":  {l:"Deputatlik / saylanadigan organ a'zoligi",c:"Депутатлик / сайланадиган орган аъзолиги"},
+  "lbl-addr":    {l:"Doimiy yashash manzili",      c:"Доимий яшаш манзили"},
+  "btn-addwork": {l:"+ Yangi davrni qo'shish",     c:"+ Янги даврни қўшиш"},
+  "btn-addrel":  {l:"+ Qarindosh qo'shish",         c:"+ Қариндош қўшиш"},
+  "btn-addlang": {l:"+ Til qo'shish",              c:"+ Тил қўшиш"},
+  "ht-passport": {l:"Pasportdagi kabi to'liq yozing",c:"Паспортдаги каби тўлиқ ёзинг"},
+  "ht-bplace":   {l:"Masalan: Andijon viloyati, Asaka tumani",c:"Масалан: Андижон вилояти, Асака тумани"},
+  "ht-uni":      {l:"1982 y. Toshkent davlat universiteti (kunduzgi). Bir nechta bo'lsa, barchasini yozing.",c:"1982 й. Тошкент давлат университети (кундузги). Бир нечта бўлса, барчасини ёзинг."},
+  "ht-spec":     {l:"Masalan: Yurist, Iqtisodchi (diplom bo'yicha)",c:"Масалан: Юрист, Иқтисодчи (диплом бўйича)"},
+  "ht-lang":     {l:"Faqat yaxshi biladigan tillaringizni qo'shing",c:"Фақат яхши биладиган тилларингизни қўшинг"},
+  "ht-mil":      {l:"Harbiy (maxsus) unvoni faqat harbiy va huquqni muhofaza qilish idoralari xodimlari uchun ko'rsatiladi.",c:"Ҳарбий (махсус) унвони фақат ҳарбий ва ҳуқуқни муҳофаза қилиш идоралари ходимлари учун кўрсатилади."},
+  "ht-awards":   {l:"Masalan: 2005 y. «Mehnat shuhrati» ordeni.",c:"Масалан: 2005 й. «Меҳнат шуҳрати» ордени."},
+  "ht-dawards":  {l:"Masalan: 2019 y. «Ma'naviyat fidoyisi» ko'krak nishoni.",c:"Масалан: 2019 й. «Маънавият фидойиси» кўкрак нишони."},
+  "ht-deputy":   {l:"Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.",c:"Масалан: 2020 й. - ҳ.в. - Халқ депутатлари Тошкент вилояти Кенгаши депутати."},
+  "ht-propiska": {l:"Propiska bo'yicha to'liq manzilni yozing",c:"Прописка бўйича тўлиқ манзилни ёзинг"},
+  "ht-work":     {l:"Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)",c:"Биринчи иш жойидан бугунги кунгача (меҳнат дафтарчаси бўйича)"},
+  "ph-name":     {l:"Familiya Ism Sharif",          c:"Фамилия Исм Шариф"},
+  "ph-bplace":   {l:"Viloyat, tuman",               c:"Вилоят, туман"},
+  "ph-nat":      {l:"Masalan: o'zbek, rus, tojik",  c:"Масалан: ўзбек, рус, тожик"},
+  "ph-uni":      {l:"1982 y. Toshkent davlat universiteti (kunduzgi)",c:"1982 й. Тошкент давлат университети (кундузги)"},
+  "ph-spec":     {l:"Masalan: Yurist, Iqtisodchi",  c:"Масалан: Юрист, Иқтисодчи"},
+  "ph-sdeg-fan": {l:"Masalan: Iqtisod fanlari",     c:"Масалан: Иқтисод фанлари"},
+  "ph-yoq":      {l:"yo'q",                         c:"йўқ"},
+  "ph-addr":     {l:"Viloyat, tuman, ko'cha, uy",   c:"Вилоят, туман, кўча, уй"},
+  "work-from":   {l:"Boshlanish yili",   c:"Бошланиш йили"},
+  "work-to":     {l:"Tugash yili",       c:"Тугаш йили"},
+  "work-hv":     {l:"Hozirgi vaqtgacha",c:"Ҳозирги вақтгача"},
+  "work-desc":   {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
+  "work-ph":     {l:"Masalan: Toshkent davlat universiteti, katta o'qituvchi",c:"Масалан: Тошкент давлат университети, катта ўқитувчи"},
+  "rel-deg":     {l:"Qarindoshlik darajasi",c:"Қариндошлик даражаси"},
+  "rel-fio":     {l:"F.I.Sh.",            c:"Ф.И.Ш."},
+  "rel-fio-ph":  {l:"Pasport asosida kiriting",c:"Паспорт асосида киритинг"},
+  "rel-byear":   {l:"Tug'ilgan yili",    c:"Туғилган йили"},
+  "rel-bplace":  {l:"Tug'ilgan joyi",    c:"Туғилган жойи"},
   "rel-bplace-ph":{l:"Toshkent viloyati, Qibray tumani",c:"Тошкент вилояти, Қибрай тумани"},
-  "rel-status":   {l:"Holati",             c:"Ҳолати"},
-  "rel-alive":    {l:"Hayot",              c:"Ҳаёт"},
-  "rel-dead":     {l:"Vafot etgan",        c:"Вафот этган"},
-  "rel-job":      {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
-  "rel-job-dead": {l:"Oxirgi ish joyi (agar bo'lsa)",c:"Охирги иш жойи (агар бўлса)"},
-  "rel-addr":     {l:"Turar joyi",         c:"Турар жойи"},
-  "rel-addr-ph":  {l:"Hozirgi yashash manzili",c:"Ҳозирги яшаш манзили"},
-  "rel-dyear":    {l:"Vafot etgan yili",   c:"Вафот этган йили"},
-  "rel-dplace":   {l:"Dafn etilgan joyi",  c:"Дафн этилган жойи"},
-  "rel-dplace-ph":{l:"Toshkent sh., Mingbuloq qabristoni",c:"Тошкент ш., Мингбулоқ қабристони"},
-  /* ── Modal ── */
-  "modal-title":  {l:"Qaysi alifboda yuklab olasiz?",c:"Қайси алифбода юклаб оласиз?"},
-  "modal-sub":    {l:"Hujjat tanlangan alifboda tayyorlanadi",c:"Ҳужжат танланган алифбода тайёрланади"},
+  "rel-status":  {l:"Holati",            c:"Ҳолати"},
+  "rel-alive":   {l:"Hayot",             c:"Ҳаёт"},
+  "rel-dead":    {l:"Vafot etgan",       c:"Вафот этган"},
+  "rel-job":     {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
+  "rel-job-dead":{l:"Oxirgi ish joyi (agar bo'lsa)",c:"Охирги иш жойи (агар бўлса)"},
+  "rel-addr":    {l:"Turar joyi",        c:"Турар жойи"},
+  "rel-addr-ph": {l:"Hozirgi yashash manzili",c:"Ҳозирги яшаш манзили"},
+  "rel-dyear":   {l:"Vafot etgan yili",  c:"Вафот этган йили"},
+  "modal-title": {l:"Qaysi alifboda yuklab olasiz?",c:"Қайси алифбода юклаб оласиз?"},
+  "modal-sub":   {l:"Hujjat tanlangan alifboda tayyorlanadi",c:"Ҳужжат танланган алифбода тайёрланади"},
 };
 
-function t(key){
-  return T[key]?(currentLang==='cyr'?T[key].c:T[key].l):(key);
-}
+/* Select options tarjimasi — value o'zgarmaydi, faqat ko'rinadigan matn */
+var SELECT_OPTS = {
+  'f_party': {
+    l:["Yo'q","O'zbekiston Xalq demokratik partiyasi a'zosi","O'zbekiston Liberal demokratik partiyasi a'zosi","O'zbekiston Milliy tiklanish demokratik partiyasi a'zosi","O'zbekiston Adolat sotsial demokratik partiyasi a'zosi","O'zbekiston ekologik harakati a'zosi"],
+    c:["Йўқ","Ўзбекистон Халқ демократик партияси аъзоси","Ўзбекистон Либерал демократик партияси аъзоси","Ўзбекистон Миллий тикланиш демократик партияси аъзоси","Ўзбекистон Адолат социал демократик партияси аъзоси","Ўзбекистон экологик ҳаракати аъзоси"]
+  },
+  'f_edu': {
+    l:["— Tanlang —","Oliy","Tugallanmagan oliy","O'rta maxsus","O'rta","Tayanch o'rta"],
+    c:["— Танланг —","Олий","Тугалланмаган олий","Ўрта махсус","Ўрта","Таянч ўрта"]
+  },
+  'f_sdeg': {
+    l:["Yo'q","Falsafa doktori (PhD) / Fan nomzodi","Fan doktori (DSc)"],
+    c:["Йўқ","Фалсафа доктори (PhD) / Фан номзоди","Фан доктори (DSc)"]
+  },
+  'f_stit': {
+    l:["Yo'q","Professor","Dotsent","Katta ilmiy xodim"],
+    c:["Йўқ","Профессор","Доцент","Катта илмий ходим"]
+  }
+};
 
-function setLang(btn, lang){
+function t(key){return T[key]?(currentLang==='cyr'?T[key].c:T[key].l):key;}
+
+function setLang(btn,lang){
   btn.parentNode.querySelectorAll("button").forEach(function(b){b.classList.remove("on")});
   btn.classList.add("on");
-  currentLang = lang||'lat';
+  currentLang=lang||'lat';
   applyLang();
 }
 
@@ -632,27 +554,30 @@ function applyLang(){
   /* 1. data-i18n — textContent */
   document.querySelectorAll("[data-i18n]").forEach(function(el){
     var key=el.getAttribute("data-i18n");
-    if(T[key]) el.textContent=lang==='cyr'?T[key].c:T[key].l;
+    if(T[key])el.textContent=lang==='cyr'?T[key].c:T[key].l;
   });
   /* 2. data-i18n-ph — placeholder */
   document.querySelectorAll("[data-i18n-ph]").forEach(function(el){
     var key=el.getAttribute("data-i18n-ph");
-    if(T[key]) el.placeholder=lang==='cyr'?T[key].c:T[key].l;
+    if(T[key])el.placeholder=lang==='cyr'?T[key].c:T[key].l;
   });
-  /* 3. Footer next tugmasi */
+  /* 3. Select options matni */
+  translateSelects();
+  /* 4. Footer */
   var fn=document.getElementById("footNext");
-  if(fn && !fn.classList.contains("submit"))
-    fn.textContent=lang==='cyr'?"Давом этиш \u2192":"Davom etish \u2192";
-  if(fn && fn.classList.contains("submit"))
-    fn.textContent=lang==='cyr'?"\ud83d\udce4 Юбориш":"\ud83d\udce4 Yuborish";
+  if(fn&&!fn.classList.contains("submit"))fn.textContent=lang==='cyr'?"Давом этиш →":"Davom etish →";
+  if(fn&&fn.classList.contains("submit"))fn.textContent=lang==='cyr'?"📤 Юбориш":"📤 Yuborish";
 }
 
-
-
-/* ═══ STATUS ═══ */
-function setStat(btn){
-  document.querySelectorAll("#statusRow .status-badge").forEach(function(b){b.classList.remove("on")});
-  btn.classList.add("on");
+function translateSelects(){
+  Object.keys(SELECT_OPTS).forEach(function(id){
+    var sel=document.getElementById(id);
+    if(!sel)return;
+    var arr=currentLang==='cyr'?SELECT_OPTS[id].c:SELECT_OPTS[id].l;
+    var idx=sel.selectedIndex;
+    sel.querySelectorAll('option').forEach(function(opt,i){if(arr[i])opt.textContent=arr[i];});
+    sel.selectedIndex=idx;
+  });
 }
 
 /* ═══ PHOTO ═══ */
@@ -670,48 +595,29 @@ document.getElementById("f_photo").onchange=function(e){
   r.readAsDataURL(f);
 };
 
-/* ═══ PHONE FORMAT ═══ */
+/* ═══ PHONE ═══ */
 function fmtPhone(el){
   var raw=el.value.replace(/\D/g,"");
   if(raw.length>9)raw=raw.substring(0,9);
-  if(raw.length===0){el.value="";return;}
+  if(!raw.length){el.value="";return;}
   if(raw.length>=7)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5,7)+" "+raw.substring(7);
   else if(raw.length>=5)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5);
   else if(raw.length>=2)el.value=raw.substring(0,2)+" "+raw.substring(2);
   else el.value=raw;
 }
-function limitPhone(el,e){
-  /* o'chirish paytida aralashmaymiz — erkin tahrirlash */
-  if(e&&e.inputType&&e.inputType.indexOf("delete")!==-1)return;
-  /* yozayotganda real-time formatlash */
-  fmtPhone(el);
-}
-
-/* ═══ YEAR PILLS (mehnat faoliyati) ═══ */
-function initYearPills(){
-  var curYear=new Date().getFullYear();
-  var fromHtml="",toHtml='<button type="button" class="yr-pill" onclick="pickYr(\'f_wto\',\'h.v.\')">h.v.</button>';
-  for(var y=curYear;y>=curYear-15;y--){
-    fromHtml+='<button type="button" class="yr-pill" onclick="pickYr(\'f_wfrom\',\''+y+'\')">'+y+'</button>';
-    toHtml+='<button type="button" class="yr-pill" onclick="pickYr(\'f_wto\',\''+y+'\')">'+y+'</button>';
-  }
-  var fe=document.getElementById("yrFrom"),te=document.getElementById("yrTo");
-  if(fe)fe.innerHTML=fromHtml;
-  if(te)te.innerHTML=toHtml;
-}
-function pickYr(inputId,val){document.getElementById(inputId).value=val;}
-
-/* ═══ QUICK FILL ═══ */
-function qfill(id,val){document.getElementById(id).value=val;document.getElementById(id).focus();}
+function limitPhone(el,e){if(e&&e.inputType&&e.inputType.indexOf("delete")!==-1)return;fmtPhone(el);}
 
 /* ═══ LANGUAGES ═══ */
-var LANGS=["ingliz tili","rus tili","nemis tili","fransuz tili","arab tili","turk tili","xitoy tili","koreys tili","ispan tili","yapon tili"];
+var LANGS_LAT=["ingliz tili","rus tili","nemis tili","fransuz tili","arab tili","turk tili","xitoy tili","koreys tili","ispan tili","yapon tili"];
+var LANGS_CYR=["инглиз тили","рус тили","немис тили","франсуз тили","араб тили","турк тили","хитой тили","корейс тили","испан тили","япон тили"];
 function addLang(){
   var d=document.createElement("div");d.className="dli";
-  var opts='<option value="boshqa">Boshqa til</option>'+LANGS.map(function(l){return'<option value="'+l+'">'+l+'</option>'}).join("");
+  var arr=currentLang==='cyr'?LANGS_CYR:LANGS_LAT;
+  var boshqa=currentLang==='cyr'?"Бошқа тил":"Boshqa til";
+  var opts='<option value="boshqa">'+boshqa+'</option>'+arr.map(function(l,i){return'<option value="'+LANGS_LAT[i]+'">'+l+'</option>';}).join("");
   d.innerHTML='<button class="dli-x" type="button" onclick="this.parentNode.remove()">✕</button>'+
     '<select class="fi" onchange="toggleLangInput(this)">'+opts+'</select>'+
-    '<input class="fi" type="text" placeholder="Tilni yozing..." maxlength="100" style="margin-top:6px;display:block">';
+    '<input class="fi" type="text" placeholder="'+(currentLang==='cyr'?"Тилни ёзинг...":"Tilni yozing...")+'" maxlength="100" style="margin-top:6px;display:none">';
   document.getElementById("langList").appendChild(d);
 }
 function toggleLangInput(sel){
@@ -721,58 +627,39 @@ function toggleLangInput(sel){
 }
 function getSelectedLangs(){
   return[].slice.call(document.querySelectorAll("#langList .dli")).map(function(d){
-    var sel=d.querySelector("select");
-    var inp=d.querySelector("input");
+    var sel=d.querySelector("select");var inp=d.querySelector("input");
     if(sel.value==="boshqa")return(inp.value||"").trim();
     return sel.value;
   }).filter(function(v){return v;});
 }
 
 /* ═══ WORK ═══ */
-function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML;}
-
 function addWorkBlock(){
   var container=document.getElementById("workBlocks");
   var idx=container.querySelectorAll(".work-block").length;
-  var d=document.createElement("div");
-  d.className="dli work-block";
-  d.style.paddingTop="10px";
+  var d=document.createElement("div");d.className="dli work-block";d.style.paddingTop="10px";
   var delBtn=idx>0?'<button class="dli-x" type="button" onclick="delWorkBlock(this)">&#x2715;</button>':'';
   d.innerHTML=delBtn+
     '<div class="row2">'+
-      '<div>'+
-        '<label class="fl" data-i18n="work-from">'+t("work-from")+'</label>'+
-        '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-from")+'" maxlength="4" oninput="this.value=this.value.replace(/\D/g,\'\').substring(0,4);collectWorks()">'+
-      '</div>'+
-      '<div>'+
-        '<label class="fl" data-i18n="work-to">'+t("work-to")+'</label>'+
-        '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-to")+'" maxlength="4" oninput="this.value=this.value.replace(/\D/g,\'\').substring(0,4);collectWorks()">'+
-        '<label style="display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--s7);cursor:pointer">'+
-          '<input type="checkbox" onchange="toggleHv(this)"> <span data-i18n="work-hv">'+t("work-hv")+'</span>'+
-        '</label>'+
-      '</div>'+
+      '<div><label class="fl" data-i18n="work-from">'+t("work-from")+'</label>'+
+      '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-from")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()"></div>'+
+      '<div><label class="fl" data-i18n="work-to">'+t("work-to")+'</label>'+
+      '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-to")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()">'+
+      '<label style="display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--s7);cursor:pointer">'+
+      '<input type="checkbox" onchange="toggleHv(this)"> <span data-i18n="work-hv">'+t("work-hv")+'</span></label></div>'+
     '</div>'+
-    '<div class="fg" style="margin-top:8px">'+
-      '<label class="fl" data-i18n="work-desc">'+t("work-desc")+'</label>'+
-      '<textarea class="fi" placeholder="'+t("work-ph")+'" maxlength="500" rows="2" oninput="collectWorks()"></textarea>'+
-    '</div>';
-  container.appendChild(d);
-  collectWorks();
+    '<div class="fg" style="margin-top:8px"><label class="fl" data-i18n="work-desc">'+t("work-desc")+'</label>'+
+    '<textarea class="fi" placeholder="'+t("work-ph")+'" maxlength="500" rows="2" oninput="collectWorks()"></textarea></div>';
+  container.appendChild(d);collectWorks();
 }
-function delWorkBlock(btn){
-  btn.closest(".work-block").remove();
-  collectWorks();
-}
+function delWorkBlock(btn){btn.closest(".work-block").remove();collectWorks();}
 function toggleHv(cb){
-  var toInput=cb.closest(".row2").querySelector("input[type=text]:nth-child(1)");
-  /* 2-input: tugash yili */
   var inputs=cb.closest(".row2").querySelectorAll("input[type=text]");
   var toField=inputs[1];
   if(cb.checked){toField.value="";toField.disabled=true;toField.placeholder="h.v.";}
-  else{toField.disabled=false;toField.placeholder="1982";}
+  else{toField.disabled=false;toField.placeholder=t("work-to");}
   collectWorks();
 }
-
 function collectWorks(){
   savedWorks=[];
   document.querySelectorAll("#workBlocks .work-block").forEach(function(d){
@@ -787,103 +674,90 @@ function collectWorks(){
 }
 
 /* ═══ RELATIVES ═══ */
-var RELS=["Otasi","Onasi","Turmush o'rtog'i","O'g'li","Qizi","Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi"];
+var RELS_LAT=["Otasi","Onasi","Turmush o'rtog'i","O'g'li","Qizi","Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi"];
+var RELS_CYR=["Отаси","Онаси","Турмуш ўртоғи","Ўғли","Қизи","Акаси","Укаси","Опаси","Синглиси","Қайнотаси","Қайнонаси"];
 
 function addRelCard(){
   var list=document.getElementById("relList");
   var n=list.querySelectorAll(".rel-card").length+1;
-  var relOpts=RELS.map(function(r){return'<option>'+r+'</option>'}).join("");
+  var arr=currentLang==='cyr'?RELS_CYR:RELS_LAT;
+  var relOpts=arr.map(function(r,i){return'<option value="'+RELS_LAT[i]+'">'+r+'</option>';}).join("");
   var card=document.createElement("div");
   card.className="rel-card";
   card.style.cssText="background:var(--s0);border:1.5px solid var(--s2);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;animation:fadeUp .2s ease";
   card.innerHTML=
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
-      '<span style="font-size:12px;font-weight:700;color:var(--pri);background:var(--pri-l);padding:3px 10px;border-radius:12px">'+t("rel-deg")+' #'+n+'</span>'+
-      '<button type="button" onclick="delRelCard(this)" style="width:24px;height:24px;border-radius:50%;border:none;background:var(--err-l);color:var(--err);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer">&#x2715;</button>'+
-    '</div>'+
-    '<div class="fg" style="margin-top:0">'+
-      '<label class="fl" data-i18n="rel-deg">'+t("rel-deg")+'</label>'+
-      '<select class="fi" data-rf="rel">'+relOpts+'</select>'+
-    '</div>'+
-    '<div class="fg">'+
-      '<label class="fl" data-i18n="rel-fio">'+t("rel-fio")+'</label>'+
-      '<input class="fi" type="text" data-rf="fio" placeholder="'+t("rel-fio-ph")+'" maxlength="200">'+
-    '</div>'+
+    '<span style="font-size:12px;font-weight:700;color:var(--pri);background:var(--pri-l);padding:3px 10px;border-radius:12px">'+t("rel-deg")+' #'+n+'</span>'+
+    '<button type="button" onclick="delRelCard(this)" style="width:24px;height:24px;border-radius:50%;border:none;background:var(--err-l);color:var(--err);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer">&#x2715;</button></div>'+
+    '<div class="fg" style="margin-top:0"><label class="fl" data-i18n="rel-deg">'+t("rel-deg")+'</label>'+
+    '<select class="fi" data-rf="rel">'+relOpts+'</select></div>'+
+    '<div class="fg"><label class="fl" data-i18n="rel-fio">'+t("rel-fio")+'</label>'+
+    '<input class="fi" type="text" data-rf="fio" placeholder="'+t("rel-fio-ph")+'" maxlength="200"></div>'+
     '<div class="row2">'+
-      '<div class="fg">'+
-        '<label class="fl" data-i18n="rel-byear">'+t("rel-byear")+'</label>'+
-        '<input class="fi" type="text" inputmode="numeric" data-rf="byear" placeholder="'+t("rel-byear-ph")+'" maxlength="4" oninput="this.value=this.value.replace(/\D/g,\'\').substring(0,4)">'+
-      '</div>'+
-      '<div class="fg">'+
-        '<label class="fl" data-i18n="rel-bplace">'+t("rel-bplace")+'</label>'+
-        '<input class="fi" type="text" data-rf="bplace" placeholder="'+t("rel-bplace-ph")+'" maxlength="200">'+
-      '</div>'+
-    '</div>'+
-    '<div class="fg">'+
-      '<label class="fl" data-i18n="rel-status">'+t("rel-status")+'</label>'+
-      '<div class="status-row" style="margin-top:4px">'+
-        '<button type="button" class="status-badge on" onclick="setRelStatus(this,\'alive\')">&#128154; <span data-i18n="rel-alive">'+t("rel-alive")+'</span></button>'+
-        '<button type="button" class="status-badge" onclick="setRelStatus(this,\'dead\')">&#128420; <span data-i18n="rel-dead">'+t("rel-dead")+'</span></button>'+
-      '</div>'+
-    '</div>'+
-    '<div class="fg" data-job-wrap>'+
-      '<label class="fl" data-job-label data-i18n="rel-job">'+t("rel-job")+'</label>'+
-      '<textarea class="fi" data-rf="job" rows="2" placeholder="'+t("work-ph")+'" maxlength="500"></textarea>'+
-    '</div>'+
-    '<div class="fg" data-addr-wrap>'+
-      '<label class="fl" data-i18n="rel-addr">'+t("rel-addr")+'</label>'+
-      '<input class="fi" type="text" data-rf="addr" placeholder="'+t("rel-addr-ph")+'" maxlength="300">'+
-    '</div>'+
-    '<div class="fg" data-dyear-wrap style="display:none">'+
-      '<label class="fl" data-i18n="rel-dyear">'+t("rel-dyear")+'</label>'+
-      '<input class="fi" type="text" inputmode="numeric" data-rf="dyear" placeholder="2010" maxlength="4" oninput="this.value=this.value.replace(/\D/g,\'\').substring(0,4)">'+
-    '</div>';
+    '<div class="fg"><label class="fl" data-i18n="rel-byear">'+t("rel-byear")+'</label>'+
+    '<input class="fi" type="text" inputmode="numeric" data-rf="byear" placeholder="1960" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>'+
+    '<div class="fg"><label class="fl" data-i18n="rel-bplace">'+t("rel-bplace")+'</label>'+
+    '<input class="fi" type="text" data-rf="bplace" placeholder="'+t("rel-bplace-ph")+'" maxlength="200"></div></div>'+
+    '<div class="fg"><label class="fl" data-i18n="rel-status">'+t("rel-status")+'</label>'+
+    '<div class="status-row" style="margin-top:4px">'+
+    '<button type="button" class="status-badge on" onclick="setRelStatus(this,\'alive\')">&#128154; <span data-i18n="rel-alive">'+t("rel-alive")+'</span></button>'+
+    '<button type="button" class="status-badge" onclick="setRelStatus(this,\'dead\')">&#128420; <span data-i18n="rel-dead">'+t("rel-dead")+'</span></button>'+
+    '</div></div>'+
+    '<div class="fg" data-job-wrap><label class="fl" data-job-label data-i18n="rel-job">'+t("rel-job")+'</label>'+
+    '<textarea class="fi" data-rf="job" rows="2" placeholder="'+t("work-ph")+'" maxlength="500"></textarea></div>'+
+    '<div class="fg" data-addr-wrap><label class="fl" data-i18n="rel-addr">'+t("rel-addr")+'</label>'+
+    '<input class="fi" type="text" data-rf="addr" placeholder="'+t("rel-addr-ph")+'" maxlength="300"></div>'+
+    '<div class="fg" data-dyear-wrap style="display:none"><label class="fl" data-i18n="rel-dyear">'+t("rel-dyear")+'</label>'+
+    '<input class="fi" type="text" inputmode="numeric" data-rf="dyear" placeholder="2010" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>';
   list.appendChild(card);
 }
 function delRelCard(btn){btn.closest(".rel-card").remove();}
-function setRelStatus(btn, status){
+function setRelStatus(btn,status){
   var card=btn.closest(".rel-card");
   card.querySelectorAll(".status-row .status-badge").forEach(function(b){b.classList.remove("on")});
   btn.classList.add("on");
-  /* Ish joyi: har doim ko'rinadi, faqat label o'zgaradi */
   var jobLabel=card.querySelector("[data-job-label]");
-  if(jobLabel){
-    var key=status==="dead"?"rel-job-dead":"rel-job";
-    jobLabel.setAttribute("data-i18n",key);
-    jobLabel.textContent=t(key);
-  }
-  var jobTa=card.querySelector("[data-rf=\"job\"]");
-  if(jobTa)jobTa.placeholder=status==="dead"?"Masalan: Toshkent davlat iqtisodiyot universiteti dotsenti":"Masalan: Pensiyada (Toshkent davlat iqtisodiyot universiteti dotsenti) yoki O\u02BBzbekiston Milliy universiteti dotsenti";
-  /* Turar joyi: faqat hayotda */
+  if(jobLabel){var key=status==="dead"?"rel-job-dead":"rel-job";jobLabel.setAttribute("data-i18n",key);jobLabel.textContent=t(key);}
   var addrWrap=card.querySelector("[data-addr-wrap]");
   if(addrWrap)addrWrap.style.display=status==="alive"?"block":"none";
-  /* Vafot yili: faqat vafotda */
   var dyearWrap=card.querySelector("[data-dyear-wrap]");
   if(dyearWrap)dyearWrap.style.display=status==="dead"?"block":"none";
 }
 
+/* ═══ ILMIY DARAJA ═══ */
+function toggleSdegInput(){
+  var val=document.getElementById("f_sdeg").value;
+  document.getElementById("sdegFanWrap").style.display=(val!=="yo'q")?"block":"none";
+  if(val==="yo'q")document.getElementById("f_sdeg_fan").value="";
+}
+
+/* ═══ TA'LIM HINT ═══ */
+var EDU_HINTS={
+  l:{"Oliy":"Bakalavriat yoki magistraturani to'liq tamomlaganlar uchun.","Tugallanmagan oliy":"OTMda o'qishni davom ettirayotgan yoki oliy ta'limni yakunlamaganlar uchun.","O'rta maxsus":"Kollej, akademik litsey yoki texnikumni tamomlaganlar uchun.","O'rta":"Umumta'lim maktabining 11-sinfini tugatganlar uchun.","Tayanch o'rta":"Umumta'lim maktabining 9-sinfini tugatganlar uchun."},
+  c:{"Oliy":"Бакалавриат ёки магистратурани тўлиқ тамомлаганлар учун.","Tugallanmagan oliy":"ОТМда ўқишни давом эттираётган ёки олий таълимни якунламаганлар учун.","O'rta maxsus":"Коллеж, академик лицей ёки техникумни тамомлаганлар учун.","O'rta":"Умумтаълим мактабининг 11-синфини тугатганлар учун.","Tayanch o'rta":"Умумтаълим мактабининг 9-синфини тугатганлар учун."}
+};
+function showEduHint(){
+  var val=document.getElementById("f_edu").value;
+  var hint=document.getElementById("eduHint");
+  var txt=document.getElementById("eduHintText");
+  if(val&&EDU_HINTS.l[val]){
+    txt.textContent=currentLang==='cyr'?EDU_HINTS.c[val]:EDU_HINTS.l[val];
+    hint.style.display="flex";
+  }else{hint.style.display="none";}
+}
+
 /* ═══ SUBMIT ═══ */
 async function submitForm(script){
-  script = script || 'lat';
+  script=script||'lat';
   if(isSubmitting)return;
   if(!validateSec(0))return openSec(0);
   var addr=gv("f_addr");
   if(!addr){toast("Yashash manzilini kiriting","err");shake("f_addr");return;}
-
   isSubmitting=true;
   var btn=document.getElementById("footNext");
   btn.textContent="⏳ Yuborilmoqda...";btn.disabled=true;
 
   var langs=getSelectedLangs();
-  /* ═══ RELATIVES: yig'ish + saralash ═══
-   * Saralash tartibi (backend qoidasi):
-   * 1. Otasi  2. Onasi  3. Turmush o'rtog'i
-   * 4. O'g'li / Qizi (tug'ilgan yiliga qarab kattasidan kichigiga)
-   * 5. Akasi / Opasi / Ukasi / Singlisi (yiliga qarab)
-   * 6. Qaynotasi / Qaynonasi
-   * Backend "job" ustuniga vafot etganlar uchun: "[dyear] йил вафот этган ([job])"
-   * Backend "addr" ustuni vafot etganlar uchun: "" (bo'sh)
-   */
   var REL_ORDER={"Otasi":1,"Onasi":2,"Turmush o'rtog'i":3,"O'g'li":4,"Qizi":4,"Akasi":5,"Opasi":5,"Ukasi":5,"Singlisi":5,"Qaynotasi":6,"Qaynonasi":6};
   var rels=[].slice.call(document.querySelectorAll("#relList .rel-card")).map(function(d){
     var isDead=d.querySelector("[data-dyear-wrap]")&&d.querySelector("[data-dyear-wrap]").style.display!=="none";
@@ -891,44 +765,22 @@ async function submitForm(script){
     var dyear=(d.querySelector('[data-rf="dyear"]')||{}).value||"";
     var formattedJob=isDead?(dyear?dyear+" йил вафот этган"+(job?" ("+job+")":""):""):(job);
     var relVal=(d.querySelector('[data-rf="rel"]')||{}).value||"";
-    return{
-      rel:relVal,
-      fio:(d.querySelector('[data-rf="fio"]')||{}).value||"",
-      byear:(d.querySelector('[data-rf="byear"]')||{}).value||"",
-      bplace:(d.querySelector('[data-rf="bplace"]')||{}).value||"",
-      job:formattedJob,
-      addr:isDead?"":(d.querySelector('[data-rf="addr"]')||{}).value||"",
-      _order:REL_ORDER[relVal]||99
-    };
+    return{rel:relVal,fio:(d.querySelector('[data-rf="fio"]')||{}).value||"",byear:(d.querySelector('[data-rf="byear"]')||{}).value||"",bplace:(d.querySelector('[data-rf="bplace"]')||{}).value||"",job:formattedJob,addr:isDead?"":(d.querySelector('[data-rf="addr"]')||{}).value||"",_order:REL_ORDER[relVal]||99};
   });
-  rels.sort(function(a,b){
-    if(a._order!==b._order)return a._order-b._order;
-    /* bir xil toifada — tug'ilgan yiliga qarab (kattadan kichikka) */
-    return(parseInt(a.byear)||9999)-(parseInt(b.byear)||9999);
-  });
+  rels.sort(function(a,b){if(a._order!==b._order)return a._order-b._order;return(parseInt(a.byear)||9999)-(parseInt(b.byear)||9999);});
 
   var phoneNum="+998"+gv("f_phone").replace(/\s/g,"");
   var lastWork=savedWorks.length>0?savedWorks[savedWorks.length-1]:null;
   var payload={
-    photo_base64:photoBase64,
-    fullname:gv("f_name"),
-    birthdate:gv("f_bdate"),
-    birthplace:gv("f_bplace"),
-    nationality:gv("f_nat")||"o'zbek",
-    party:document.getElementById("f_party").value,
+    photo_base64:photoBase64,fullname:gv("f_name"),birthdate:gv("f_bdate"),birthplace:gv("f_bplace"),
+    nationality:gv("f_nat")||"o'zbek",party:document.getElementById("f_party").value,
     job_year:lastWork?(lastWork.from+(lastWork.to?"-"+lastWork.to:"")):"",
     current_job:lastWork?(lastWork.org+(lastWork.pos?" "+lastWork.pos:"")):"",
-    edu_level:document.getElementById("f_edu").value,
-    university:gv("f_uni"),
-    speciality:gv("f_spec"),
-    science_degree:document.getElementById("f_sdeg").value,
-    science_title:document.getElementById("f_stit").value,
-    military_rank:gv("f_mil")||"yo'q",
-    langs:langs,
-    awards:gv("f_awards")||"yo'q",
-    departmental_awards:gv("f_dept_awards")||"yo'q",
-    deputy:gv("f_deputy")||"yo'q",
-    address:addr,
+    edu_level:document.getElementById("f_edu").value,university:gv("f_uni"),speciality:gv("f_spec"),
+    science_degree:document.getElementById("f_sdeg").value,science_title:document.getElementById("f_stit").value,
+    military_rank:gv("f_mil")||"yo'q",langs:langs,
+    awards:gv("f_awards")||"yo'q",departmental_awards:gv("f_dept_awards")||"yo'q",
+    deputy:gv("f_deputy")||"yo'q",address:addr,
     phones:{me:phoneNum,father:"",mother:""},
     work_history:savedWorks.map(function(w){return{from:w.from,to:w.to,org:w.org,pos:w.pos}}),
     relatives:rels
@@ -937,12 +789,7 @@ async function submitForm(script){
   try{
     var c=new AbortController();
     var tmr=setTimeout(function(){c.abort()},60000);
-    var res=await fetch("/submit",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({tg_id:TG_ID,initData:initData,script:script,data:payload}),
-      signal:c.signal
-    });
+    var res=await fetch("/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tg_id:TG_ID,initData:initData,script:script,data:payload}),signal:c.signal});
     clearTimeout(tmr);
     var txt=await res.text(),result;
     try{result=JSON.parse(txt)}catch(e){throw new Error("Noto'g'ri javob")}
@@ -955,129 +802,23 @@ async function submitForm(script){
     }
   }catch(e){
     var msg=e.name==="AbortError"?"So'rov vaqti tugadi (60s). Qayta urining.":e.message;
-    toast(msg,"err");
-    btn.textContent="📤 Yuborish";btn.disabled=false;isSubmitting=false;
+    toast(msg,"err");btn.textContent="📤 Yuborish";btn.disabled=false;isSubmitting=false;
   }
 }
 
-
-
-
-/* ═══ DEPUTATLIK ═══
- * Qoidalar (backend uchun):
- * 1. Yo'q holati  — hech bir organ kiritilmagan bo'lsa, qiymat = "йўқ"
- * 2. Ha holati    — har bir blok: "[yildan] й. - [yilgacha] - [organ nomi]"
- * 3. h.v.         — "Yilgacha" maydoni "h.v." bo'lsa, avtomatik "ҳ.в." ga o'giriladi
- * 4. Ko'p qatorli — 2+ organ bo'lsa, har biri vergul + yangi qator (
-) bilan biriktiriladi
- *    Oxirgisi nuqta (.) bilan tugaydi
- */
-function addDeputy(){
-  var d=document.createElement("div");d.className="dli";d.style.paddingTop="10px";
-  d.innerHTML=
-    '<button class="dli-x" type="button" onclick="this.parentNode.remove();renderDeputy()">✕</button>'+
-    '<div class="row2">'+
-      '<div><label class="fl">Yildan</label><input class="fi" type="text" placeholder="2020" maxlength="10" oninput="renderDeputy()"></div>'+
-      '<div><label class="fl">Yilgacha</label>'+
-        '<input class="fi" type="text" placeholder="2024 yoki h.v." maxlength="10" oninput="renderDeputy()">'+
-        '<div style="margin-top:4px"><button type="button" class="yr-pill" onclick="this.previousElementSibling.value=&quot;h.v.&quot;;renderDeputy()">h.v.</button></div>'+
-      '</div>'+
-    '</div>'+
-    '<div style="margin-top:8px"><label class="fl">Organ nomi</label>'+
-      '<input class="fi" type="text" placeholder="Masalan: Xalq deputatlari Toshkent viloyati Kengashi deputati" maxlength="300" oninput="renderDeputy()">'+
-    '</div>';
-  document.getElementById("deputyList").appendChild(d);
-  document.getElementById("rmDeputyBtn").style.display="block";
-  renderDeputy();
-}
-function remLastDeputy(){
-  var items=document.querySelectorAll("#deputyList .dli");
-  if(items.length>0)items[items.length-1].remove();
-  if(document.querySelectorAll("#deputyList .dli").length===0)
-    document.getElementById("rmDeputyBtn").style.display="none";
-  renderDeputy();
-}
-function renderDeputy(){
-  var items=[].slice.call(document.querySelectorAll("#deputyList .dli"));
-  if(items.length===0){
-    /* Qoida 1: Yo'q holati */
-    document.getElementById("f_deputy").value="йўқ";
-    return;
-  }
-  var lines=items.map(function(d){
-    var inputs=d.querySelectorAll("input[type=text]");
-    var yildan=(inputs[0]?inputs[0].value.trim():"");
-    var yilgacha=(inputs[1]?inputs[1].value.trim():"");
-    var organ=(inputs[2]?inputs[2].value.trim():"");
-    /* Qoida 3: h.v. -> ҳ.в. */
-    if(/^h\.?v\.?$/i.test(yilgacha))yilgacha="ҳ.в.";
-    var part1=yildan?yildan+" й.":"?";
-    var part2=yilgacha||"?";
-    var part3=organ||"?";
-    return part1+" - "+part2+" - "+part3;
-  });
-  /* Qoida 4: Ko'p qatorli — vergul + 
-, oxirgisi nuqta */
-  var result=lines.map(function(l,i){
-    return i<lines.length-1?l+",":l+".";
-  }).join("\n");
-  document.getElementById("f_deputy").value=result;
-}
-
-/* ═══ ILMIY DARAJA ═══ */
-function toggleSdegInput(){
-  var val=document.getElementById("f_sdeg").value;
-  var wrap=document.getElementById("sdegFanWrap");
-  wrap.style.display=(val!=="yo'q")?"block":"none";
-  if(val==="yo'q")document.getElementById("f_sdeg_fan").value="";
-}
-
-/* ═══ TA'LIM DARAJASI IZOHI ═══ */
-var EDU_HINTS_CYR={
-  "Oliy":"Бакалавриат ёки магистратурани тўлиқ тамомлаганлар учун.",
-  "Tugallanmagan oliy":"ОТМда ўқишни давом эттираётган талабалар ёки олий таълимни тўлиқ якунламаганлар учун.",
-  "O'rta maxsus":"Коллеж, академик лицей ёки техникумни тамомлаганлар учун.",
-  "O'rta":"Умумтаълим мактабининг 11-синфини тўлиқ тугатганлар учун.",
-  "Tayanch o'rta":"Умумтаълим мактабининг 9-синфини тўлиқ тугатганлар учун."
-};
-var EDU_HINTS={
-  "Oliy":"Bakalavriat yoki magistraturani to'liq tamomlaganlar uchun.",
-  "Tugallanmagan oliy":"OTMda o'qishni davom ettirayotgan talabalar yoki oliy ta'limni to'liq yakunlamaganlar uchun.",
-  "O'rta maxsus":"Kollej, akademik litsey yoki texnikumni tamomlaganlar uchun.",
-  "O'rta":"Umumta'lim maktabining 11-sinfini to'liq tugatganlar uchun.",
-  "Tayanch o'rta":"Umumta'lim maktabining 9-sinfini to'liq tugatganlar uchun."
-};
-function showEduHint(){
-  var val=document.getElementById("f_edu").value;
-  var hint=document.getElementById("eduHint");
-  var txt=document.getElementById("eduHintText");
-  if(val&&EDU_HINTS[val]){
-    txt._latVal=EDU_HINTS[val];
-    /* Kirill tarjimasi (hozircha bir xil — foydalanuvchi kirillda yozishi mumkin) */
-    txt._cyrVal=EDU_HINTS_CYR[val]||EDU_HINTS[val];
-    txt.textContent=currentLang==='cyr'?txt._cyrVal:txt._latVal;
-    hint.style.display="flex";
-  }else{hint.style.display="none";}
-}
-
-/* ═══ DRAFT SAVE ═══ */
+/* ═══ DRAFT ═══ */
 function saveDraft(){
-  try{
-    var d={name:gv("f_name"),phone:gv("f_phone"),bdate:gv("f_bdate"),bplace:gv("f_bplace"),nat:gv("f_nat"),works:savedWorks};
-    sessionStorage.setItem("obj_draft",JSON.stringify(d));
-  }catch(e){}
+  try{sessionStorage.setItem("obj_draft",JSON.stringify({name:gv("f_name"),phone:gv("f_phone"),bdate:gv("f_bdate"),bplace:gv("f_bplace"),nat:gv("f_nat"),works:savedWorks}));}catch(e){}
 }
 function loadDraft(){
   try{
-    var raw=sessionStorage.getItem("obj_draft");
-    if(!raw)return;
+    var raw=sessionStorage.getItem("obj_draft");if(!raw)return;
     var d=JSON.parse(raw);
     if(d.name)document.getElementById("f_name").value=d.name;
     if(d.phone)document.getElementById("f_phone").value=d.phone;
     if(d.bdate)document.getElementById("f_bdate").value=d.bdate;
     if(d.bplace)document.getElementById("f_bplace").value=d.bplace;
     if(d.nat)document.getElementById("f_nat").value=d.nat;
-    if(d.works&&d.works.length){savedWorks=d.works;renderWorks();}
     toast("Oldingi qoralama tiklandi","info");
   }catch(e){}
 }
@@ -1086,7 +827,6 @@ setInterval(saveDraft,10000);
 /* ═══ INIT ═══ */
 addWorkBlock();
 updateFooter();
-initYearPills();
 loadDraft();
 </script>
 </body>
