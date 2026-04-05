@@ -1,4 +1,4 @@
-import base64, io
+import base64, io, re
 from docx import Document
 from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -10,6 +10,173 @@ F   = "Times New Roman"
 FS  = Pt(11)
 F14 = Pt(14)
 
+
+# ═══════════════════════════════════════════════════════════════════
+#  TRANSLITERATSIYA DVIGATEL  (Lotin → Kirill)
+#  Qoidalar:
+#   1. Barcha apostrof turlarini standartlashtirish
+#   2. O' → Ў,  G' → Ғ  (apostrof bilan birikkan)
+#   3. Qo'shaloq harflar: SH→Ш, CH→Ч, NG→НГ, TS→Ц
+#   4. YA→Я, YO→Ё, YU→Ю, YE→Е
+#   5. E qoidasi: so'z boshida → Э, o'rtada → Е
+#   6. Kirill matn bo'lsa — o'zgartirmasdan o'tkazish
+# ═══════════════════════════════════════════════════════════════════
+
+def _is_cyrillic_char(c: str) -> bool:
+    return '\u0400' <= c <= '\u04FF'
+
+def _has_cyrillic(text: str) -> bool:
+    return any(_is_cyrillic_char(c) for c in text)
+
+def _normalize_apostrophe(text: str) -> str:
+    """Barcha apostrof/tutu belgisi turlarini bitta standartga keltirish."""
+    for ch in ['\u2018', '\u2019', '\u02BC', '\u02BB', '\u0060', '\u00B4',
+               '\u044A', '\u044B', '\u042A', '\u0027']:
+        text = text.replace(ch, "'")
+    return text
+
+def _word_lat_to_cyr(word: str) -> str:
+    """Bitta so'zni lotinchadan kirillchaga o'girish."""
+
+    # Kirill harflari ko'p bo'lsa — o'zgartirmasdan qaytarish
+    if _has_cyrillic(word):
+        return word
+
+    # Belgilar jadvali (tartibi muhim: avval qo'shaloq, keyin birlik)
+    DIGRAPHS = [
+        # katta harf
+        ('SH', 'Ш'), ('CH', 'Ч'), ('NG', 'НГ'), ('TS', 'Ц'),
+        ('YA', 'Я'), ('YO', 'Ё'), ('YU', 'Ю'), ('YE', 'Е'),
+        # bosh harf (birinchi katta, ikkinchi kichik)
+        ('Sh', 'Ш'), ('Ch', 'Ч'), ('Ng', 'НГ'), ('Ts', 'Ц'),
+        ('Ya', 'Я'), ('Yo', 'Ё'), ('Yu', 'Ю'), ('Ye', 'Е'),
+        # kichik harf
+        ('sh', 'ш'), ('ch', 'ч'), ('ng', 'нг'), ('ts', 'ц'),
+        ('ya', 'я'), ('yo', 'ё'), ('yu', 'ю'), ('ye', 'е'),
+    ]
+    # O' va G' (apostrof bilan)
+    APOSTROPHE_PAIRS = [
+        ("O'", 'Ў'), ("G'", 'Ғ'),
+        ("o'", 'ў'), ("g'", 'ғ'),
+    ]
+    SINGLES = {
+        'A': 'А', 'B': 'Б', 'D': 'Д', 'E': 'Е', 'F': 'Ф', 'G': 'Г',
+        'H': 'Ҳ', 'I': 'И', 'J': 'Ж', 'K': 'К', 'L': 'Л', 'M': 'М',
+        'N': 'Н', 'O': 'О', 'P': 'П', 'Q': 'Қ', 'R': 'Р', 'S': 'С',
+        'T': 'Т', 'U': 'У', 'V': 'В', 'X': 'Х', 'Y': 'Й', 'Z': 'З',
+        'a': 'а', 'b': 'б', 'd': 'д', 'e': 'е', 'f': 'ф', 'g': 'г',
+        'h': 'ҳ', 'i': 'и', 'j': 'ж', 'k': 'к', 'l': 'л', 'm': 'м',
+        'n': 'н', 'o': 'о', 'p': 'п', 'q': 'қ', 'r': 'р', 's': 'с',
+        't': 'т', 'u': 'у', 'v': 'в', 'x': 'х', 'y': 'й', 'z': 'з',
+    }
+
+    s = _normalize_apostrophe(word)
+
+    # O' va G' ni almashtirish
+    for lat, cyr in APOSTROPHE_PAIRS:
+        s = s.replace(lat, cyr)
+
+    # Qo'shaloq harflarni placeholder bilan almashtirish
+    placeholders = {}
+    ph_idx = [0]
+    result_parts = [s]
+
+    def replace_all(pairs, text):
+        for lat, cyr in pairs:
+            text = text.replace(lat, cyr)
+        return text
+
+    s = replace_all(DIGRAPHS, s)
+
+    # Birlik harflar
+    out = []
+    for i, ch in enumerate(s):
+        if ch in SINGLES:
+            # E qoidasi: so'z boshida (yoki kirill bo'lmagan belgidan keyin) → Э/э
+            if ch == 'E':
+                prev = s[i-1] if i > 0 else ''
+                if i == 0 or (prev not in 'aeiouAEIOUаеёиоуыэюяўАЕЁИОУЫЭЮЯЎ' and not _is_cyrillic_char(prev) and prev not in 'аеёиоуыэюяўbdfghjklmnpqrstvxyz'):
+                    out.append('Э')
+                else:
+                    out.append(SINGLES[ch])
+            elif ch == 'e':
+                prev = s[i-1] if i > 0 else ''
+                if i == 0 or prev in ' \t\n\r-–—.,;:!?()"«»':
+                    out.append('э')
+                else:
+                    out.append(SINGLES[ch])
+            else:
+                out.append(SINGLES[ch])
+        else:
+            out.append(ch)
+    return ''.join(out)
+
+
+def lat_to_cyr(text: str) -> str:
+    """
+    Matnni lotinchadan kirillchaga o'girish.
+    Aralash matnda ham ishlaydi: har bir so'zni alohida qayta ishlaydi.
+    Kirill harflari o'zgarmasdan qoladi.
+    """
+    if not text:
+        return text
+
+    # Agar matn asosan kirill bo'lsa — o'zgartirmasdan qaytarish
+    cyr_count = sum(1 for c in text if _is_cyrillic_char(c))
+    lat_count  = sum(1 for c in text if c.isalpha() and not _is_cyrillic_char(c))
+    if cyr_count > lat_count:
+        return text
+
+    # So'zlarga bo'lib qayta ishlash (tinish belgilari saqlanadi)
+    parts = re.split(r'(\s+)', text)
+    return ''.join(_word_lat_to_cyr(p) if p.strip() else p for p in parts)
+
+
+def apply_script(data: dict, script: str) -> dict:
+    """
+    Agar script == 'cyr' bo'lsa, barcha matn maydonlarini kirillchaga o'girish.
+    Aks holda — o'zgartirmasdan qaytarish.
+    """
+    if script != 'cyr':
+        return data
+
+    TEXT_FIELDS = [
+        'fullname', 'birthplace', 'nationality', 'party',
+        'edu_level', 'university', 'speciality',
+        'science_degree', 'science_title', 'military_rank',
+        'langs', 'awards', 'departmental_awards', 'deputy',
+        'address', 'current_job', 'job_year',
+    ]
+
+    result = dict(data)
+
+    for field in TEXT_FIELDS:
+        val = result.get(field)
+        if isinstance(val, str):
+            result[field] = lat_to_cyr(val)
+        elif isinstance(val, list):
+            result[field] = [lat_to_cyr(v) if isinstance(v, str) else v for v in val]
+
+    # Mehnat tarixi
+    wh = result.get('work_history', [])
+    result['work_history'] = [
+        {k: lat_to_cyr(v) if isinstance(v, str) else v for k, v in w.items()}
+        for w in wh if isinstance(w, dict)
+    ]
+
+    # Qarindoshlar
+    rels = result.get('relatives', [])
+    result['relatives'] = [
+        {k: lat_to_cyr(v) if isinstance(v, str) else v for k, v in r.items()}
+        for r in rels if isinstance(r, dict)
+    ]
+
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  DOCX GENERATSIYA
+# ═══════════════════════════════════════════════════════════════════
 
 def _font(run, bold=False, size=None):
     run.font.name = F
@@ -102,7 +269,15 @@ def _cell_para(cell, text, bold=False, align=WD_ALIGN_PARAGRAPH.LEFT):
     _run(p, text or "—", bold=bold)
 
 
-def generate(data: dict, output_path: str):
+def generate(data: dict, output_path: str, script: str = 'lat'):
+    """
+    Hujjat yaratish.
+    script: 'lat' = lotin alifbosi (o'zgartirmasdan),
+            'cyr' = kirill alifbosi (transliteratsiya qilinadi)
+    """
+    # Transliteratsiya nuqtasi — faqat hujjat yaratishdan oldin
+    data = apply_script(data, script)
+
     doc = Document()
 
     sec = doc.sections[0]
@@ -128,13 +303,13 @@ def generate(data: dict, output_path: str):
     langs = data.get("langs", [])
     langs_str = ", ".join(langs) if isinstance(langs, list) else str(langs)
 
-    # ── 1. MA‘LUMOTNOMA ──
+    # ── 1. MA'LUMOTNOMA ──
     p0 = doc.add_paragraph()
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
     p0.paragraph_format.space_after  = Pt(0)
     p0.paragraph_format.line_spacing = Pt(16)
-    _run(p0, "MA‘LUMOTNOMA", bold=True, size=F14)
+    _run(p0, "MA'LUMOTNOMA", bold=True, size=F14)
 
     # ── 2. Fullname ──
     p1 = doc.add_paragraph()
@@ -144,15 +319,6 @@ def generate(data: dict, output_path: str):
     p1.paragraph_format.line_spacing = Pt(16)
     _run(p1, fullname, bold=True, size=F14)
 
-    # ── 3. JADVAL: 3 ustun ──
-    # col0=7.5sm, col1=6.8sm, col2=3.2sm (rasm)
-    # Qator 0: lavozim (col0+col1 merge) | rasm (col2, barcha qatorlarga merge)
-    # Qator 1+: ma‘lumotlar (col0=label, col1=label2)
-    # Qator 2+: qiymatlar (col0=val1, col1=val2)
-
-    # Nechta info qator kerakligini hisoblaymiz
-    # har bir "row2" = 2 qator (label + value), long = 2 qator
-    # Jami: 1 (lavozim) + 6*2 (row2) + 4*2 (long) = 1+12+8 = 21 qator
     N_ROWS = 20
 
     tbl = doc.add_table(rows=N_ROWS, cols=3)
@@ -161,17 +327,14 @@ def generate(data: dict, output_path: str):
     tbl.columns[1].width = Cm(7.5)
     tbl.columns[2].width = Cm(3.0)
 
-    # Barcha celllardan border olib tashlash
     for row in tbl.rows:
         for cell in row.cells:
             _no_border(cell)
 
-    # col2 ni barcha qatorlarda merge (rasm uchun)
     photo_cell = tbl.cell(0, 2)
     for i in range(1, N_ROWS):
         photo_cell = photo_cell.merge(tbl.cell(i, 2))
 
-    # Rasmni o‘ng cellga qo‘yish
     photo_cell.paragraphs[0].clear()
     rp = photo_cell.paragraphs[0]
     rp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -186,7 +349,6 @@ def generate(data: dict, output_path: str):
         except Exception:
             pass
 
-    # Qator 0: lavozim (col0 + col1 merge)
     lav_cell = tbl.cell(0, 0).merge(tbl.cell(0, 1))
     lav_cell.paragraphs[0].clear()
     lp = lav_cell.paragraphs[0]
@@ -202,46 +364,40 @@ def generate(data: dict, output_path: str):
         lp2.paragraph_format.line_spacing = Pt(14)
         _run(lp2, current_job, size=FS)
 
-    # Info qatorlarni yozish (qator indexini kuzatamiz)
-    ri = [1]  # mutable counter
+    ri = [1]
 
     def row2(l1, v1, l2=None, v2=None):
-        # Label qatori
         _cp(tbl.cell(ri[0], 0), l1, bold=True, before=5)
         _cp(tbl.cell(ri[0], 1), l2 or "", bold=True, before=5)
         ri[0] += 1
-        # Qiymat qatori
         _cp(tbl.cell(ri[0], 0), v1)
         _cp(tbl.cell(ri[0], 1), v2 or "")
         ri[0] += 1
 
     def inline2(label, val):
-        """Label col0, qiymat col1 — bir xil qatorda"""
         _cp(tbl.cell(ri[0], 0), label, bold=True, before=8)
         _cp(tbl.cell(ri[0], 1), val or "—", before=8)
         ri[0] += 1
 
     def long2(label, val):
-        # Label — col0+col1 merge
         mc = tbl.cell(ri[0], 0).merge(tbl.cell(ri[0], 1))
         _cp(mc, label, bold=True, before=8)
         ri[0] += 1
-        # Qiymat — col0+col1 merge
         mc2 = tbl.cell(ri[0], 0).merge(tbl.cell(ri[0], 1))
         _cp(mc2, val)
         ri[0] += 1
 
-    row2("Tug‘ilgan yili:", bd, "Tug‘ilgan joyi:", data.get("birthplace",""))
-    row2("Millati:", data.get("nationality","o‘zbek"), "Partiyaviyligi:", data.get("party","yo‘q"))
-    row2("Ma‘lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
-    inline2("Ma‘lumoti bo‘Yicha mutaxassisligi:", data.get("speciality","") or "—")
-    row2("Ilmiy darajasi:", data.get("science_degree","yo‘q"), "Ilmiy unvoni:", data.get("science_title","yo‘q"))
-    row2("Qaysi chet tillarini biladi:", langs_str or "yo‘q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo‘q"))
-    long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo‘q"))
-    long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo‘q"))
+    row2("Tug'ilgan yili:", bd, "Tug'ilgan joyi:", data.get("birthplace",""))
+    row2("Millati:", data.get("nationality","o'zbek"), "Partiyaviyligi:", data.get("party","yo'q"))
+    row2("Ma'lumoti:", data.get("edu_level",""), "Tamomlagan:", data.get("university",""))
+    inline2("Ma'lumoti bo'yicha mutaxassisligi:", data.get("speciality","") or "—")
+    row2("Ilmiy darajasi:", data.get("science_degree","yo'q"), "Ilmiy unvoni:", data.get("science_title","yo'q"))
+    row2("Qaysi chet tillarini biladi:", langs_str or "yo'q", "Harbiy (maxsus) unvoni:", data.get("military_rank","yo'q"))
+    long2("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):", data.get("awards","yo'q"))
+    long2("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):", data.get("departmental_awards","yo'q"))
     long2("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
-          "yoki boshqa saylanadigan organlarning a‘zosimi (to‘liq ko‘rsatilishi lozim):", data.get("deputy","yo‘q"))
-    long2("Doimiy yashash manzili (aniq ko‘rsatilsin):", data.get("address",""))
+          "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):", data.get("deputy","yo'q"))
+    long2("Doimiy yashash manzili (aniq ko'rsatilsin):", data.get("address",""))
 
     # ── MEHNAT FAOLIYATI ──
     _para(doc, "MEHNAT FAOLIYATI", bold=True, size=F14,
@@ -273,7 +429,7 @@ def generate(data: dict, output_path: str):
 
     _para(doc, f"{fullname}ning yaqin qarindoshlari haqida",
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER)
-    _para(doc, "MA‘LUMOT",
+    _para(doc, "MA'LUMOT",
           bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
 
     relatives = data.get("relatives", [])
@@ -285,7 +441,7 @@ def generate(data: dict, output_path: str):
             rt.columns[i].width = w
         for i, h in enumerate(["Qarindosh-\nligi",
                                 "Familiyasi, ismi\nva otasining ismi",
-                                "Tug‘ilgan yili\nva joyi",
+                                "Tug'ilgan yili\nva joyi",
                                 "Ish joyi va\nlavozimi",
                                 "Turar joyi"]):
             _cell_borders(rt.cell(0, i))
@@ -293,8 +449,11 @@ def generate(data: dict, output_path: str):
                        align=WD_ALIGN_PARAGRAPH.CENTER)
         for rel in relatives:
             row = rt.add_row()
+            byear = rel.get("byear","")
+            bplace = rel.get("bplace","")
+            birth = f"{byear} y., {bplace}" if byear and bplace else (byear or bplace)
             vals = [rel.get("rel",""), rel.get("fio",""),
-                    rel.get("birth",""), rel.get("job",""),
+                    birth, rel.get("job",""),
                     rel.get("addr","")]
             for i, v in enumerate(vals):
                 _cell_borders(row.cells[i])
