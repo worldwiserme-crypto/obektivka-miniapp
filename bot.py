@@ -35,11 +35,13 @@ async def serve_app(request):
 async def submit(request):
     tg_id = 0
     try:
-        body  = await request.json()
-        tg_id = int(body.get("tg_id", 0))
-        data  = body.get("data", {})
+        body   = await request.json()
+        tg_id  = int(body.get("tg_id", 0))
+        data   = body.get("data", {})
+        # 'lat' yoki 'cyr' — frontenddan keladi, default lotin
+        script = body.get("script", "lat")
 
-        logging.info(f"Submit keldi: tg_id={tg_id}, fullname={data.get('fullname')}")
+        logging.info(f"Submit keldi: tg_id={tg_id}, fullname={data.get('fullname')}, script={script}")
 
         if not tg_id:
             return web.json_response({"ok": False, "error": "tg_id yo'q"})
@@ -49,7 +51,8 @@ async def submit(request):
         os.makedirs("/tmp/obj", exist_ok=True)
         docx_path = f"/tmp/obj/{tg_id}.docx"
 
-        generate(data, docx_path)
+        # script parametrini generate() ga uzatish
+        generate(data, docx_path, script=script)
         logging.info(f"Hujjat yaratildi: {docx_path}")
 
         fullname = data.get("fullname", "obektivka")
@@ -58,10 +61,11 @@ async def submit(request):
 
         await bot.delete_message(tg_id, loading_msg.message_id)
 
+        script_label = "Кирилл" if script == "cyr" else "Lotin"
         await bot.send_document(
             tg_id,
             document=BufferedInputFile(file_data, filename=f"{fullname}.docx"),
-            caption="✅ <b>Obektivkangiz tayyor!</b>\n📎 Word (.docx) formatida."
+            caption=f"✅ <b>Obektivkangiz tayyor!</b>\n📎 Word (.docx) formatida ({script_label} alifbosi)."
         )
 
         os.remove(docx_path)
