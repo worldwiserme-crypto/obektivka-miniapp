@@ -158,7 +158,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 
 <main class="cnt">
 
-  <!-- 1. SHAXSIY -->
   <section class="acc open" id="sec0">
     <div class="acc-head" onclick="toggleSec(0)">
       <div class="acc-num">1</div>
@@ -169,13 +168,11 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
       <svg class="acc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="acc-body">
-
       <div class="fg">
         <label class="fl" for="f_name" data-i18n="lbl-name">To'liq F.I.Sh<span class="rq">*</span></label>
         <input class="fi" type="text" id="f_name" data-i18n-ph="ph-name" placeholder="Familiya Ism Sharif" maxlength="200">
         <div class="ht"><i>i</i><span data-i18n="ht-passport">Pasportdagi kabi to'liq yozing</span></div>
       </div>
-
       <div class="fg">
         <label class="fl" for="f_phone" data-i18n="lbl-phone">Telefon raqam<span class="rq">*</span></label>
         <div class="phone-wrap">
@@ -183,7 +180,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
           <input class="fi" type="tel" id="f_phone" placeholder="90 123 45 67" maxlength="12" oninput="limitPhone(this,event)" onblur="fmtPhone(this)">
         </div>
       </div>
-
       <div class="fg">
         <label class="fl" data-i18n="lbl-photo">Rasm (3×4)</label>
         <div class="photo-area">
@@ -200,7 +196,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
           </div>
         </div>
       </div>
-
       <div class="row2">
         <div class="fg">
           <label class="fl" for="f_bdate" data-i18n="lbl-bdate">Tug'ilgan sana<span class="rq">*</span></label>
@@ -212,7 +207,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
           <div class="ht"><i>i</i><span data-i18n="ht-bplace">Masalan: Andijon viloyati, Asaka tumani</span></div>
         </div>
       </div>
-
       <div class="row2">
         <div class="fg">
           <label class="fl" for="f_nat" data-i18n="lbl-nat">Millati</label>
@@ -233,7 +227,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
     </div>
   </section>
 
-  <!-- 2. TA'LIM -->
   <section class="acc" id="sec1">
     <div class="acc-head" onclick="toggleSec(1)">
       <div class="acc-num">2</div>
@@ -266,21 +259,19 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
         <div class="eg-hint" data-i18n="ht-spec">Masalan: Yurist, Iqtisodchi (diplom bo'yicha)</div>
         <input class="fi" type="text" id="f_spec" data-i18n-ph="ph-spec" maxlength="200" placeholder="Masalan: Yurist, Iqtisodchi">
       </div>
-
       <div class="fg">
         <label class="fl" data-i18n="lbl-lang">Chet tillari</label>
         <div id="langList"></div>
         <button class="ab" type="button" data-i18n="btn-addlang" onclick="addLang()">+ Til qo'shish</button>
         <div class="ht" style="margin-top:6px"><i>i</i><span data-i18n="ht-lang">Faqat yaxshi biladigan tillaringizni qo'shing</span></div>
       </div>
-
       <div class="row2">
         <div class="fg">
           <label class="fl" for="f_sdeg" data-i18n="lbl-sdeg">Ilmiy darajasi</label>
           <select class="fi" id="f_sdeg" onchange="toggleSdegInput()">
             <option value="yo'q" selected>Yo'q</option>
-            <option value="Falsafa doktori (PhD) / Fan nomzodi">Falsafa doktori (PhD) / Fan nomzodi</option>
-            <option value="Fan doktori (DSc)">Fan doktori (DSc)</option>
+            <option value="Falsafa doktori">Falsafa doktori</option>
+            <option value="Fan doktori">Fan doktori</option>
           </select>
           <div id="sdegFanWrap" style="display:none;margin-top:8px">
             <label class="fl" for="f_sdeg_fan" data-i18n="lbl-sdeg-fan">Qaysi fan bo'yicha?</label>
@@ -297,7 +288,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
           </select>
         </div>
       </div>
-
       <div class="fg">
         <label class="fl" for="f_mil" data-i18n="lbl-mil">Harbiy unvoni</label>
         <input class="fi" type="text" id="f_mil" value="yo'q" maxlength="200">
@@ -321,7 +311,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
     </div>
   </section>
 
-  <!-- 3. MEHNAT -->
   <section class="acc" id="sec2">
     <div class="acc-head" onclick="toggleSec(2)">
       <div class="acc-num">3</div>
@@ -338,7 +327,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
     </div>
   </section>
 
-  <!-- 4. OILA -->
   <section class="acc" id="sec3">
     <div class="acc-head" onclick="toggleSec(3)">
       <div class="acc-num">4</div>
@@ -351,7 +339,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
     <div class="acc-body">
       <div id="relList" style="margin-top:10px"></div>
       <button class="ab" type="button" data-i18n="btn-addrel" onclick="addRelCard()">+ Qarindosh qo'shish</button>
-
       <div class="fg" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--s2)">
         <label class="fl" for="f_addr" data-i18n="lbl-addr">Doimiy yashash manzili<span class="rq">*</span></label>
         <input class="fi" type="text" id="f_addr" data-i18n-ph="ph-addr" placeholder="Viloyat, tuman, ko'cha, uy" maxlength="300">
@@ -362,7 +349,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
 
 </main>
 
-<!-- MODAL -->
 <div id="scriptModal" class="modal-overlay" style="display:none">
   <div class="modal-box">
     <div class="modal-title" data-i18n="modal-title">Qaysi alifboda yuklab olasiz?</div>
@@ -374,7 +360,6 @@ input[type="file"].fi{font-size:12px;color:var(--s5);padding:8px 10px}
   </div>
 </div>
 
-<!-- FOOTER -->
 <div class="foot" id="foot">
   <div class="foot-inner">
     <button class="foot-back" id="footBack" onclick="prevSec()" style="display:none">←</button>
@@ -388,139 +373,96 @@ var savedWorks=[],isSubmitting=false,currentLang='lat';
 var initData="";
 if(window.Telegram&&window.Telegram.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand();initData=window.Telegram.WebApp.initData||"";}
 
-/* ═══ TOAST ═══ */
-function toast(msg,type){
-  var tw=document.getElementById("toastWrap");
-  var t=document.createElement("div");t.className="toast "+(type||"info");t.textContent=msg;tw.appendChild(t);
-  setTimeout(function(){t.style.opacity="0";t.style.transform="translateY(-8px)";t.style.transition="all .3s";setTimeout(function(){t.remove()},300)},2800);
-}
+function toast(msg,type){var tw=document.getElementById("toastWrap");var t=document.createElement("div");t.className="toast "+(type||"info");t.textContent=msg;tw.appendChild(t);setTimeout(function(){t.style.opacity="0";t.style.transform="translateY(-8px)";t.style.transition="all .3s";setTimeout(function(){t.remove()},300)},2800);}
 
-/* ═══ ACCORDION ═══ */
-function toggleSec(n){
-  if(n===curSec){document.getElementById("sec"+n).classList.toggle("open");return;}
-  if(n>curSec&&!validateSec(curSec))return;
-  openSec(n);
-}
-function openSec(n){
-  for(var i=0;i<totalSec;i++){
-    var el=document.getElementById("sec"+i);
-    el.classList.remove("open");
-    if(i<n)el.classList.add("done-sec");else el.classList.remove("done-sec");
-  }
-  document.getElementById("sec"+n).classList.add("open");
-  curSec=n;updateProgress();updateFooter();
-  setTimeout(function(){document.getElementById("sec"+n).scrollIntoView({behavior:"smooth",block:"start"})},100);
-}
-function nextSec(){
-  if(curSec===totalSec-1){if(!validateSec(curSec))return;document.getElementById("scriptModal").style.display="flex";return;}
-  if(!validateSec(curSec))return;
-  openSec(curSec+1);
-}
+function toggleSec(n){if(n===curSec){document.getElementById("sec"+n).classList.toggle("open");return;}if(n>curSec&&!validateSec(curSec))return;openSec(n);}
+function openSec(n){for(var i=0;i<totalSec;i++){var el=document.getElementById("sec"+i);el.classList.remove("open");if(i<n)el.classList.add("done-sec");else el.classList.remove("done-sec");}document.getElementById("sec"+n).classList.add("open");curSec=n;updateProgress();updateFooter();setTimeout(function(){document.getElementById("sec"+n).scrollIntoView({behavior:"smooth",block:"start"})},100);}
+function nextSec(){if(curSec===totalSec-1){if(!validateSec(curSec))return;document.getElementById("scriptModal").style.display="flex";return;}if(!validateSec(curSec))return;openSec(curSec+1);}
 function submitWithScript(script){document.getElementById("scriptModal").style.display="none";submitForm(script);}
 document.addEventListener("click",function(e){var m=document.getElementById("scriptModal");if(m&&e.target===m)m.style.display="none";});
 function prevSec(){if(curSec>0)openSec(curSec-1);}
-function updateProgress(){
-  document.querySelectorAll(".prog-seg").forEach(function(s,i){s.classList.remove("done","cur");if(i<curSec)s.classList.add("done");if(i===curSec)s.classList.add("cur");});
-}
-function updateFooter(){
-  var back=document.getElementById("footBack"),next=document.getElementById("footNext");
-  back.style.display=curSec===0?"none":"block";
-  if(curSec===totalSec-1){next.textContent=currentLang==='cyr'?"📤 Юбориш":"📤 Yuborish";next.classList.add("submit");}
-  else{next.textContent=currentLang==='cyr'?"Давом этиш →":"Davom etish →";next.classList.remove("submit");}
-}
+function updateProgress(){document.querySelectorAll(".prog-seg").forEach(function(s,i){s.classList.remove("done","cur");if(i<curSec)s.classList.add("done");if(i===curSec)s.classList.add("cur");});}
+function updateFooter(){var back=document.getElementById("footBack"),next=document.getElementById("footNext");back.style.display=curSec===0?"none":"block";if(curSec===totalSec-1){next.textContent=currentLang==='cyr'?"📤 Юбориш":"📤 Yuborish";next.classList.add("submit");}else{next.textContent=currentLang==='cyr'?"Давом этиш →":"Davom etish →";next.classList.remove("submit");}}
 
-/* ═══ VALIDATION ═══ */
-function validateSec(n){
-  if(n===0){
-    var name=gv("f_name"),phone=gv("f_phone"),bdate=gv("f_bdate");
-    if(!name){toast("Ism-familiyani kiriting","err");shake("f_name");return false;}
-    var rawPhone=phone.replace(/\s/g,"");
-    if(!rawPhone){toast("Telefon raqamni kiriting","err");shake("f_phone");return false;}
-    if(!/^[0-9]{9}$/.test(rawPhone)){toast("Telefon: 9 ta raqam kiriting (prefixsiz)","err");shake("f_phone");return false;}
-    if(!bdate){toast("Tug'ilgan sanani tanlang","err");shake("f_bdate");return false;}
-  }
-  return true;
-}
+function validateSec(n){if(n===0){var name=gv("f_name"),phone=gv("f_phone"),bdate=gv("f_bdate");if(!name){toast("Ism-familiyani kiriting","err");shake("f_name");return false;}var rawPhone=phone.replace(/\s/g,"");if(!rawPhone){toast("Telefon raqamni kiriting","err");shake("f_phone");return false;}if(!/^[0-9]{9}$/.test(rawPhone)){toast("Telefon: 9 ta raqam kiriting (prefixsiz)","err");shake("f_phone");return false;}if(!bdate){toast("Tug'ilgan sanani tanlang","err");shake("f_bdate");return false;}}return true;}
 function shake(id){var el=document.getElementById(id);el.classList.add("has-err");el.focus();setTimeout(function(){el.classList.remove("has-err")},2000);}
 function gv(id){return(document.getElementById(id).value||"").trim();}
 
-/* ═══ I18N ═══ */
 var T={
-  "hdr-title":   {l:"Ma'lumotnoma",              c:"Маълумотнома"},
-  "sec0-title":  {l:"Shaxsiy ma'lumotlar",        c:"Шахсий маълумотлар"},
-  "sec0-sub":    {l:"Ism, telefon, tug'ilgan sana",c:"Исм, телефон, туғилган сана"},
-  "sec1-title":  {l:"Ta'lim va ilmiy faoliyat",   c:"Таълим ва илмий фаолият"},
-  "sec1-sub":    {l:"Diplom, mutaxassislik, tillar",c:"Диплом, мутахассислик, тиллар"},
-  "sec2-title":  {l:"Mehnat faoliyati",            c:"Меҳнат фаолияти"},
-  "sec2-sub":    {l:"Amaldagi va oldingi ish joylari",c:"Амалдаги ва олдинги иш жойлари"},
-  "sec3-title":  {l:"Oila va manzil",              c:"Оила ва манзил"},
-  "sec3-sub":    {l:"Yaqin qarindoshlar, turar joyi",c:"Яқин қариндошлар, турар жойи"},
-  "lbl-name":    {l:"To'liq F.I.Sh",              c:"Тўлиқ Ф.И.Ш"},
-  "lbl-phone":   {l:"Telefon raqam",               c:"Телефон рақам"},
-  "lbl-photo":   {l:"Rasm (3×4)",                  c:"Расм (3×4)"},
-  "btn-photo":   {l:"Rasm tanlash",                c:"Расм танлаш"},
-  "lbl-bdate":   {l:"Tug'ilgan sana",              c:"Туғилган сана"},
-  "lbl-bplace":  {l:"Tug'ilgan joyi",              c:"Туғилган жойи"},
-  "lbl-nat":     {l:"Millati",                     c:"Миллати"},
-  "lbl-party":   {l:"Partiyaviyligi",               c:"Партиявийлиги"},
-  "lbl-edu":     {l:"Ma'lumoti",                   c:"Маълумоти"},
-  "lbl-uni":     {l:"Tamomlagan joyi va yili",     c:"Тамомлаган жойи ва йили"},
-  "lbl-spec":    {l:"Mutaxassisligi",               c:"Мутахассислиги"},
-  "lbl-lang":    {l:"Chet tillari",                c:"Чет тиллари"},
-  "lbl-sdeg":    {l:"Ilmiy darajasi",              c:"Илмий даражаси"},
-  "lbl-sdeg-fan":{l:"Qaysi fan bo'yicha?",         c:"Қайси фан бўйича?"},
-  "lbl-stit":    {l:"Ilmiy unvoni",                c:"Илмий унвони"},
-  "lbl-mil":     {l:"Harbiy unvoni",               c:"Ҳарбий унвони"},
-  "lbl-awards":  {l:"Davlat mukofotlari",          c:"Давлат мукофотлари"},
-  "lbl-dawards": {l:"Idoraviy mukofotlar",          c:"Идоравий мукофотлар"},
-  "lbl-deputy":  {l:"Deputatlik / saylanadigan organ a'zoligi",c:"Депутатлик / сайланадиган орган аъзолиги"},
-  "lbl-addr":    {l:"Doimiy yashash manzili",      c:"Доимий яшаш манзили"},
-  "btn-addwork": {l:"+ Yangi davrni qo'shish",     c:"+ Янги даврни қўшиш"},
-  "btn-addrel":  {l:"+ Qarindosh qo'shish",         c:"+ Қариндош қўшиш"},
-  "btn-addlang": {l:"+ Til qo'shish",              c:"+ Тил қўшиш"},
-  "ht-passport": {l:"Pasportdagi kabi to'liq yozing",c:"Паспортдаги каби тўлиқ ёзинг"},
-  "ht-bplace":   {l:"Masalan: Andijon viloyati, Asaka tumani",c:"Масалан: Андижон вилояти, Асака тумани"},
-  "ht-uni":      {l:"1982 y. Toshkent davlat universiteti (kunduzgi). Bir nechta bo'lsa, barchasini yozing.",c:"1982 й. Тошкент давлат университети (кундузги). Бир нечта бўлса, барчасини ёзинг."},
-  "ht-spec":     {l:"Masalan: Yurist, Iqtisodchi (diplom bo'yicha)",c:"Масалан: Юрист, Иқтисодчи (диплом бўйича)"},
-  "ht-lang":     {l:"Faqat yaxshi biladigan tillaringizni qo'shing",c:"Фақат яхши биладиган тилларингизни қўшинг"},
-  "ht-mil":      {l:"Harbiy (maxsus) unvoni faqat harbiy va huquqni muhofaza qilish idoralari xodimlari uchun ko'rsatiladi.",c:"Ҳарбий (махсус) унвони фақат ҳарбий ва ҳуқуқни муҳофаза қилиш идоралари ходимлари учун кўрсатилади."},
-  "ht-awards":   {l:"Masalan: 2005 y. «Mehnat shuhrati» ordeni.",c:"Масалан: 2005 й. «Меҳнат шуҳрати» ордени."},
-  "ht-dawards":  {l:"Masalan: 2019 y. «Ma'naviyat fidoyisi» ko'krak nishoni.",c:"Масалан: 2019 й. «Маънавият фидойиси» кўкрак нишони."},
-  "ht-deputy":   {l:"Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.",c:"Масалан: 2020 й. - ҳ.в. - Халқ депутатлари Тошкент вилояти Кенгаши депутати."},
-  "ht-propiska": {l:"Propiska bo'yicha to'liq manzilni yozing",c:"Прописка бўйича тўлиқ манзилни ёзинг"},
-  "ht-work":     {l:"Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)",c:"Биринчи иш жойидан бугунги кунгача (меҳнат дафтарчаси бўйича)"},
-  "ph-name":     {l:"Familiya Ism Sharif",          c:"Фамилия Исм Шариф"},
-  "ph-bplace":   {l:"Viloyat, tuman",               c:"Вилоят, туман"},
-  "ph-nat":      {l:"Masalan: o'zbek, rus, tojik",  c:"Масалан: ўзбек, рус, тожик"},
-  "ph-uni":      {l:"1982 y. Toshkent davlat universiteti (kunduzgi)",c:"1982 й. Тошкент давлат университети (кундузги)"},
-  "ph-spec":     {l:"Masalan: Yurist, Iqtisodchi",  c:"Масалан: Юрист, Иқтисодчи"},
-  "ph-sdeg-fan": {l:"Masalan: Iqtisod fanlari",     c:"Масалан: Иқтисод фанлари"},
-  "ph-yoq":      {l:"yo'q",                         c:"йўқ"},
-  "ph-addr":     {l:"Viloyat, tuman, ko'cha, uy",   c:"Вилоят, туман, кўча, уй"},
-  "work-from":   {l:"Boshlanish yili",   c:"Бошланиш йили"},
-  "work-to":     {l:"Tugash yili",       c:"Тугаш йили"},
-  "work-hv":     {l:"Hozirgi vaqtgacha",c:"Ҳозирги вақтгача"},
-  "work-desc":   {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
-  "work-ph":     {l:"Masalan: Toshkent davlat universiteti, katta o'qituvchi",c:"Масалан: Тошкент давлат университети, катта ўқитувчи"},
-  "rel-deg":     {l:"Qarindoshlik darajasi",c:"Қариндошлик даражаси"},
-  "rel-fio":     {l:"F.I.Sh.",            c:"Ф.И.Ш."},
-  "rel-fio-ph":  {l:"Pasport asosida kiriting",c:"Паспорт асосида киритинг"},
-  "rel-byear":   {l:"Tug'ilgan yili",    c:"Туғилган йили"},
-  "rel-bplace":  {l:"Tug'ilgan joyi",    c:"Туғилган жойи"},
+  "hdr-title":{l:"Ma'lumotnoma",c:"Маълумотнома"},
+  "sec0-title":{l:"Shaxsiy ma'lumotlar",c:"Шахсий маълумотлар"},
+  "sec0-sub":{l:"Ism, telefon, tug'ilgan sana",c:"Исм, телефон, туғилган сана"},
+  "sec1-title":{l:"Ta'lim va ilmiy faoliyat",c:"Таълим ва илмий фаолият"},
+  "sec1-sub":{l:"Diplom, mutaxassislik, tillar",c:"Диплом, мутахассислик, тиллар"},
+  "sec2-title":{l:"Mehnat faoliyati",c:"Меҳнат фаолияти"},
+  "sec2-sub":{l:"Amaldagi va oldingi ish joylari",c:"Амалдаги ва олдинги иш жойлари"},
+  "sec3-title":{l:"Oila va manzil",c:"Оила ва манзил"},
+  "sec3-sub":{l:"Yaqin qarindoshlar, turar joyi",c:"Яқин қариндошлар, турар жойи"},
+  "lbl-name":{l:"To'liq F.I.Sh",c:"Тўлиқ Ф.И.Ш"},
+  "lbl-phone":{l:"Telefon raqam",c:"Телефон рақам"},
+  "lbl-photo":{l:"Rasm (3×4)",c:"Расм (3×4)"},
+  "btn-photo":{l:"Rasm tanlash",c:"Расм танлаш"},
+  "lbl-bdate":{l:"Tug'ilgan sana",c:"Туғилган сана"},
+  "lbl-bplace":{l:"Tug'ilgan joyi",c:"Туғилган жойи"},
+  "lbl-nat":{l:"Millati",c:"Миллати"},
+  "lbl-party":{l:"Partiyaviyligi",c:"Партиявийлиги"},
+  "lbl-edu":{l:"Ma'lumoti",c:"Маълумоти"},
+  "lbl-uni":{l:"Tamomlagan joyi va yili",c:"Тамомлаган жойи ва йили"},
+  "lbl-spec":{l:"Mutaxassisligi",c:"Мутахассислиги"},
+  "lbl-lang":{l:"Chet tillari",c:"Чет тиллари"},
+  "lbl-sdeg":{l:"Ilmiy darajasi",c:"Илмий даражаси"},
+  "lbl-sdeg-fan":{l:"Qaysi fan bo'yicha?",c:"Қайси фан бўйича?"},
+  "lbl-stit":{l:"Ilmiy unvoni",c:"Илмий унвони"},
+  "lbl-mil":{l:"Harbiy unvoni",c:"Ҳарбий унвони"},
+  "lbl-awards":{l:"Davlat mukofotlari",c:"Давлат мукофотлари"},
+  "lbl-dawards":{l:"Idoraviy mukofotlar",c:"Идоравий мукофотлар"},
+  "lbl-deputy":{l:"Deputatlik / saylanadigan organ a'zoligi",c:"Депутатлик / сайланадиган орган аъзолиги"},
+  "lbl-addr":{l:"Doimiy yashash manzili",c:"Доимий яшаш манзили"},
+  "btn-addwork":{l:"+ Yangi davrni qo'shish",c:"+ Янги даврни қўшиш"},
+  "btn-addrel":{l:"+ Qarindosh qo'shish",c:"+ Қариндош қўшиш"},
+  "btn-addlang":{l:"+ Til qo'shish",c:"+ Тил қўшиш"},
+  "ht-passport":{l:"Pasportdagi kabi to'liq yozing",c:"Паспортдаги каби тўлиқ ёзинг"},
+  "ht-bplace":{l:"Masalan: Andijon viloyati, Asaka tumani",c:"Масалан: Андижон вилояти, Асака тумани"},
+  "ht-uni":{l:"1982 y. Toshkent davlat universiteti (kunduzgi). Bir nechta bo'lsa, barchasini yozing.",c:"1982 й. Тошкент давлат университети (кундузги). Бир нечта бўлса, барчасини ёзинг."},
+  "ht-spec":{l:"Masalan: Yurist, Iqtisodchi (diplom bo'yicha)",c:"Масалан: Юрист, Иқтисодчи (диплом бўйича)"},
+  "ht-lang":{l:"Faqat yaxshi biladigan tillaringizni qo'shing",c:"Фақат яхши биладиган тилларингизни қўшинг"},
+  "ht-mil":{l:"Harbiy (maxsus) unvoni faqat harbiy va huquqni muhofaza qilish idoralari xodimlari uchun ko'rsatiladi.",c:"Ҳарбий (махсус) унвони фақат ҳарбий ва ҳуқуқни муҳофаза қилиш идоралари ходимлари учун кўрсатилади."},
+  "ht-awards":{l:"Masalan: 2005 y. «Mehnat shuhrati» ordeni.",c:"Масалан: 2005 й. «Меҳнат шуҳрати» ордени."},
+  "ht-dawards":{l:"Masalan: 2019 y. «Ma'naviyat fidoyisi» ko'krak nishoni.",c:"Масалан: 2019 й. «Маънавият фидойиси» кўкрак нишони."},
+  "ht-deputy":{l:"Masalan: 2020 y. - h.v. - Xalq deputatlari Toshkent viloyati Kengashi deputati.",c:"Масалан: 2020 й. - ҳ.в. - Халқ депутатлари Тошкент вилояти Кенгаши депутати."},
+  "ht-propiska":{l:"Propiska bo'yicha to'liq manzilni yozing",c:"Прописка бўйича тўлиқ манзилни ёзинг"},
+  "ht-work":{l:"Birinchi ish joyidan bugungi kungacha (mehnat daftarchasi bo'yicha)",c:"Биринчи иш жойидан бугунги кунгача (меҳнат дафтарчаси бўйича)"},
+  "ph-name":{l:"Familiya Ism Sharif",c:"Фамилия Исм Шариф"},
+  "ph-bplace":{l:"Viloyat, tuman",c:"Вилоят, туман"},
+  "ph-nat":{l:"Masalan: o'zbek, rus, tojik",c:"Масалан: ўзбек, рус, тожик"},
+  "ph-uni":{l:"1982 y. Toshkent davlat universiteti (kunduzgi)",c:"1982 й. Тошкент давлат университети (кундузги)"},
+  "ph-spec":{l:"Masalan: Yurist, Iqtisodchi",c:"Масалан: Юрист, Иқтисодчи"},
+  "ph-sdeg-fan":{l:"Masalan: Iqtisod fanlari",c:"Масалан: Иқтисод фанлари"},
+  "ph-yoq":{l:"yo'q",c:"йўқ"},
+  "ph-addr":{l:"Viloyat, tuman, ko'cha, uy",c:"Вилоят, туман, кўча, уй"},
+  "work-from":{l:"Boshlanish yili",c:"Бошланиш йили"},
+  "work-to":{l:"Tugash yili",c:"Тугаш йили"},
+  "work-hv":{l:"Hozirgi vaqtgacha",c:"Ҳозирги вақтгача"},
+  "work-desc":{l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
+  "work-ph":{l:"Masalan: Toshkent davlat universiteti, katta o'qituvchi",c:"Масалан: Тошкент давлат университети, катта ўқитувчи"},
+  "rel-deg":{l:"Qarindoshlik darajasi",c:"Қариндошлик даражаси"},
+  "rel-fio":{l:"F.I.Sh.",c:"Ф.И.Ш."},
+  "rel-fio-ph":{l:"Pasport asosida kiriting",c:"Паспорт асосида киритинг"},
+  "rel-byear":{l:"Tug'ilgan yili",c:"Туғилган йили"},
+  "rel-bplace":{l:"Tug'ilgan joyi",c:"Туғилган жойи"},
   "rel-bplace-ph":{l:"Toshkent viloyati, Qibray tumani",c:"Тошкент вилояти, Қибрай тумани"},
-  "rel-status":  {l:"Holati",            c:"Ҳолати"},
-  "rel-alive":   {l:"Hayot",             c:"Ҳаёт"},
-  "rel-dead":    {l:"Vafot etgan",       c:"Вафот этган"},
-  "rel-job":     {l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
+  "rel-status":{l:"Holati",c:"Ҳолати"},
+  "rel-alive":{l:"Hayot",c:"Ҳаёт"},
+  "rel-dead":{l:"Vafot etgan",c:"Вафот этган"},
+  "rel-job":{l:"Ish joyi va lavozimi",c:"Иш жойи ва лавозими"},
   "rel-job-dead":{l:"Oxirgi ish joyi (agar bo'lsa)",c:"Охирги иш жойи (агар бўлса)"},
-  "rel-addr":    {l:"Turar joyi",        c:"Турар жойи"},
-  "rel-addr-ph": {l:"Hozirgi yashash manzili",c:"Ҳозирги яшаш манзили"},
-  "rel-dyear":   {l:"Vafot etgan yili",  c:"Вафот этган йили"},
-  "modal-title": {l:"Qaysi alifboda yuklab olasiz?",c:"Қайси алифбода юклаб оласиз?"},
-  "modal-sub":   {l:"Hujjat tanlangan alifboda tayyorlanadi",c:"Ҳужжат танланган алифбода тайёрланади"},
+  "rel-addr":{l:"Turar joyi",c:"Турар жойи"},
+  "rel-addr-ph":{l:"Hozirgi yashash manzili",c:"Ҳозирги яшаш манзили"},
+  "rel-dyear":{l:"Vafot etgan yili",c:"Вафот этган йили"},
+  "modal-title":{l:"Qaysi alifboda yuklab olasiz?",c:"Қайси алифбода юклаб оласиз?"},
+  "modal-sub":{l:"Hujjat tanlangan alifboda tayyorlanadi",c:"Ҳужжат танланган алифбода тайёрланади"},
 };
 
-/* Select options tarjimasi — value o'zgarmaydi, faqat ko'rinadigan matn */
 var SELECT_OPTS = {
   'f_party': {
     l:["Yo'q","O'zbekiston Xalq demokratik partiyasi a'zosi","O'zbekiston Liberal demokratik partiyasi a'zosi","O'zbekiston Milliy tiklanish demokratik partiyasi a'zosi","O'zbekiston Adolat sotsial demokratik partiyasi a'zosi","O'zbekiston ekologik harakati a'zosi"],
@@ -531,8 +473,8 @@ var SELECT_OPTS = {
     c:["— Танланг —","Олий","Тугалланмаган олий","Ўрта махсус","Ўрта","Таянч ўрта"]
   },
   'f_sdeg': {
-    l:["Yo'q","Falsafa doktori (PhD) / Fan nomzodi","Fan doktori (DSc)"],
-    c:["Йўқ","Фалсафа доктори (PhD) / Фан номзоди","Фан доктори (DSc)"]
+    l:["Yo'q","Falsafa doktori","Fan doktori"],
+    c:["Йўқ","Фалсафа доктори","Фан доктори"]
   },
   'f_stit': {
     l:["Yo'q","Professor","Dotsent","Katta ilmiy xodim"],
@@ -542,211 +484,56 @@ var SELECT_OPTS = {
 
 function t(key){return T[key]?(currentLang==='cyr'?T[key].c:T[key].l):key;}
 
-function setLang(btn,lang){
-  btn.parentNode.querySelectorAll("button").forEach(function(b){b.classList.remove("on")});
-  btn.classList.add("on");
-  currentLang=lang||'lat';
-  applyLang();
-}
+function setLang(btn,lang){btn.parentNode.querySelectorAll("button").forEach(function(b){b.classList.remove("on")});btn.classList.add("on");currentLang=lang||'lat';applyLang();}
 
 function applyLang(){
   var lang=currentLang;
-  /* 1. data-i18n — textContent */
-  document.querySelectorAll("[data-i18n]").forEach(function(el){
-    var key=el.getAttribute("data-i18n");
-    if(T[key])el.textContent=lang==='cyr'?T[key].c:T[key].l;
-  });
-  /* 2. data-i18n-ph — placeholder */
-  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){
-    var key=el.getAttribute("data-i18n-ph");
-    if(T[key])el.placeholder=lang==='cyr'?T[key].c:T[key].l;
-  });
-  /* 3. Select options matni */
+  document.querySelectorAll("[data-i18n]").forEach(function(el){var key=el.getAttribute("data-i18n");if(T[key])el.textContent=lang==='cyr'?T[key].c:T[key].l;});
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){var key=el.getAttribute("data-i18n-ph");if(T[key])el.placeholder=lang==='cyr'?T[key].c:T[key].l;});
   translateSelects();
-  /* 4. Footer */
+  /* BUG 4 FIX: Millati default value tarjimasi */
+  var natEl=document.getElementById("f_nat");
+  if(natEl){
+    if(lang==='cyr' && natEl.value==="o'zbek") natEl.value="\u045e\u0437\u0431\u0435\u043a";
+    if(lang==='lat' && natEl.value==="\u045e\u0437\u0431\u0435\u043a") natEl.value="o'zbek";
+  }
   var fn=document.getElementById("footNext");
   if(fn&&!fn.classList.contains("submit"))fn.textContent=lang==='cyr'?"Давом этиш →":"Davom etish →";
   if(fn&&fn.classList.contains("submit"))fn.textContent=lang==='cyr'?"📤 Юбориш":"📤 Yuborish";
 }
 
-function translateSelects(){
-  Object.keys(SELECT_OPTS).forEach(function(id){
-    var sel=document.getElementById(id);
-    if(!sel)return;
-    var arr=currentLang==='cyr'?SELECT_OPTS[id].c:SELECT_OPTS[id].l;
-    var idx=sel.selectedIndex;
-    sel.querySelectorAll('option').forEach(function(opt,i){if(arr[i])opt.textContent=arr[i];});
-    sel.selectedIndex=idx;
-  });
-}
+function translateSelects(){Object.keys(SELECT_OPTS).forEach(function(id){var sel=document.getElementById(id);if(!sel)return;var arr=currentLang==='cyr'?SELECT_OPTS[id].c:SELECT_OPTS[id].l;var idx=sel.selectedIndex;sel.querySelectorAll('option').forEach(function(opt,i){if(arr[i])opt.textContent=arr[i];});sel.selectedIndex=idx;});}
 
-/* ═══ PHOTO ═══ */
-document.getElementById("f_photo").onchange=function(e){
-  var f=e.target.files[0];
-  if(!f)return;
-  if(f.size>MAX_PHOTO){toast("Rasm 5MB dan katta bo'lmasligi kerak","err");e.target.value="";return;}
-  var r=new FileReader();
-  r.onload=function(ev){
-    photoBase64=ev.target.result;
-    var thumb=document.getElementById("pThumb");
-    thumb.innerHTML='<img src="'+ev.target.result+'">';
-    thumb.classList.add("has");
-  };
-  r.readAsDataURL(f);
-};
+document.getElementById("f_photo").onchange=function(e){var f=e.target.files[0];if(!f)return;if(f.size>MAX_PHOTO){toast("Rasm 5MB dan katta bo'lmasligi kerak","err");e.target.value="";return;}var r=new FileReader();r.onload=function(ev){photoBase64=ev.target.result;var thumb=document.getElementById("pThumb");thumb.innerHTML='<img src="'+ev.target.result+'">';thumb.classList.add("has");};r.readAsDataURL(f);};
 
-/* ═══ PHONE ═══ */
-function fmtPhone(el){
-  var raw=el.value.replace(/\D/g,"");
-  if(raw.length>9)raw=raw.substring(0,9);
-  if(!raw.length){el.value="";return;}
-  if(raw.length>=7)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5,7)+" "+raw.substring(7);
-  else if(raw.length>=5)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5);
-  else if(raw.length>=2)el.value=raw.substring(0,2)+" "+raw.substring(2);
-  else el.value=raw;
-}
+function fmtPhone(el){var raw=el.value.replace(/\D/g,"");if(raw.length>9)raw=raw.substring(0,9);if(!raw.length){el.value="";return;}if(raw.length>=7)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5,7)+" "+raw.substring(7);else if(raw.length>=5)el.value=raw.substring(0,2)+" "+raw.substring(2,5)+" "+raw.substring(5);else if(raw.length>=2)el.value=raw.substring(0,2)+" "+raw.substring(2);else el.value=raw;}
 function limitPhone(el,e){if(e&&e.inputType&&e.inputType.indexOf("delete")!==-1)return;fmtPhone(el);}
 
-/* ═══ LANGUAGES ═══ */
 var LANGS_LAT=["ingliz tili","rus tili","nemis tili","fransuz tili","arab tili","turk tili","xitoy tili","koreys tili","ispan tili","yapon tili"];
 var LANGS_CYR=["инглиз тили","рус тили","немис тили","франсуз тили","араб тили","турк тили","хитой тили","корейс тили","испан тили","япон тили"];
-function addLang(){
-  var d=document.createElement("div");d.className="dli";
-  var arr=currentLang==='cyr'?LANGS_CYR:LANGS_LAT;
-  var boshqa=currentLang==='cyr'?"Бошқа тил":"Boshqa til";
-  var opts='<option value="boshqa">'+boshqa+'</option>'+arr.map(function(l,i){return'<option value="'+LANGS_LAT[i]+'">'+l+'</option>';}).join("");
-  d.innerHTML='<button class="dli-x" type="button" onclick="this.parentNode.remove()">✕</button>'+
-    '<select class="fi" onchange="toggleLangInput(this)">'+opts+'</select>'+
-    '<input class="fi" type="text" placeholder="'+(currentLang==='cyr'?"Тилни ёзинг...":"Tilni yozing...")+'" maxlength="100" style="margin-top:6px;display:none">';
-  document.getElementById("langList").appendChild(d);
-}
-function toggleLangInput(sel){
-  var inp=sel.parentNode.querySelector("input");
-  if(sel.value==="boshqa"){inp.style.display="block";inp.focus();}
-  else{inp.style.display="none";inp.value="";}
-}
-function getSelectedLangs(){
-  return[].slice.call(document.querySelectorAll("#langList .dli")).map(function(d){
-    var sel=d.querySelector("select");var inp=d.querySelector("input");
-    if(sel.value==="boshqa")return(inp.value||"").trim();
-    return sel.value;
-  }).filter(function(v){return v;});
-}
+function addLang(){var d=document.createElement("div");d.className="dli";var arr=currentLang==='cyr'?LANGS_CYR:LANGS_LAT;var boshqa=currentLang==='cyr'?"Бошқа тил":"Boshqa til";var opts='<option value="boshqa">'+boshqa+'</option>'+arr.map(function(l,i){return'<option value="'+LANGS_LAT[i]+'">'+l+'</option>';}).join("");d.innerHTML='<button class="dli-x" type="button" onclick="this.parentNode.remove()">✕</button>'+'<select class="fi" onchange="toggleLangInput(this)">'+opts+'</select>'+'<input class="fi" type="text" placeholder="'+(currentLang==='cyr'?"Тилни ёзинг...":"Tilni yozing...")+'" maxlength="100" style="margin-top:6px;display:none">';document.getElementById("langList").appendChild(d);}
+function toggleLangInput(sel){var inp=sel.parentNode.querySelector("input");if(sel.value==="boshqa"){inp.style.display="block";inp.focus();}else{inp.style.display="none";inp.value="";}}
+function getSelectedLangs(){return[].slice.call(document.querySelectorAll("#langList .dli")).map(function(d){var sel=d.querySelector("select");var inp=d.querySelector("input");if(sel.value==="boshqa")return(inp.value||"").trim();return sel.value;}).filter(function(v){return v;});}
 
-/* ═══ WORK ═══ */
-function addWorkBlock(){
-  var container=document.getElementById("workBlocks");
-  var idx=container.querySelectorAll(".work-block").length;
-  var d=document.createElement("div");d.className="dli work-block";d.style.paddingTop="10px";
-  var delBtn=idx>0?'<button class="dli-x" type="button" onclick="delWorkBlock(this)">&#x2715;</button>':'';
-  d.innerHTML=delBtn+
-    '<div class="row2">'+
-      '<div><label class="fl" data-i18n="work-from">'+t("work-from")+'</label>'+
-      '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-from")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()"></div>'+
-      '<div><label class="fl" data-i18n="work-to">'+t("work-to")+'</label>'+
-      '<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-to")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()">'+
-      '<label style="display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--s7);cursor:pointer">'+
-      '<input type="checkbox" onchange="toggleHv(this)"> <span data-i18n="work-hv">'+t("work-hv")+'</span></label></div>'+
-    '</div>'+
-    '<div class="fg" style="margin-top:8px"><label class="fl" data-i18n="work-desc">'+t("work-desc")+'</label>'+
-    '<textarea class="fi" placeholder="'+t("work-ph")+'" maxlength="500" rows="2" oninput="collectWorks()"></textarea></div>';
-  container.appendChild(d);collectWorks();
-}
+function addWorkBlock(){var container=document.getElementById("workBlocks");var idx=container.querySelectorAll(".work-block").length;var d=document.createElement("div");d.className="dli work-block";d.style.paddingTop="10px";var delBtn=idx>0?'<button class="dli-x" type="button" onclick="delWorkBlock(this)">&#x2715;</button>':'';d.innerHTML=delBtn+'<div class="row2">'+'<div><label class="fl" data-i18n="work-from">'+t("work-from")+'</label>'+'<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-from")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()"></div>'+'<div><label class="fl" data-i18n="work-to">'+t("work-to")+'</label>'+'<input class="fi" type="text" inputmode="numeric" placeholder="'+t("work-to")+'" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4);collectWorks()">'+'<label style="display:flex;align-items:center;gap:5px;margin-top:5px;font-size:12px;color:var(--s7);cursor:pointer">'+'<input type="checkbox" onchange="toggleHv(this)"> <span data-i18n="work-hv">'+t("work-hv")+'</span></label></div>'+'</div>'+'<div class="fg" style="margin-top:8px"><label class="fl" data-i18n="work-desc">'+t("work-desc")+'</label>'+'<textarea class="fi" placeholder="'+t("work-ph")+'" maxlength="500" rows="2" oninput="collectWorks()"></textarea></div>';container.appendChild(d);collectWorks();}
 function delWorkBlock(btn){btn.closest(".work-block").remove();collectWorks();}
-function toggleHv(cb){
-  var inputs=cb.closest(".row2").querySelectorAll("input[type=text]");
-  var toField=inputs[1];
-  if(cb.checked){toField.value="";toField.disabled=true;toField.placeholder="h.v.";}
-  else{toField.disabled=false;toField.placeholder=t("work-to");}
-  collectWorks();
-}
-function collectWorks(){
-  savedWorks=[];
-  document.querySelectorAll("#workBlocks .work-block").forEach(function(d){
-    var inputs=d.querySelectorAll("input[type=text]");
-    var cb=d.querySelector("input[type=checkbox]");
-    var ta=d.querySelector("textarea");
-    var from=(inputs[0]?inputs[0].value.trim():"");
-    var to=cb&&cb.checked?"h.v.":(inputs[1]?inputs[1].value.trim():"");
-    var desc=(ta?ta.value.trim():"");
-    savedWorks.push({from:from,to:to,org:desc,pos:""});
-  });
-}
+function toggleHv(cb){var inputs=cb.closest(".row2").querySelectorAll("input[type=text]");var toField=inputs[1];if(cb.checked){toField.value="";toField.disabled=true;toField.placeholder="h.v.";}else{toField.disabled=false;toField.placeholder=t("work-to");}collectWorks();}
+function collectWorks(){savedWorks=[];document.querySelectorAll("#workBlocks .work-block").forEach(function(d){var inputs=d.querySelectorAll("input[type=text]");var cb=d.querySelector("input[type=checkbox]");var ta=d.querySelector("textarea");var from=(inputs[0]?inputs[0].value.trim():"");var to=cb&&cb.checked?"h.v.":(inputs[1]?inputs[1].value.trim():"");var desc=(ta?ta.value.trim():"");savedWorks.push({from:from,to:to,org:desc,pos:""});});}
 
-/* ═══ RELATIVES ═══ */
 var RELS_LAT=["Otasi","Onasi","Turmush o'rtog'i","O'g'li","Qizi","Akasi","Ukasi","Opasi","Singlisi","Qaynotasi","Qaynonasi"];
 var RELS_CYR=["Отаси","Онаси","Турмуш ўртоғи","Ўғли","Қизи","Акаси","Укаси","Опаси","Синглиси","Қайнотаси","Қайнонаси"];
-
-function addRelCard(){
-  var list=document.getElementById("relList");
-  var n=list.querySelectorAll(".rel-card").length+1;
-  var arr=currentLang==='cyr'?RELS_CYR:RELS_LAT;
-  var relOpts=arr.map(function(r,i){return'<option value="'+RELS_LAT[i]+'">'+r+'</option>';}).join("");
-  var card=document.createElement("div");
-  card.className="rel-card";
-  card.style.cssText="background:var(--s0);border:1.5px solid var(--s2);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;animation:fadeUp .2s ease";
-  card.innerHTML=
-    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+
-    '<span style="font-size:12px;font-weight:700;color:var(--pri);background:var(--pri-l);padding:3px 10px;border-radius:12px">'+t("rel-deg")+' #'+n+'</span>'+
-    '<button type="button" onclick="delRelCard(this)" style="width:24px;height:24px;border-radius:50%;border:none;background:var(--err-l);color:var(--err);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer">&#x2715;</button></div>'+
-    '<div class="fg" style="margin-top:0"><label class="fl" data-i18n="rel-deg">'+t("rel-deg")+'</label>'+
-    '<select class="fi" data-rf="rel">'+relOpts+'</select></div>'+
-    '<div class="fg"><label class="fl" data-i18n="rel-fio">'+t("rel-fio")+'</label>'+
-    '<input class="fi" type="text" data-rf="fio" placeholder="'+t("rel-fio-ph")+'" maxlength="200"></div>'+
-    '<div class="row2">'+
-    '<div class="fg"><label class="fl" data-i18n="rel-byear">'+t("rel-byear")+'</label>'+
-    '<input class="fi" type="text" inputmode="numeric" data-rf="byear" placeholder="1960" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>'+
-    '<div class="fg"><label class="fl" data-i18n="rel-bplace">'+t("rel-bplace")+'</label>'+
-    '<input class="fi" type="text" data-rf="bplace" placeholder="'+t("rel-bplace-ph")+'" maxlength="200"></div></div>'+
-    '<div class="fg"><label class="fl" data-i18n="rel-status">'+t("rel-status")+'</label>'+
-    '<div class="status-row" style="margin-top:4px">'+
-    '<button type="button" class="status-badge on" onclick="setRelStatus(this,\'alive\')">&#128154; <span data-i18n="rel-alive">'+t("rel-alive")+'</span></button>'+
-    '<button type="button" class="status-badge" onclick="setRelStatus(this,\'dead\')">&#128420; <span data-i18n="rel-dead">'+t("rel-dead")+'</span></button>'+
-    '</div></div>'+
-    '<div class="fg" data-job-wrap><label class="fl" data-job-label data-i18n="rel-job">'+t("rel-job")+'</label>'+
-    '<textarea class="fi" data-rf="job" rows="2" placeholder="'+t("work-ph")+'" maxlength="500"></textarea></div>'+
-    '<div class="fg" data-addr-wrap><label class="fl" data-i18n="rel-addr">'+t("rel-addr")+'</label>'+
-    '<input class="fi" type="text" data-rf="addr" placeholder="'+t("rel-addr-ph")+'" maxlength="300"></div>'+
-    '<div class="fg" data-dyear-wrap style="display:none"><label class="fl" data-i18n="rel-dyear">'+t("rel-dyear")+'</label>'+
-    '<input class="fi" type="text" inputmode="numeric" data-rf="dyear" placeholder="2010" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>';
-  list.appendChild(card);
-}
+function addRelCard(){var list=document.getElementById("relList");var n=list.querySelectorAll(".rel-card").length+1;var arr=currentLang==='cyr'?RELS_CYR:RELS_LAT;var relOpts=arr.map(function(r,i){return'<option value="'+RELS_LAT[i]+'">'+r+'</option>';}).join("");var card=document.createElement("div");card.className="rel-card";card.style.cssText="background:var(--s0);border:1.5px solid var(--s2);border-radius:var(--r);padding:14px;margin-bottom:10px;position:relative;animation:fadeUp .2s ease";card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'+'<span style="font-size:12px;font-weight:700;color:var(--pri);background:var(--pri-l);padding:3px 10px;border-radius:12px">'+t("rel-deg")+' #'+n+'</span>'+'<button type="button" onclick="delRelCard(this)" style="width:24px;height:24px;border-radius:50%;border:none;background:var(--err-l);color:var(--err);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer">&#x2715;</button></div>'+'<div class="fg" style="margin-top:0"><label class="fl" data-i18n="rel-deg">'+t("rel-deg")+'</label>'+'<select class="fi" data-rf="rel">'+relOpts+'</select></div>'+'<div class="fg"><label class="fl" data-i18n="rel-fio">'+t("rel-fio")+'</label>'+'<input class="fi" type="text" data-rf="fio" placeholder="'+t("rel-fio-ph")+'" maxlength="200"></div>'+'<div class="row2">'+'<div class="fg"><label class="fl" data-i18n="rel-byear">'+t("rel-byear")+'</label>'+'<input class="fi" type="text" inputmode="numeric" data-rf="byear" placeholder="1960" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>'+'<div class="fg"><label class="fl" data-i18n="rel-bplace">'+t("rel-bplace")+'</label>'+'<input class="fi" type="text" data-rf="bplace" placeholder="'+t("rel-bplace-ph")+'" maxlength="200"></div></div>'+'<div class="fg"><label class="fl" data-i18n="rel-status">'+t("rel-status")+'</label>'+'<div class="status-row" style="margin-top:4px">'+'<button type="button" class="status-badge on" onclick="setRelStatus(this,\'alive\')">&#128154; <span data-i18n="rel-alive">'+t("rel-alive")+'</span></button>'+'<button type="button" class="status-badge" onclick="setRelStatus(this,\'dead\')">&#128420; <span data-i18n="rel-dead">'+t("rel-dead")+'</span></button>'+'</div></div>'+'<div class="fg" data-job-wrap><label class="fl" data-job-label data-i18n="rel-job">'+t("rel-job")+'</label>'+'<textarea class="fi" data-rf="job" rows="2" placeholder="'+t("work-ph")+'" maxlength="500"></textarea></div>'+'<div class="fg" data-addr-wrap><label class="fl" data-i18n="rel-addr">'+t("rel-addr")+'</label>'+'<input class="fi" type="text" data-rf="addr" placeholder="'+t("rel-addr-ph")+'" maxlength="300"></div>'+'<div class="fg" data-dyear-wrap style="display:none"><label class="fl" data-i18n="rel-dyear">'+t("rel-dyear")+'</label>'+'<input class="fi" type="text" inputmode="numeric" data-rf="dyear" placeholder="2010" maxlength="4" oninput="this.value=this.value.replace(/\\D/g,\'\').substring(0,4)"></div>';list.appendChild(card);}
 function delRelCard(btn){btn.closest(".rel-card").remove();}
-function setRelStatus(btn,status){
-  var card=btn.closest(".rel-card");
-  card.querySelectorAll(".status-row .status-badge").forEach(function(b){b.classList.remove("on")});
-  btn.classList.add("on");
-  var jobLabel=card.querySelector("[data-job-label]");
-  if(jobLabel){var key=status==="dead"?"rel-job-dead":"rel-job";jobLabel.setAttribute("data-i18n",key);jobLabel.textContent=t(key);}
-  var addrWrap=card.querySelector("[data-addr-wrap]");
-  if(addrWrap)addrWrap.style.display=status==="alive"?"block":"none";
-  var dyearWrap=card.querySelector("[data-dyear-wrap]");
-  if(dyearWrap)dyearWrap.style.display=status==="dead"?"block":"none";
-}
+function setRelStatus(btn,status){var card=btn.closest(".rel-card");card.querySelectorAll(".status-row .status-badge").forEach(function(b){b.classList.remove("on")});btn.classList.add("on");var jobLabel=card.querySelector("[data-job-label]");if(jobLabel){var key=status==="dead"?"rel-job-dead":"rel-job";jobLabel.setAttribute("data-i18n",key);jobLabel.textContent=t(key);}var addrWrap=card.querySelector("[data-addr-wrap]");if(addrWrap)addrWrap.style.display=status==="alive"?"block":"none";var dyearWrap=card.querySelector("[data-dyear-wrap]");if(dyearWrap)dyearWrap.style.display=status==="dead"?"block":"none";}
 
-/* ═══ ILMIY DARAJA ═══ */
-function toggleSdegInput(){
-  var val=document.getElementById("f_sdeg").value;
-  document.getElementById("sdegFanWrap").style.display=(val!=="yo'q")?"block":"none";
-  if(val==="yo'q")document.getElementById("f_sdeg_fan").value="";
-}
+function toggleSdegInput(){var val=document.getElementById("f_sdeg").value;document.getElementById("sdegFanWrap").style.display=(val!=="yo'q")?"block":"none";if(val==="yo'q")document.getElementById("f_sdeg_fan").value="";}
 
-/* ═══ TA'LIM HINT ═══ */
 var EDU_HINTS={
   l:{"Oliy":"Bakalavriat yoki magistraturani to'liq tamomlaganlar uchun.","Tugallanmagan oliy":"OTMda o'qishni davom ettirayotgan yoki oliy ta'limni yakunlamaganlar uchun.","O'rta maxsus":"Kollej, akademik litsey yoki texnikumni tamomlaganlar uchun.","O'rta":"Umumta'lim maktabining 11-sinfini tugatganlar uchun.","Tayanch o'rta":"Umumta'lim maktabining 9-sinfini tugatganlar uchun."},
   c:{"Oliy":"Бакалавриат ёки магистратурани тўлиқ тамомлаганлар учун.","Tugallanmagan oliy":"ОТМда ўқишни давом эттираётган ёки олий таълимни якунламаганлар учун.","O'rta maxsus":"Коллеж, академик лицей ёки техникумни тамомлаганлар учун.","O'rta":"Умумтаълим мактабининг 11-синфини тугатганлар учун.","Tayanch o'rta":"Умумтаълим мактабининг 9-синфини тугатганлар учун."}
 };
-function showEduHint(){
-  var val=document.getElementById("f_edu").value;
-  var hint=document.getElementById("eduHint");
-  var txt=document.getElementById("eduHintText");
-  if(val&&EDU_HINTS.l[val]){
-    txt.textContent=currentLang==='cyr'?EDU_HINTS.c[val]:EDU_HINTS.l[val];
-    hint.style.display="flex";
-  }else{hint.style.display="none";}
-}
+function showEduHint(){var val=document.getElementById("f_edu").value;var hint=document.getElementById("eduHint");var txt=document.getElementById("eduHintText");if(val&&EDU_HINTS.l[val]){txt.textContent=currentLang==='cyr'?EDU_HINTS.c[val]:EDU_HINTS.l[val];hint.style.display="flex";}else{hint.style.display="none";}}
 
-/* ═══ SUBMIT ═══ */
 async function submitForm(script){
   script=script||'lat';
   if(isSubmitting)return;
@@ -763,7 +550,7 @@ async function submitForm(script){
     var isDead=d.querySelector("[data-dyear-wrap]")&&d.querySelector("[data-dyear-wrap]").style.display!=="none";
     var job=(d.querySelector('[data-rf="job"]')||{}).value||"";
     var dyear=(d.querySelector('[data-rf="dyear"]')||{}).value||"";
-    var formattedJob=isDead?(dyear?dyear+" йил вафот этган"+(job?" ("+job+")":""):""):(job);
+    var formattedJob=isDead?(dyear?dyear+" yil vafot etgan"+(job?" ("+job+")":""):""):(job);
     var relVal=(d.querySelector('[data-rf="rel"]')||{}).value||"";
     return{rel:relVal,fio:(d.querySelector('[data-rf="fio"]')||{}).value||"",byear:(d.querySelector('[data-rf="byear"]')||{}).value||"",bplace:(d.querySelector('[data-rf="bplace"]')||{}).value||"",job:formattedJob,addr:isDead?"":(d.querySelector('[data-rf="addr"]')||{}).value||"",_order:REL_ORDER[relVal]||99};
   });
@@ -771,13 +558,24 @@ async function submitForm(script){
 
   var phoneNum="+998"+gv("f_phone").replace(/\s/g,"");
   var lastWork=savedWorks.length>0?savedWorks[savedWorks.length-1]:null;
+
+  /* BUG 3 FIX: Ilmiy darajani "fan_nomi bo'yicha daraja" formatida yig'ish */
+  var sciDegree=(function(){
+    var deg=document.getElementById("f_sdeg").value;
+    var fan=gv("f_sdeg_fan");
+    if(deg==="yo'q")return "yo'q";
+    if(fan)return fan+" bo'yicha "+deg.toLowerCase();
+    return deg;
+  })();
+
   var payload={
     photo_base64:photoBase64,fullname:gv("f_name"),birthdate:gv("f_bdate"),birthplace:gv("f_bplace"),
     nationality:gv("f_nat")||"o'zbek",party:document.getElementById("f_party").value,
     job_year:lastWork?(lastWork.from+(lastWork.to?"-"+lastWork.to:"")):"",
     current_job:lastWork?(lastWork.org+(lastWork.pos?" "+lastWork.pos:"")):"",
     edu_level:document.getElementById("f_edu").value,university:gv("f_uni"),speciality:gv("f_spec"),
-    science_degree:document.getElementById("f_sdeg").value,science_title:document.getElementById("f_stit").value,
+    science_degree:sciDegree,
+    science_title:document.getElementById("f_stit").value,
     military_rank:gv("f_mil")||"yo'q",langs:langs,
     awards:gv("f_awards")||"yo'q",departmental_awards:gv("f_dept_awards")||"yo'q",
     deputy:gv("f_deputy")||"yo'q",address:addr,
@@ -787,44 +585,24 @@ async function submitForm(script){
   };
 
   try{
-    var c=new AbortController();
-    var tmr=setTimeout(function(){c.abort()},60000);
+    var c=new AbortController();var tmr=setTimeout(function(){c.abort()},60000);
     var res=await fetch("/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tg_id:TG_ID,initData:initData,script:script,data:payload}),signal:c.signal});
-    clearTimeout(tmr);
-    var txt=await res.text(),result;
+    clearTimeout(tmr);var txt=await res.text(),result;
     try{result=JSON.parse(txt)}catch(e){throw new Error("Noto'g'ri javob")}
     if(result.ok){
       document.body.innerHTML='<div class="suc"><div class="suc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><h2>Yuborildi!</h2><p>Telegram ga qayting —<br>hujjatingiz tayyor bo\'ladi.</p></div>';
       try{sessionStorage.removeItem("obj_draft")}catch(e){}
-    }else{
-      toast(result.error||"Xatolik yuz berdi","err");
-      btn.textContent="📤 Yuborish";btn.disabled=false;isSubmitting=false;
-    }
+    }else{toast(result.error||"Xatolik yuz berdi","err");btn.textContent="📤 Yuborish";btn.disabled=false;isSubmitting=false;}
   }catch(e){
     var msg=e.name==="AbortError"?"So'rov vaqti tugadi (60s). Qayta urining.":e.message;
     toast(msg,"err");btn.textContent="📤 Yuborish";btn.disabled=false;isSubmitting=false;
   }
 }
 
-/* ═══ DRAFT ═══ */
-function saveDraft(){
-  try{sessionStorage.setItem("obj_draft",JSON.stringify({name:gv("f_name"),phone:gv("f_phone"),bdate:gv("f_bdate"),bplace:gv("f_bplace"),nat:gv("f_nat"),works:savedWorks}));}catch(e){}
-}
-function loadDraft(){
-  try{
-    var raw=sessionStorage.getItem("obj_draft");if(!raw)return;
-    var d=JSON.parse(raw);
-    if(d.name)document.getElementById("f_name").value=d.name;
-    if(d.phone)document.getElementById("f_phone").value=d.phone;
-    if(d.bdate)document.getElementById("f_bdate").value=d.bdate;
-    if(d.bplace)document.getElementById("f_bplace").value=d.bplace;
-    if(d.nat)document.getElementById("f_nat").value=d.nat;
-    toast("Oldingi qoralama tiklandi","info");
-  }catch(e){}
-}
+function saveDraft(){try{sessionStorage.setItem("obj_draft",JSON.stringify({name:gv("f_name"),phone:gv("f_phone"),bdate:gv("f_bdate"),bplace:gv("f_bplace"),nat:gv("f_nat"),works:savedWorks}));}catch(e){}}
+function loadDraft(){try{var raw=sessionStorage.getItem("obj_draft");if(!raw)return;var d=JSON.parse(raw);if(d.name)document.getElementById("f_name").value=d.name;if(d.phone)document.getElementById("f_phone").value=d.phone;if(d.bdate)document.getElementById("f_bdate").value=d.bdate;if(d.bplace)document.getElementById("f_bplace").value=d.bplace;if(d.nat)document.getElementById("f_nat").value=d.nat;toast("Oldingi qoralama tiklandi","info");}catch(e){}}
 setInterval(saveDraft,10000);
 
-/* ═══ INIT ═══ */
 addWorkBlock();
 updateFooter();
 loadDraft();
