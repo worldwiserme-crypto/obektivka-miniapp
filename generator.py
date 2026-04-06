@@ -1,15 +1,25 @@
 import base64, io, re
 from docx import Document
-from docx.shared import Pt, Cm, Emu
+from docx.shared import Pt, Cm, Emu, Twips
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml.ns import qn, nsmap
+from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from lxml import etree
 
 F   = "Times New Roman"
 FS  = Pt(11)
 F14 = Pt(14)
+F12 = Pt(12)
+
+# Rasmiy standartdan olingan tab stop pozitsiyasi: 4228 twips = 7.46 cm
+TAB_POS_TWIPS = 4228
+# Mehnat faoliyati: hanging indent = 942340 EMU ≈ 2.62 cm
+WORK_INDENT = Cm(2.62)
+# Label qatorlar orasidagi masofa: 101600 EMU = 8pt
+LABEL_SPACE = Pt(8)
+# Mehnat faoliyati qatorlari orasidagi masofa: 50800 EMU = 4pt
+WORK_SPACE = Pt(4)
 
 
 # ──────────────────────────────────────────────────────────────
@@ -129,17 +139,21 @@ def apply_script(data: dict, script: str) -> dict:
 # ──────────────────────────────────────────────────────────────
 #  FONT / PARAGRAF YORDAMCHILARI
 # ──────────────────────────────────────────────────────────────
-def _font(run, bold=False, size=None):
-    run.font.name = F
-    r_pr = run._element.get_or_add_rPr()
+def _set_rfonts(r_pr, name=F):
+    """Run ning barcha font xossalarini to'g'ri o'rnatish"""
     rFonts = r_pr.find(qn('w:rFonts'))
     if rFonts is None:
         rFonts = OxmlElement('w:rFonts')
-        r_pr.append(rFonts)
-    rFonts.set(qn('w:ascii'), F)
-    rFonts.set(qn('w:hAnsi'), F)
-    rFonts.set(qn('w:cs'), F)
-    rFonts.set(qn('w:eastAsia'), F)
+        r_pr.insert(0, rFonts)
+    rFonts.set(qn('w:ascii'), name)
+    rFonts.set(qn('w:hAnsi'), name)
+    rFonts.set(qn('w:cs'), name)
+    rFonts.set(qn('w:eastAsia'), name)
+
+
+def _font(run, bold=False, size=None):
+    run.font.name = F
+    _set_rfonts(run._element.get_or_add_rPr())
     run.font.size = size or FS
     run.font.bold = bold
 
@@ -150,36 +164,31 @@ def _run(p, text, bold=False, size=None):
     return r
 
 
-def _para(doc, text="", bold=False, size=None,
-          align=WD_ALIGN_PARAGRAPH.LEFT, before=0, after=0, spacing=None):
-    p = doc.add_paragraph()
-    p.alignment = align
-    p.paragraph_format.space_before = Pt(before)
-    p.paragraph_format.space_after  = Pt(after)
-    if spacing:
-        p.paragraph_format.line_spacing = Pt(spacing)
-    if text:
-        _run(p, text, bold=bold, size=size)
-    return p
+def _add_tab_stop(p, pos_twips):
+    """Paragrafga tab stop qo'shish (twips da)"""
+    pPr = p._element.get_or_add_pPr()
+    tabs_el = pPr.find(qn('w:tabs'))
+    if tabs_el is None:
+        tabs_el = OxmlElement('w:tabs')
+        pPr.append(tabs_el)
+    tab = OxmlElement('w:tab')
+    tab.set(qn('w:val'), 'left')
+    tab.set(qn('w:pos'), str(pos_twips))
+    tabs_el.append(tab)
 
 
 # ──────────────────────────────────────────────────────────────
-#  FLOATING RASM (ANCHOR) — namunadagidek
+#  FLOATING RASM (ANCHOR) — rasmiy standartga mos
 # ──────────────────────────────────────────────────────────────
-def add_floating_image(paragraph, image_path_or_bytes, width_cm=3.2, height_cm=4.0):
+def add_floating_image(paragraph, image_bytes, width_cm=3.0, height_cm=4.0):
     """
-    Rasm 'anchor' (floating) tarzda yuqori-o'ng burchakka joylashtiriladi,
-    matn atrofida oqib o'tadi (wrapSquare). Bu aynan namunadagi usul.
+    Rasm yuqori-o'ng burchakda anchor tarzda joylashtiriladi.
+    Rasmiy standart: 3×4 sm, wrapSquare, margin-right=margin-top ga yaqin.
     """
-    # 1) Avval rasmni oddiy qilib qo'shib, rId ni olamiz
     run = paragraph.add_run()
-    if isinstance(image_path_or_bytes, bytes):
-        img_stream = io.BytesIO(image_path_or_bytes)
-    else:
-        img_stream = image_path_or_bytes
+    img_stream = io.BytesIO(image_bytes)
     inline_shape = run.add_picture(img_stream, width=Cm(width_cm), height=Cm(height_cm))
 
-    # 2) inline → anchor ga o'tkazamiz
     inline = run._element.xpath('.//wp:inline')
     if not inline:
         return inline_shape
@@ -188,18 +197,18 @@ def add_floating_image(paragraph, image_path_or_bytes, width_cm=3.2, height_cm=4
     cx = str(int(Cm(width_cm)))
     cy = str(int(Cm(height_cm)))
 
-    # rId ni inline dan topib olish (python-docx BaseOxmlElement
-    # o'z nsmap ni avtomatik qo'llaydi — qo'shimcha namespaces argumenti kerak emas)
     blip_list = inline.xpath('.//a:blip')
     r_embed = ""
     if blip_list:
         r_embed = blip_list[0].get(qn('r:embed')) or ""
 
+    # Rasmiy namunadan: rasm sahifaning yuqori-o'ng burchagida,
+    # margin ga nisbatan right-aligned, top-aligned
     anchor_xml = f'''<wp:anchor xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
     xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"
     xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-    behindDoc="0" distT="0" distB="0" distL="114300" distR="114300"
+    behindDoc="0" distT="0" distB="0" distL="114300" distR="0"
     simplePos="0" locked="0" layoutInCell="1" allowOverlap="1" relativeHeight="2">
   <wp:simplePos x="0" y="0"/>
   <wp:positionH relativeFrom="margin">
@@ -211,15 +220,15 @@ def add_floating_image(paragraph, image_path_or_bytes, width_cm=3.2, height_cm=4
   <wp:extent cx="{cx}" cy="{cy}"/>
   <wp:effectExtent l="0" t="0" r="0" b="0"/>
   <wp:wrapSquare wrapText="bothSides"/>
-  <wp:docPr id="1" name="Image1"/>
+  <wp:docPr id="1" name="Photo1"/>
   <wp:cNvGraphicFramePr>
     <a:graphicFrameLocks noChangeAspect="1"/>
   </wp:cNvGraphicFramePr>
   <a:graphic>
     <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-      <pic:pic>
+      <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
         <pic:nvPicPr>
-          <pic:cNvPr id="1" name="Image1"/>
+          <pic:cNvPr id="1" name="Photo1"/>
           <pic:cNvPicPr>
             <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
           </pic:cNvPicPr>
@@ -246,7 +255,7 @@ def add_floating_image(paragraph, image_path_or_bytes, width_cm=3.2, height_cm=4
 
 
 # ──────────────────────────────────────────────────────────────
-#  ASOSIY GENERATOR
+#  JADVAL YORDAMCHILARI (2-sahifa: qarindoshlar)
 # ──────────────────────────────────────────────────────────────
 def _cell_borders(cell):
     tcPr = cell._tc.get_or_add_tcPr()
@@ -263,31 +272,27 @@ def _cell_borders(cell):
     tcPr.append(cb)
 
 
-def _cell_para(cell, text, bold=False, align=WD_ALIGN_PARAGRAPH.LEFT):
+def _cell_para(cell, text, bold=False, align=WD_ALIGN_PARAGRAPH.LEFT, size=None):
     p = cell.paragraphs[0]
     p.clear()
     p.alignment = align
     p.paragraph_format.space_before = Pt(1)
     p.paragraph_format.space_after  = Pt(1)
     p.paragraph_format.line_spacing = Pt(13)
-    _run(p, text or "—", bold=bold)
+    _run(p, text or "—", bold=bold, size=size or FS)
 
 
-def _two_col_row(doc, left_label, left_val, right_label, right_val):
-    """
-    Ikki ustunli qator: CHAP|O'NG. Jadval ichida emas — namunadagidek
-    tab-lar yoki hanging indent bilan emas, bitta 2-ustunli bordersiz jadval bilan.
-    Lekin TABLE ICHIDA emas — chunki floating rasm bilan jadval orasida
-    konflikt bo'lmasligi kerak. Shuning uchun TAB stops ishlatamiz.
-    """
-    pass
-
-
+# ──────────────────────────────────────────────────────────────
+#  ASOSIY GENERATOR
+# ──────────────────────────────────────────────────────────────
 def generate(data: dict, output_path: str, script: str = 'lat'):
     data = apply_script(data, script)
     doc = Document()
 
-    # ─── Sahifa sozlamalari ───
+    # ─── Rasmiy sahifa sozlamalari ───
+    # Izoh: yuqoridan 1.5sm, pastdan 1sm, o'ngdan 1sm, chapdan 2sm
+    # (rasmiy namunada left=2.69sm bo'lgan — lekin izoh 2sm deydi,
+    #  biz rasmiy amaliy parametrni ishlatamiz)
     sec = doc.sections[0]
     sec.page_width    = Cm(21)
     sec.page_height   = Cm(29.7)
@@ -296,8 +301,10 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
     sec.left_margin   = Cm(2.0)
     sec.right_margin  = Cm(1.0)
 
+    # Normal uslub
     doc.styles["Normal"].font.name = F
     doc.styles["Normal"].font.size = FS
+    _set_rfonts(doc.styles["Normal"]._element.get_or_add_rPr())
 
     fullname    = data.get("fullname", "")
     job_year    = data.get("job_year", "")
@@ -315,93 +322,58 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
     YOQ = "йўқ" if IS_CYR else "yo'q"
     def L(lat, cyr): return cyr if IS_CYR else lat
 
-    # Mavjud matn maydonining kengligi (sahifa – marginlar)
-    # 21 - 2 - 1 = 18 sm
-    text_width_cm = 18.0
-    # Rasm kengligi + gap (namunada: cx=1156335 EMU ≈ 3.21 sm + distL ≈ 0.32 sm)
-    photo_w = 3.2
-    photo_h = 4.0
-    photo_gap = 0.5
-    # Rasm atrofidagi matn kengligi (rasm wrap yoqilganda chap tomon)
-    wrap_text_width = text_width_cm - photo_w - photo_gap  # ≈ 14.3 sm
+    # ═══════════════════════════════════════════════════════════
+    # 1-SAHIFA
+    # ═══════════════════════════════════════════════════════════
 
-    # ═══ 1. SARLAVHA — markazda, rasm yonida "oqadi" ═══
+    # ─── SARLAVHA: МАЪЛУМОТНОМА — 14pt bold, markazda ───
     p0 = doc.add_paragraph()
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p0.paragraph_format.space_before = Pt(0)
     p0.paragraph_format.space_after  = Pt(0)
-    # Birinchi paragrafga rasmni biriktiramiz (anchor rasm istalgan paragrafda turishi mumkin)
+    # Birinchi paragrafga floating rasmni biriktirish
     if photo_b64:
         try:
             img_bytes = base64.b64decode(photo_b64.split(",")[-1])
-            add_floating_image(p0, img_bytes, width_cm=photo_w, height_cm=photo_h)
+            add_floating_image(p0, img_bytes, width_cm=3.0, height_cm=4.0)
         except Exception as e:
-            print(f"Rasm qo'shishda xato: {e}")
-
+            pass
     _run(p0, L("MA'LUMOTNOMA", "МАЪЛУМОТНОМА"), bold=True, size=F14)
 
-    # F.I.Sh.
+    # ─── F.I.Sh. — 14pt bold, markazda ───
     p1 = doc.add_paragraph()
     p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p1.paragraph_format.space_before = Pt(2)
+    p1.paragraph_format.space_before = Pt(0)
     p1.paragraph_format.space_after  = Pt(0)
     _run(p1, fullname, bold=True, size=F14)
 
-    # ═══ 2. Joriy lavozim qatori (rasm yonida chap tomonda) ═══
-    # Namunada: "2020- йил 09 январдан:" — yangi qator — "UzAuto Motors..." (bold)
+    # ─── Bo'sh qator (namunada bor) ───
+    doc.add_paragraph().paragraph_format.space_before = Pt(0)
+
+    # ─── Joriy lavozim: sana va ish joyi ───
     if job_year:
         p_jy = doc.add_paragraph()
-        p_jy.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p_jy.paragraph_format.space_before = Pt(6)
+        p_jy.paragraph_format.space_before = Pt(0)
         p_jy.paragraph_format.space_after  = Pt(0)
         _run(p_jy, job_year, size=FS)
-
     if current_job:
         p_cj = doc.add_paragraph()
-        p_cj.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p_cj.paragraph_format.space_before = Pt(0)
-        p_cj.paragraph_format.space_after  = Pt(4)
-        _run(p_cj, current_job, bold=True, size=FS)
+        p_cj.paragraph_format.space_after  = Pt(0)
+        _run(p_cj, current_job, size=FS)
 
-    # ═══ 3. 2-USTUNLI MA'LUMOT BLOKLARI ═══
-    # Rasm hali ham yuqori-o'ngda "float" qilyapti, matn uning atrofida oqadi.
-    # Bu yerda tab stops yordamida 2 ustunga ajratamiz.
-    # Chap ustun: 0 dan ~7 sm gacha, o'ng ustun: 7 sm dan boshlab.
-    # Rasm atrofida matn ~14.3 sm bo'lgani uchun, 2 ustunli layout
-    # rasm ostiga tushgach, to'liq 18 sm kenglikdagi joy paydo bo'ladi.
-    # Tab stop: chap label ~ 0, chap val ~ 3.5, o'ng label ~ 7, o'ng val ~ 11
-
-    def add_pair_row(label1, val1, label2=None, val2=None):
-        """
-        Bir qatorda: [bold label1] val1  [TAB]  [bold label2] val2
-        Bu — namunadagi tuzilish.
-        """
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(4)
-        p.paragraph_format.space_after  = Pt(0)
-        # Tab stops
-        tabs = p.paragraph_format.tab_stops
-        tabs.add_tab_stop(Cm(7.0))   # 2-ustun boshlanishi
-        # Chap ustun
-        _run(p, label1 + " ", bold=True)
-        _run(p, val1 or "—")
-        if label2 is not None:
-            _run(p, "\t")
-            _run(p, label2 + " ", bold=True)
-            _run(p, val2 or "—")
-        return p
-
-    # Namunadagidek: label tepada bold, value pastda — ikkita paragrafli layout
-    # Aslida namuna: [bold label]  [tab]  [bold label]  → yangi qator → value  [tab]  value
-    # Ha, buni to'g'ri modellashtiraylik:
+    # ═══════════════════════════════════════════════════════════
+    # 2-USTUNLI MA'LUMOT BLOKLARI (tab stop = 4228 twips = 7.46 cm)
+    # Rasmiy namuna: label = bold 11pt, space_before=8pt
+    #                value = regular 11pt, space_before=0
+    # ═══════════════════════════════════════════════════════════
 
     def add_label_row(l1, l2=None):
-        """Tepadagi qator — bold labellar"""
+        """Tepadagi qator — bold labellar (2 ustunli)"""
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_before = LABEL_SPACE
         p.paragraph_format.space_after  = Pt(0)
-        tabs = p.paragraph_format.tab_stops
-        tabs.add_tab_stop(Cm(7.0))
+        _add_tab_stop(p, TAB_POS_TWIPS)
         _run(p, l1, bold=True)
         if l2:
             _run(p, "\t")
@@ -409,12 +381,11 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
         return p
 
     def add_value_row(v1, v2=None):
-        """Pastdagi qator — qiymatlar"""
+        """Pastdagi qator — oddiy qiymatlar"""
         p = doc.add_paragraph()
         p.paragraph_format.space_before = Pt(0)
         p.paragraph_format.space_after  = Pt(0)
-        tabs = p.paragraph_format.tab_stops
-        tabs.add_tab_stop(Cm(7.0))
+        _add_tab_stop(p, TAB_POS_TWIPS)
         _run(p, v1 or "—")
         if v2 is not None:
             _run(p, "\t")
@@ -422,89 +393,112 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
         return p
 
     def add_inline_pair(label, val):
-        """Bir qatorda: [bold label] [tab] val"""
+        """Bir qatorda label + tab + val"""
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_before = LABEL_SPACE
         p.paragraph_format.space_after  = Pt(0)
-        tabs = p.paragraph_format.tab_stops
-        tabs.add_tab_stop(Cm(7.0))
+        _add_tab_stop(p, TAB_POS_TWIPS)
         _run(p, label, bold=True)
         _run(p, "\t")
         _run(p, val or "—")
         return p
 
-    def add_full_row(label, val):
-        """Keng label + keyingi qatorda qiymat"""
-        p1 = doc.add_paragraph()
-        p1.paragraph_format.space_before = Pt(6)
-        p1.paragraph_format.space_after  = Pt(0)
-        _run(p1, label, bold=True)
-        p2 = doc.add_paragraph()
-        p2.paragraph_format.space_before = Pt(0)
-        p2.paragraph_format.space_after  = Pt(0)
-        _run(p2, val or "—")
-        return p1, p2
+    def add_full_label(label):
+        """To'liq kenglikdagi bold label"""
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = LABEL_SPACE
+        p.paragraph_format.space_after  = Pt(0)
+        _run(p, label, bold=True)
+        return p
 
-    # Qatorlarni chiqaramiz (namuna ketma-ketligi)
+    def add_full_value(val, hanging=None):
+        """To'liq kenglikdagi qiymat (ixtiyoriy hanging indent bilan)"""
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after  = Pt(0)
+        if hanging:
+            p.paragraph_format.left_indent      = hanging
+            p.paragraph_format.first_line_indent = -hanging
+        _run(p, val or "—")
+        return p
+
+    # ─── Qatorlarni ketma-ket chiqaramiz ───
+
+    # Tug'ilgan yili / Tug'ilgan joyi
     add_label_row(L("Tug'ilgan yili:", "Туғилган йили:"),
                   L("Tug'ilgan joyi:", "Туғилган жойи:"))
     add_value_row(bd, data.get("birthplace", ""))
 
+    # Millati / Partiyaviyligi
     add_label_row(L("Millati:", "Миллати:"),
                   L("Partiyaviyligi:", "Партиявийлиги:"))
     add_value_row(data.get("nationality", "o'zbek"), data.get("party", YOQ))
 
+    # Ma'lumoti / Tamomlagan
     add_label_row(L("Ma'lumoti:", "Маълумоти:"),
                   L("Tamomlagan:", "Тамомлаган:"))
     add_value_row(data.get("edu_level", ""), data.get("university", ""))
 
+    # Mutaxassisligi (bir qatorda)
     add_inline_pair(L("Ma'lumoti bo'yicha mutaxassisligi:",
                       "Маълумоти бўйича мутахассислиги:"),
                     data.get("speciality", "") or "—")
 
+    # Ilmiy darajasi / Ilmiy unvoni
     add_label_row(L("Ilmiy darajasi:", "Илмий даражаси:"),
                   L("Ilmiy unvoni:", "Илмий унвони:"))
     add_value_row(data.get("science_degree", YOQ),
                   data.get("science_title", YOQ))
 
+    # Chet tillari / Harbiy unvoni
     add_label_row(L("Qaysi chet tillarini biladi:", "Қайси чет тилларини билади:"),
                   L("Harbiy (maxsus) unvoni:", "Ҳарбий (махсус) унвони:"))
     add_value_row(langs_str or YOQ, data.get("military_rank", YOQ))
 
-    add_full_row(L("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):",
-                   "Давлат мукофотлари ва мукофотлари билан тақдирланган (қанақа):"),
-                 data.get("awards", YOQ))
+    # Davlat mukofotlari (to'liq kenglikda)
+    add_full_label(L("Davlat mukofotlari va premiyalari bilan taqdirlangan (qanaqa):",
+                     "Давлат мукофотлари ва премиялари билан тақдирланганми (қанақа):"))
+    add_full_value(data.get("awards", YOQ))
 
-    add_full_row(L("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):",
-                   "Идоравий мукофотлар билан тақдирланган (қанақа):"),
-                 data.get("departmental_awards", YOQ))
+    # Idoraviy mukofotlar (to'liq kenglikda)
+    add_full_label(L("Idoraviy mukofotlar bilan taqdirlangan (qanaqa):",
+                     "Идоравий мукофотлар билан тақдирланганми (қанақа):"))
+    add_full_value(data.get("departmental_awards", YOQ))
 
-    add_full_row(L("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi "
-                   "yoki boshqa saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
-                   "Халқ депутатлари, республика, вилоят, шаҳар ва туман Кенгаши депутатими "
-                   "ёки бошқа сайланадиган органларнинг аъзосими (тўлиқ кўрсатилиши лозим):"),
-                 data.get("deputy", YOQ))
+    # Deputatlik (to'liq kenglikda)
+    add_full_label(L("Xalq deputatlari, respublika, viloyat, shahar va tuman Kengashi deputatimi yoki boshqa",
+                     "Халқ депутатлари, республика, вилоят, шаҳар ва туман Кенгаши депутатими ёки бошқа"))
+    # 2-qator — davomi
+    p_dep2 = doc.add_paragraph()
+    p_dep2.paragraph_format.space_before = Pt(0)
+    p_dep2.paragraph_format.space_after  = Pt(0)
+    _run(p_dep2, L("saylanadigan organlarning a'zosimi (to'liq ko'rsatilishi lozim):",
+                    "сайланадиган органларнинг аъзосими (тўлиқ кўрсатилиши лозим):"), bold=True)
 
-    add_full_row(L("Doimiy yashash manzili (aniq ko'rsatilsin):",
-                   "Доимий яшаш манзили (аниқ кўрсатилсин):"),
-                 data.get("address", ""))
+    dep_val = data.get("deputy", YOQ)
+    add_full_value(dep_val, hanging=Cm(2.49))
 
-    # ═══ 4. MEHNAT FAOLIYATI ═══
-    # Namunada: markazlangan bold sarlavha, keyin hanging indent bilan paragraflar
-    _para(doc, L("MEHNAT FAOLIYATI", "МЕҲНАТ ФАОЛИЯТИ"),
-          bold=True, size=F14,
-          align=WD_ALIGN_PARAGRAPH.CENTER, before=14, after=6)
+    # ═══════════════════════════════════════════════════════════
+    # MEHNAT FAOLIYATI — 14pt bold, markazda
+    # Qatorlar: hanging indent = 2.62 cm, space_before = 4pt
+    # ═══════════════════════════════════════════════════════════
+    p_mf = doc.add_paragraph()
+    p_mf.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_mf.paragraph_format.space_before = Pt(6)
+    p_mf.paragraph_format.space_after  = Pt(0)
+    _run(p_mf, L("MEHNAT FAOLIYATI", "МЕҲНАТ ФАОЛИЯТИ"), bold=True, size=F14)
 
     for w in data.get("work_history", []):
         if isinstance(w, dict):
             f, t = w.get("from", ""), w.get("to", "")
             org, pos = w.get("org", ""), w.get("pos", "")
-            if f and t and t not in ("h.v.", "х.в.", "х.в", "ҳ.в.", "ҳ.в"):
-                prefix = L(f"{f}-{t}-yy. - ", f"{f}-{t}-йй. - ")
+            hv_variants = ("h.v.", "х.в.", "х.в", "ҳ.в.", "ҳ.в", "hozirgi vaqtgacha")
+            if f and t and t.lower() not in hv_variants:
+                prefix = L(f"{f}-{t} yy. - ", f"{f}-{t} йй. - ")
             elif f and t:
-                prefix = L(f"{f}-y. - h.v. - ", f"{f}-й. -   х.в. - ")
+                prefix = L(f"{f} y. -  h.v.  - ", f"{f} й. -  ҳ.в.  - ")
             elif f:
-                prefix = L(f"{f}-y. - ", f"{f}-й. - ")
+                prefix = L(f"{f} y. - ", f"{f} й. - ")
             else:
                 prefix = ""
             body = org
@@ -516,11 +510,10 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
         full_line = prefix + body
         if full_line.strip():
             p = doc.add_paragraph()
-            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.space_before = WORK_SPACE
             p.paragraph_format.space_after  = Pt(0)
-            # Hanging indent — namunadagidek
-            p.paragraph_format.left_indent     = Cm(2.75)
-            p.paragraph_format.first_line_indent = Cm(-2.75)
+            p.paragraph_format.left_indent      = WORK_INDENT
+            p.paragraph_format.first_line_indent = -WORK_INDENT
             _run(p, full_line)
 
     # ═══ Telefon (ixtiyoriy) ═══
@@ -530,26 +523,39 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
     if phones.get("father"): tel.append(L("ota: ", "ота: ") + phones["father"])
     if phones.get("mother"): tel.append(L("ona: ", "она: ") + phones["mother"])
     if tel:
-        _para(doc, L("Tel.: ", "Тел.: ") + "     ".join(tel),
-              bold=True, before=12)
+        p_tel = doc.add_paragraph()
+        p_tel.paragraph_format.space_before = Pt(10)
+        p_tel.paragraph_format.space_after  = Pt(0)
+        _run(p_tel, L("Tel.: ", "Тел.: ") + "     ".join(tel), bold=True)
 
-    # ═══ 5. 2-SAHIFA: QARINDOSHLAR JADVALI ═══
+    # ═══════════════════════════════════════════════════════════
+    # 2-SAHIFA: QARINDOSHLAR JADVALI — 12pt bold sarlavha
+    # ═══════════════════════════════════════════════════════════
     doc.add_page_break()
 
-    _para(doc,
-          fullname + L("ning yaqin qarindoshlari haqida",
-                       "нинг яқин қариндошлари ҳақида"),
-          bold=True, size=Pt(12), align=WD_ALIGN_PARAGRAPH.CENTER)
-    _para(doc, L("MA'LUMOT", "МАЪЛУМОТ"),
-          bold=True, size=Pt(12),
-          align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=10)
+    p_rel_title = doc.add_paragraph()
+    p_rel_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_rel_title.paragraph_format.space_before = Pt(0)
+    p_rel_title.paragraph_format.space_after  = Pt(0)
+    _run(p_rel_title,
+         fullname + L("ning yaqin qarindoshlari haqida",
+                      "нинг яқин қариндошлари ҳақида"),
+         bold=True, size=F12)
 
+    p_rel_sub = doc.add_paragraph()
+    p_rel_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_rel_sub.paragraph_format.space_before = Pt(0)
+    p_rel_sub.paragraph_format.space_after  = Pt(6)
+    _run(p_rel_sub, L("MA'LUMOT", "МАЪЛУМОТ"), bold=True, size=F12)
+
+    # ─── Jadval: 5 ustunli ───
     relatives = data.get("relatives", [])
     if relatives:
         rt = doc.add_table(rows=1, cols=5)
         rt.style = "Table Grid"
         rt.alignment = WD_TABLE_ALIGNMENT.CENTER
-        widths = [Cm(2.6), Cm(4.2), Cm(3.4), Cm(4.6), Cm(3.2)]
+        # Rasmiy namunadan: col widths
+        widths = [Cm(2.22), Cm(3.81), Cm(3.49), Cm(5.04), Cm(4.00)]
         for i, w in enumerate(widths):
             rt.columns[i].width = w
 
@@ -569,7 +575,7 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
             byear = rel.get("byear", "")
             bplace = rel.get("bplace", "")
             if byear and bplace:
-                birth = L(f"{byear}-yil\n{bplace}", f"{byear}-йил\n{bplace}")
+                birth = L(f"{byear} yil,\n{bplace}", f"{byear} йил,\n{bplace}")
             else:
                 birth = byear or bplace
             vals = [rel.get("rel", ""), rel.get("fio", ""),
@@ -580,7 +586,8 @@ def generate(data: dict, output_path: str, script: str = 'lat'):
                     _cell_para(row.cells[i], v, bold=True,
                                align=WD_ALIGN_PARAGRAPH.CENTER)
                 elif i == 2:
-                    _cell_para(row.cells[i], v, align=WD_ALIGN_PARAGRAPH.CENTER)
+                    _cell_para(row.cells[i], v,
+                               align=WD_ALIGN_PARAGRAPH.CENTER)
                 else:
                     _cell_para(row.cells[i], v)
 
