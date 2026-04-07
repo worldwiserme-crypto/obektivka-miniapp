@@ -151,21 +151,31 @@ async def show_balance(callback: CallbackQuery):
 
 @router.callback_query(F.data == "topup_menu")
 async def topup_menu(callback: CallbackQuery):
-    """Hisobni to'ldirish — faqat Telegram Stars."""
+    """Hisobni to'ldirish — ikki usul bir qatorda."""
     await callback.answer()
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✦  Telegram Stars bilan to'lash", callback_data="topup_stars")],
+        [
+            InlineKeyboardButton(
+                text=f"◆  Karta  ·  {price_text(DOC_PRICE)}",
+                callback_data="p2p_pay"
+            ),
+            InlineKeyboardButton(
+                text=f"✦  Stars  ·  {STARS_PER_DOC} ⭐",
+                callback_data="topup_stars"
+            ),
+        ],
         [InlineKeyboardButton(text="←  Bosh menyu", callback_data="back_main")],
     ])
 
     await callback.message.answer(
         "<b>Hisobni to'ldirish</b>\n"
-        "<i>xavfsiz to'lov usuli</i>\n\n"
-        "\u00a0\u00a0\u00a0Telegram Stars orqali bir bosishda\n"
-        "\u00a0\u00a0\u00a0to'lang. Tasdiqlash darhol amalga\n"
-        "\u00a0\u00a0\u00a0oshadi.\n\n"
-        f"<i>narx</i>  ·  <b>{price_text(DOC_PRICE)}</b> / hujjat",
+        "<i>ikki usul — bitta narx</i>\n\n"
+        "\u00a0\u00a0\u00a0<b>Karta</b>  ·  admin tomonidan\n"
+        "\u00a0\u00a0\u00a0qo'lda tasdiqlanadi (5–15 daq.)\n\n"
+        "\u00a0\u00a0\u00a0<b>Stars</b>  ·  darhol avtomatik\n"
+        "\u00a0\u00a0\u00a0tasdiqlanadi\n\n"
+        f"<i>narx</i>  ·  <b>{price_text(DOC_PRICE)}</b>",
         reply_markup=kb,
     )
 
@@ -336,14 +346,16 @@ async def submit(request):
             ])
         else:
             kb = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(
-                    text=f"◆  Karta orqali to'lash  ·  {price_text(DOC_PRICE)}",
-                    callback_data="p2p_pay"
-                )],
-                [InlineKeyboardButton(
-                    text=f"✦  Telegram Stars  ·  {STARS_PER_DOC} ⭐",
-                    callback_data="topup_stars"
-                )],
+                [
+                    InlineKeyboardButton(
+                        text=f"◆  Karta  ·  {price_text(DOC_PRICE)}",
+                        callback_data="p2p_pay"
+                    ),
+                    InlineKeyboardButton(
+                        text=f"✦  Stars  ·  {STARS_PER_DOC} ⭐",
+                        callback_data="topup_stars"
+                    ),
+                ],
                 [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="cancel_doc")],
             ])
 
