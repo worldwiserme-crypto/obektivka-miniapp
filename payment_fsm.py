@@ -67,20 +67,21 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
     )
 
     cancel_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data="p2p_cancel")],
+        [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="p2p_cancel")],
     ])
 
     await callback.message.answer(
-        f"💳 <b>To'lov ma'lumotlari</b>\n"
-        f"{'━' * 28}\n\n"
-        f"Quyidagi kartaga <b>{price_text(DOC_PRICE)}</b> o'tkazing:\n\n"
-        f"┌───────────────────────────┐\n"
-        f"│  <code>{CARD_NUMBER}</code>\n"
-        f"│  {CARD_HOLDER}\n"
-        f"└───────────────────────────┘\n\n"
-        f"📸 To'lovdan so'ng <b>chek skrinshotini</b>\n"
-        f"shu chatga yuboring.\n\n"
-        f"⏱ <i>Chek uchun 30 daqiqa vaqtingiz bor.</i>",
+        f"<b>Karta orqali to'lov</b>\n"
+        f"<i>quyidagi rekvizitlarga o'tkazma qiling</i>\n\n"
+        f"<i>summa</i>\n"
+        f"<b>{price_text(DOC_PRICE)}</b>\n\n"
+        f"<i>karta raqami</i>\n"
+        f"<code>{CARD_NUMBER}</code>\n\n"
+        f"<i>qabul qiluvchi</i>\n"
+        f"<b>{CARD_HOLDER}</b>\n\n"
+        f"\u00a0\u00a0\u00a0To'lovdan so'ng chek skrinshotini\n"
+        f"\u00a0\u00a0\u00a0shu chatga yuboring.\n\n"
+        f"<i>Tasdiqlash vaqti  ·  5–15 daqiqa</i>",
         reply_markup=cancel_kb,
     )
 
@@ -98,8 +99,10 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
     if not ADMIN_ID:
         logger.critical("ADMIN_ID sozlanmagan! Railway Variables'ga ADMIN_ID qo'shing.")
         await message.answer(
-            "⚠️ <b>Tizimda vaqtinchalik nosozlik.</b>\n"
-            "<i>Iltimos, keyinroq qayta urinib ko'ring.</i>"
+            "<b>Vaqtinchalik nosozlik</b>\n"
+            "<i>tizim sozlanmoqda</i>\n\n"
+            "\u00a0\u00a0\u00a0Iltimos, bir oz vaqtdan so'ng\n"
+            "\u00a0\u00a0\u00a0qayta urinib ko'ring."
         )
         await state.clear()
         return
@@ -107,20 +110,23 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
     photo = message.photo[-1]
 
     admin_text = (
-        f"🧾 <b>Yangi to'lov cheki</b>\n"
-        f"{'━' * 30}\n\n"
-        f"👤 <b>{message.from_user.full_name or '—'}</b>\n"
-        f"🆔 ID: <code>{tg_id}</code>\n"
-        f"📱 @{message.from_user.username or '—'}\n\n"
-        f"💰 Summa: <b>{price_text(amount)}</b>\n"
-        f"🕐 {datetime.now().strftime('%d.%m.%Y  %H:%M')}"
+        f"<b>Yangi to'lov cheki</b>\n"
+        f"<i>tasdiqlash kutilmoqda</i>\n\n"
+        f"<i>foydalanuvchi</i>\n"
+        f"<b>{message.from_user.full_name or '—'}</b>\n\n"
+        f"<i>id</i>\n"
+        f"<code>{tg_id}</code>\n\n"
+        f"<i>username</i>\n"
+        f"@{message.from_user.username or '—'}\n\n"
+        f"<i>summa</i>\n"
+        f"<b>{price_text(amount)}</b>\n\n"
+        f"<i>vaqt</i>\n"
+        f"<b>{datetime.now().strftime('%d.%m.%Y  %H:%M')}</b>"
     )
 
     admin_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="✅ Tasdiqlash", callback_data=f"approve_pay:{tg_id}"),
-            InlineKeyboardButton(text="❌ Rad qilish", callback_data=f"reject_pay:{tg_id}"),
-        ],
+        [InlineKeyboardButton(text="✓  Tasdiqlash", callback_data=f"approve_pay:{tg_id}")],
+        [InlineKeyboardButton(text="✕  Rad qilish", callback_data=f"reject_pay:{tg_id}")],
     ])
 
     try:
@@ -133,27 +139,32 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
     except Exception as e:
         logger.error(f"Adminga chek yuborib bo'lmadi: {e}", exc_info=True)
         await message.answer(
-            "⚠️ <b>Texnik nosozlik yuz berdi.</b>\n"
-            "<i>Iltimos, keyinroq qayta urinib ko'ring.</i>"
+            "<b>Texnik nosozlik</b>\n"
+            "<i>chekni yetkazib bo'lmadi</i>\n\n"
+            "\u00a0\u00a0\u00a0Iltimos, bir oz vaqtdan so'ng\n"
+            "\u00a0\u00a0\u00a0qayta urinib ko'ring."
         )
         await state.clear()
         return
 
     await state.clear()
     await message.answer(
-        "✅ <b>Chekingiz qabul qilindi!</b>\n\n"
-        "⏳ <i>Admin tekshirib, tasdiqlagach sizga\n"
-        "hujjatning asl nusxasi yuboriladi.</i>\n\n"
-        "💡 Odatda bu <b>5–15 daqiqa</b> ichida amalga oshadi."
+        "<b>Chek qabul qilindi</b>\n"
+        "<i>tasdiqlash kutilmoqda</i>\n\n"
+        "\u00a0\u00a0\u00a0Admin to'lovingizni tekshirib,\n"
+        "\u00a0\u00a0\u00a0tasdiqlagach hujjatning asl\n"
+        "\u00a0\u00a0\u00a0nusxasi avtomatik yuboriladi.\n\n"
+        "<i>Odatda  ·  5–15 daqiqa</i>"
     )
 
 
 @payment_router.message(PaymentState.waiting_for_receipt)
 async def receipt_wrong_format(message: Message):
     await message.answer(
-        "⚠️ <b>Faqat rasmni yuboring!</b>\n\n"
-        "📸 <i>To'lov chekining skrinshotini rasmga olib,\n"
-        "shu chatga yuboring.</i>"
+        "<b>Faqat rasm yuboring</b>\n"
+        "<i>matn yoki fayl qabul qilinmaydi</i>\n\n"
+        "\u00a0\u00a0\u00a0To'lov chekining skrinshotini\n"
+        "\u00a0\u00a0\u00a0rasm sifatida shu chatga yuboring."
     )
 
 
@@ -162,8 +173,9 @@ async def cancel_payment(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.answer("Bekor qilindi", show_alert=False)
     await callback.message.answer(
-        "🗑 <b>To'lov bekor qilindi.</b>\n\n"
-        "<i>Qayta urinish uchun /start bosing.</i>"
+        "<b>To'lov bekor qilindi</b>\n"
+        "<i>hech qanday summa yechilmadi</i>\n\n"
+        "<i>Qayta boshlash uchun /start bosing.</i>"
     )
 
 
@@ -174,23 +186,24 @@ async def cancel_payment(callback: CallbackQuery, state: FSMContext):
 @payment_router.callback_query(F.data.startswith("approve_pay:"))
 async def admin_approve(callback: CallbackQuery, bot: Bot):
     if callback.from_user.id != ADMIN_ID:
-        await callback.answer("⛔ Sizda ruxsat yo'q!", show_alert=True)
+        await callback.answer("Ruxsat yo'q", show_alert=True)
         return
 
     try:
         user_tg_id = int(callback.data.split(":")[1])
     except (IndexError, ValueError):
-        await callback.answer("❌ Noto'g'ri ma'lumot!", show_alert=True)
+        await callback.answer("Noto'g'ri ma'lumot", show_alert=True)
         return
 
-    await callback.answer("✅ Tasdiqlanmoqda...")
+    await callback.answer("Tasdiqlanmoqda...")
 
     try:
         updated_caption = (
             f"{callback.message.caption}\n\n"
-            f"✅ <b>TASDIQLANDI</b>\n"
-            f"👮 {callback.from_user.full_name}\n"
-            f"🕐 {datetime.now().strftime('%H:%M:%S')}"
+            f"<i>holat</i>\n"
+            f"<b>✓  TASDIQLANDI</b>\n\n"
+            f"<i>admin</i>\n"
+            f"<b>{callback.from_user.full_name}</b>  ·  {datetime.now().strftime('%H:%M')}"
         )
         await callback.message.edit_caption(caption=updated_caption, reply_markup=None)
     except Exception:
@@ -212,9 +225,14 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
                 chat_id=user_tg_id,
                 document=BufferedInputFile(file_data, filename=f"{fullname}.docx"),
                 caption=(
-                    f"✅ <b>To'lov tasdiqlandi!</b>\n\n"
-                    f"📎 <b>{fullname}</b>  •  {script_label}\n"
-                    f"<i>Word (.docx) formatida tayyor.</i>"
+                    f"<b>To'lov tasdiqlandi</b>\n"
+                    f"<i>asl nusxa, watermark yo'q</i>\n\n"
+                    f"<i>kim uchun</i>\n"
+                    f"<b>{fullname}</b>\n\n"
+                    f"<i>format</i>\n"
+                    f"<b>Word (.docx)</b>\n\n"
+                    f"<i>alifbo</i>\n"
+                    f"<b>{script_label}</b>"
                 ),
             )
 
@@ -229,9 +247,11 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
             await bot.send_message(
                 chat_id=user_tg_id,
                 text=(
-                    "✅ <b>To'lov tasdiqlandi!</b>\n\n"
-                    "⚠️ <i>Faylni yuborishda xatolik yuz berdi.\n"
-                    "Iltimos, /start bosib qayta urinib ko'ring.</i>"
+                    "<b>To'lov tasdiqlandi</b>\n"
+                    "<i>ammo faylni yuborib bo'lmadi</i>\n\n"
+                    "\u00a0\u00a0\u00a0Texnik nosozlik yuz berdi.\n"
+                    "\u00a0\u00a0\u00a0Qayta urinib ko'ring.\n\n"
+                    "<i>/start bosing</i>"
                 ),
             )
     else:
@@ -248,11 +268,13 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
         await bot.send_message(
             chat_id=user_tg_id,
             text=(
-                "✅ <b>To'lovingiz tasdiqlandi!</b>\n\n"
-                f"💰 <b>+{price_text(DOC_PRICE)}</b> balansingizga qo'shildi.\n"
-                f"💳 Joriy balans: <b>{balance_str}</b>\n\n"
-                "<i>Hujjat olish uchun /start bosib,\n"
-                "obektivkani to'ldiring.</i>"
+                f"<b>To'lov tasdiqlandi</b>\n"
+                f"<i>hisobingiz to'ldirildi</i>\n\n"
+                f"<i>qo'shildi</i>\n"
+                f"<b>+ {price_text(DOC_PRICE)}</b>\n\n"
+                f"<i>yangi balans</i>\n"
+                f"<b>{balance_str}</b>\n\n"
+                f"<i>Endi obektivkani yarating  ·  /start</i>"
             ),
         )
 
@@ -264,23 +286,24 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
 @payment_router.callback_query(F.data.startswith("reject_pay:"))
 async def admin_reject(callback: CallbackQuery, bot: Bot):
     if callback.from_user.id != ADMIN_ID:
-        await callback.answer("⛔ Sizda ruxsat yo'q!", show_alert=True)
+        await callback.answer("Ruxsat yo'q", show_alert=True)
         return
 
     try:
         user_tg_id = int(callback.data.split(":")[1])
     except (IndexError, ValueError):
-        await callback.answer("❌ Noto'g'ri ma'lumot!", show_alert=True)
+        await callback.answer("Noto'g'ri ma'lumot", show_alert=True)
         return
 
-    await callback.answer("❌ Rad qilindi")
+    await callback.answer("Rad qilindi")
 
     try:
         updated_caption = (
             f"{callback.message.caption}\n\n"
-            f"❌ <b>RAD QILINDI</b>\n"
-            f"👮 {callback.from_user.full_name}\n"
-            f"🕐 {datetime.now().strftime('%H:%M:%S')}"
+            f"<i>holat</i>\n"
+            f"<b>✕  RAD QILINDI</b>\n\n"
+            f"<i>admin</i>\n"
+            f"<b>{callback.from_user.full_name}</b>  ·  {datetime.now().strftime('%H:%M')}"
         )
         await callback.message.edit_caption(caption=updated_caption, reply_markup=None)
     except Exception:
@@ -290,12 +313,13 @@ async def admin_reject(callback: CallbackQuery, bot: Bot):
         await bot.send_message(
             chat_id=user_tg_id,
             text=(
-                "❌ <b>To'lov tasdiqlanmadi.</b>\n\n"
-                "<i>Mumkin bo'lgan sabablar:</i>\n"
-                f"• Chekda summa noto'g'ri (<b>{price_text(DOC_PRICE)}</b> emas)\n"
-                "• Karta raqami boshqa\n"
-                "• Rasm aniq ko'rinmayapti\n\n"
-                "<i>Qayta urinish uchun /start bosing.</i>"
+                f"<b>To'lov tasdiqlanmadi</b>\n"
+                f"<i>chek qabul qilinmadi</i>\n\n"
+                f"<i>mumkin bo'lgan sabablar</i>\n"
+                f"\u00a0\u00a0\u00a0Summa <b>{price_text(DOC_PRICE)}</b> emas\n"
+                f"\u00a0\u00a0\u00a0Karta raqami boshqa\n"
+                f"\u00a0\u00a0\u00a0Rasm aniq emas\n\n"
+                f"<i>Qayta urinish uchun /start bosing.</i>"
             ),
         )
     except Exception as e:
