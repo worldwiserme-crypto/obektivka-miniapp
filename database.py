@@ -1,25 +1,25 @@
 """
-Obektivka Bot — Asinxron Ma'lumotlar Bazasi
+Obektivka Bot — Asinxron Ma'lumotlar Bazasi (To'liq versiya)
 SQLAlchemy 2.0 + asyncpg | Connection Pooling | Railway PostgreSQL
 """
 
 import os
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime
 
-from sqlalchemy import BigInteger, Integer, String, DateTime, func, select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     AsyncSession,
     async_sessionmaker,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from models import Base, User, Transaction, Template, Document
 
 logger = logging.getLogger(__name__)
 
 # ══════════════════════════════════════════════════════════════
-#  1. ASINXRON ULANISH VA POOLING
+#  ULANISH VA POOLING
 # ══════════════════════════════════════════════════════════════
 
 DATABASE_URL = os.getenv(
@@ -27,40 +27,30 @@ DATABASE_URL = os.getenv(
     "postgresql+asyncpg://user:pass@localhost:5432/obektivka",
 )
 
-# Railway ko'pincha "postgresql://" beradi — asyncpg uchun almashtirish
+# Railway "postgresql://" beradi — asyncpg uchun moslashtirish
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 engine = create_async_engine(
     DATABASE_URL,
-    # ─── Connection Pool sozlamalari ───
-    pool_size=5,           # Doimiy ochiq ulanishlar soni
-    max_overflow=10,       # Yuqori yuklamada qo'shimcha ulanishlar (jami: 15)
-    pool_timeout=30,       # Bo'sh ulanish kutish vaqti (soniya)
-    pool_recycle=1800,     # Ulanishni yangilash (30 daqiqa) — Railway idle timeout uchun
-    pool_pre_ping=True,    # Har bir so'rovdan oldin ulanishni tekshirish (stale connection himoya)
-    echo=False,            # True = SQL loglarni ko'rsatish (debug uchun)
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=30,
+    pool_recycle=1800,     # Railway idle timeout uchun
+    pool_pre_ping=True,    # Stale connection himoya
+    echo=False,
 )
 
 async_session_factory = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
-    expire_on_commit=False,  # Commit'dan keyin obyektlar "expired" bo'lmasin
+    expire_on_commit=False,
 )
 
 
 @asynccontextmanager
 async def get_session() -> AsyncSession:
-    """
-    Xavfsiz session context manager.
-    
-    Foydalanish:
-        async with get_session() as session:
-            user = await session.get(User, 123)
-    
-    Xatolik bo'lsa → rollback → log → raise
-    Muvaffaqiyatli bo'lsa → commit → close
-    """
+    """Xavfsiz session: auto-commit / auto-rollback / auto-close."""
     session = async_session_factory()
     try:
         yield session
@@ -87,47 +77,7 @@ async def dispose_db():
 
 
 # ══════════════════════════════════════════════════════════════
-#  2. MODEL — Users jadvali
-# ══════════════════════════════════════════════════════════════
-
-class Base(DeclarativeBase):
-    pass
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    tg_id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, comment="Telegram user ID"
-    )
-    username: Mapped[str | None] = mapped_column(
-        String(64), nullable=True
-    )
-    full_name: Mapped[str | None] = mapped_column(
-        String(200), nullable=True
-    )
-    balance: Mapped[int] = mapped_column(
-        Integer, default=0, nullable=False, comment="Balans (so'mda)"
-    )
-    docs_count: Mapped[int] = mapped_column(
-        Integer, default=0, nullable=False
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now(), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now(), onupdate=func.now()
-    )
-
-    def has_enough_balance(self, price: int) -> bool:
-        return self.balance >= price
-
-    def __repr__(self) -> str:
-        return f"<User tg_id={self.tg_id} balance={self.balance}>"
-
-
-# ══════════════════════════════════════════════════════════════
-#  3. CRUD NAMUNA — get_or_create_user
+#  USER CRUD
 # ══════════════════════════════════════════════════════════════
 
 async def get_or_create_user(
@@ -135,30 +85,17 @@ async def get_or_create_user(
     username: str | None = None,
     full_name: str | None = None,
 ) -> User | None:
-    """
-    Foydalanuvchini olish yoki yangi yaratish.
-
-    Xavfsizlik:
-      - try/except ichida — bot hech qachon crash bo'lmaydi
-      - Session auto-commit / auto-rollback (get_session context manager)
-      - Race condition: ikki so'rov bir vaqtda kelsa ham xavfsiz
-
-    Returns:
-        User obyekti yoki None (faqat jiddiy DB xatosida)
-    """
+    """Foydalanuvchini olish yoki yangi yaratish."""
     try:
         async with get_session() as session:
             user = await session.get(User, tg_id)
-
             if user is not None:
-                # Mavjud foydalanuvchi — username/full_name yangilash
                 if username and user.username != username:
                     user.username = username
                 if full_name and user.full_name != full_name:
                     user.full_name = full_name
                 return user
 
-            # Yangi foydalanuvchi yaratish
             user = User(
                 tg_id=tg_id,
                 username=username,
@@ -167,13 +104,193 @@ async def get_or_create_user(
                 docs_count=0,
             )
             session.add(user)
-            await session.flush()  # ID ni olish uchun
-            logger.info(f"Yangi foydalanuvchi: tg_id={tg_id}, name={full_name}")
+            await session.flush()
+            logger.info(f"Yangi foydalanuvchi: tg_id={tg_id}")
             return user
-
     except Exception as e:
-        logger.error(
-            f"get_or_create_user xatosi: tg_id={tg_id}, error={e}",
-            exc_info=True,
-        )
+        logger.error(f"get_or_create_user xatosi: {e}", exc_info=True)
         return None
+
+
+async def get_user(tg_id: int) -> User | None:
+    """Faqat o'qish — foydalanuvchini olish."""
+    try:
+        async with get_session() as session:
+            return await session.get(User, tg_id)
+    except Exception as e:
+        logger.error(f"get_user xatosi: {e}", exc_info=True)
+        return None
+
+
+# ══════════════════════════════════════════════════════════════
+#  BALANS OPERATSIYALARI (atomik)
+# ══════════════════════════════════════════════════════════════
+
+async def topup_balance(
+    tg_id: int,
+    amount: int,
+    provider: str,
+    provider_tx_id: str | None = None,
+) -> Transaction | None:
+    """Hisobni to'ldirish + tranzaksiyani yozish (atomik)."""
+    try:
+        async with get_session() as session:
+            user = await session.get(User, tg_id)
+            if not user:
+                logger.warning(f"topup_balance: user topilmadi tg_id={tg_id}")
+                return None
+
+            user.balance += amount
+
+            tx = Transaction(
+                user_tg_id=tg_id,
+                tx_type="topup",
+                amount=amount,
+                provider=provider,
+                provider_tx_id=provider_tx_id,
+                status="success",
+                description=f"{provider} orqali {amount} so'm kiritildi",
+            )
+            session.add(tx)
+            await session.flush()
+            logger.info(f"Topup: user={tg_id}, +{amount}, provider={provider}")
+            return tx
+    except Exception as e:
+        logger.error(f"topup_balance xatosi: {e}", exc_info=True)
+        return None
+
+
+async def deduct_balance(
+    tg_id: int,
+    price: int,
+    description: str = "",
+) -> Transaction | None:
+    """
+    Balansdan pul yechish.
+    Yetarli mablag' bo'lmasa None qaytaradi.
+    Race condition'dan himoya: SELECT ... FOR UPDATE.
+    """
+    try:
+        async with get_session() as session:
+            result = await session.execute(
+                select(User).where(User.tg_id == tg_id).with_for_update()
+            )
+            user = result.scalar_one_or_none()
+
+            if not user or user.balance < price:
+                return None
+
+            user.balance -= price
+            user.docs_count += 1
+
+            tx = Transaction(
+                user_tg_id=tg_id,
+                tx_type="purchase",
+                amount=price,
+                provider="internal",
+                status="success",
+                description=description or f"Obektivka uchun {price} so'm",
+            )
+            session.add(tx)
+            await session.flush()
+            logger.info(f"Deduct: user={tg_id}, -{price}, balance={user.balance}")
+            return tx
+    except Exception as e:
+        logger.error(f"deduct_balance xatosi: {e}", exc_info=True)
+        return None
+
+
+# ══════════════════════════════════════════════════════════════
+#  SHABLON (TEMPLATE)
+# ══════════════════════════════════════════════════════════════
+
+async def save_template(
+    tg_id: int,
+    data: dict,
+    name: str | None = None,
+) -> Template | None:
+    """Foydalanuvchining shablonini saqlash (eski default-ni o'chirib)."""
+    try:
+        async with get_session() as session:
+            await session.execute(
+                update(Template)
+                .where(Template.user_tg_id == tg_id, Template.is_default == True)
+                .values(is_default=False)
+            )
+
+            tpl = Template(
+                user_tg_id=tg_id,
+                name=name or data.get("fullname", "Nomsiz"),
+                data=data,
+                is_default=True,
+            )
+            session.add(tpl)
+            await session.flush()
+            return tpl
+    except Exception as e:
+        logger.error(f"save_template xatosi: {e}", exc_info=True)
+        return None
+
+
+async def get_default_template(tg_id: int) -> dict | None:
+    """Foydalanuvchining oxirgi shablonini qaytarish."""
+    try:
+        async with get_session() as session:
+            result = await session.execute(
+                select(Template)
+                .where(Template.user_tg_id == tg_id, Template.is_default == True)
+                .order_by(Template.updated_at.desc())
+                .limit(1)
+            )
+            tpl = result.scalar_one_or_none()
+            return tpl.data if tpl else None
+    except Exception as e:
+        logger.error(f"get_default_template xatosi: {e}", exc_info=True)
+        return None
+
+
+# ══════════════════════════════════════════════════════════════
+#  HUJJAT ARXIVI
+# ══════════════════════════════════════════════════════════════
+
+async def save_document(
+    tg_id: int,
+    file_id: str,
+    file_name: str,
+    fullname: str,
+    script: str,
+    price_paid: int,
+) -> Document | None:
+    """Sotib olingan hujjatni arxivga saqlash (file_id bilan)."""
+    try:
+        async with get_session() as session:
+            doc = Document(
+                user_tg_id=tg_id,
+                file_id=file_id,
+                file_name=file_name,
+                fullname=fullname,
+                script=script,
+                price_paid=price_paid,
+            )
+            session.add(doc)
+            await session.flush()
+            return doc
+    except Exception as e:
+        logger.error(f"save_document xatosi: {e}", exc_info=True)
+        return None
+
+
+async def get_user_documents(tg_id: int, limit: int = 20) -> list[Document]:
+    """Foydalanuvchining oxirgi hujjatlari (arxiv)."""
+    try:
+        async with get_session() as session:
+            result = await session.execute(
+                select(Document)
+                .where(Document.user_tg_id == tg_id)
+                .order_by(Document.created_at.desc())
+                .limit(limit)
+            )
+            return list(result.scalars().all())
+    except Exception as e:
+        logger.error(f"get_user_documents xatosi: {e}", exc_info=True)
+        return []
