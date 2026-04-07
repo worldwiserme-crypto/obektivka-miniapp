@@ -149,33 +149,25 @@ async def show_balance(callback: CallbackQuery):
         reply_markup=kb,
     )
 
-
 @router.callback_query(F.data == "topup_menu")
 async def topup_menu(callback: CallbackQuery):
-    """To'ldirish variantlarini ko'rsatish — P2P (karta-ga o'tkazma)."""
+    """Hisobni to'ldirish — faqat Telegram Stars."""
     await callback.answer()
 
-    amounts = [5_000, 10_000, 25_000, 50_000]
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text=f"{price_text(a)}",
-            callback_data=f"p2p_topup_{a}"
-        )] for a in amounts
-    ] + [
         [InlineKeyboardButton(text="✦  Telegram Stars bilan to'lash", callback_data="topup_stars")],
         [InlineKeyboardButton(text="←  Bosh menyu", callback_data="back_main")],
     ])
 
     await callback.message.answer(
         "<b>Hisobni to'ldirish</b>\n"
-        "<i>karta orqali xavfsiz to'lov</i>\n\n"
-        "\u00a0\u00a0\u00a0Quyidagi summalardan birini tanlang.\n"
-        "\u00a0\u00a0\u00a0To'lov chekingiz <b>5–15 daqiqa</b>\n"
-        "\u00a0\u00a0\u00a0ichida tasdiqlanadi.\n\n"
-        "<i>Yoki Telegram Stars orqali bir bosishda to'lang.</i>",
+        "<i>xavfsiz to'lov usuli</i>\n\n"
+        "\u00a0\u00a0\u00a0Telegram Stars orqali bir bosishda\n"
+        "\u00a0\u00a0\u00a0to'lang. Tasdiqlash darhol amalga\n"
+        "\u00a0\u00a0\u00a0oshadi.\n\n"
+        f"<i>narx</i>  ·  <b>{price_text(DOC_PRICE)}</b> / hujjat",
         reply_markup=kb,
     )
-
 
 # ─── Telegram Stars bilan to'lov ───
 
