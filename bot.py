@@ -619,7 +619,16 @@ async def main():
     app.router.add_post("/payment/callback", payment_webhook)
 
     # Telegram webhook
-    await bot.set_webhook(f"{WEBHOOK_HOST}/webhook")
+    await bot.set_webhook(
+    f"{WEBHOOK_HOST}/webhook",
+    allowed_updates=[
+        "message",
+        "callback_query",
+        "pre_checkout_query",
+        "successful_payment",
+    ],
+    drop_pending_updates=True,
+)
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
     setup_application(app, dp, bot=bot)
 
