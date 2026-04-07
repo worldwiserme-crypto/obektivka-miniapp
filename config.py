@@ -23,3 +23,8 @@ WATERMARK_TEXT = "NAMUNA"
 
 # ─── Fayl saqlash ───
 TEMP_DIR = "/tmp/obj"
+# ─── Admin panel sozlamalari ───
+ADMIN_GROUP_ID = int(os.getenv("ADMIN_GROUP_ID", "0"))
+ADMIN_LIST = [
+    int(x.strip()) for x in os.getenv("ADMIN_LIST", "").split(",") if x.strip().isdigit()
+]
