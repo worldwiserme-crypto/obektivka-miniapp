@@ -38,7 +38,7 @@ from database import (
 )
 from generator import generate
 from preview import generate_preview
-from payment_p2p import p2p_router
+from payment_fsm import payment_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
 router = Router()
-dp.include_router(p2p_router)   # P2P to'lov — birinchi (FSM handler'lar ustuvorlik oladi)
+dp.include_router(payment_router)# P2P to'lov — birinchi (FSM handler'lar ustuvorlik oladi)
 dp.include_router(router)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
