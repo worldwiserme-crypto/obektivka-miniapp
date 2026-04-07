@@ -1,14 +1,5 @@
 """
-Obektivka Bot — Asosiy Bot Fayli (Kengaytirilgan)
-
-Modullar:
-  1. To'lov va Balans tizimi (Telegram Stars + Click/Payme)
-  2. Preview (namuna rasm) + watermark
-  3. Arxiv va Shablonlar (user retention)
-
-Arxitektura:
-  WebApp → /submit (JSON) → DOCX yaratish → Preview rasm →
-  → Foydalanuvchiga namuna ko'rsatish → To'lov → Asl fayl berish
+Yo'lchi Bot — Premium UI versiya
 """
 
 import asyncio
@@ -48,7 +39,7 @@ bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTM
 dp = Dispatcher()
 router = Router()
 dp.include_router(admin_router)
-dp.include_router(payment_router)# P2P to'lov — birinchi (FSM handler'lar ustuvorlik oladi)
+dp.include_router(payment_router)
 dp.include_router(router)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +50,6 @@ HTML_PATH = os.path.join(BASE_DIR, "index.html")
 #  YORDAMCHI FUNKSIYALAR
 # ══════════════════════════════════════════════════════════════
 
-# O'zbek tilidagi qisqa oy nomlari (premium sana formati uchun)
 _MONTHS_UZ = {
     1: "yan", 2: "fev", 3: "mar", 4: "apr", 5: "may", 6: "iyn",
     7: "iyl", 8: "avg", 9: "sen", 10: "okt", 11: "noy", 12: "dek",
@@ -67,62 +57,73 @@ _MONTHS_UZ = {
 
 
 def price_text(amount: int) -> str:
-    """Narxni chiroyli formatda ko'rsatish."""
     return f"{amount:,}".replace(",", " ") + " so'm"
 
 
-def balance_text(user) -> str:
-    return f"<b>{price_text(user.balance)}</b>"
-
-
 def fmt_date(dt: datetime) -> str:
-    """Premium sana formati: 21 apr 2026"""
     return f"{dt.day} {_MONTHS_UZ[dt.month]} {dt.year}"
 
 
-# ──────────────────────────────────────────────
-#  Vaqtinchalik fayl ma'lumotlarini xotirada saqlash
-# ──────────────────────────────────────────────
 _pending_docs: dict[int, dict] = {}
 
 
 # ══════════════════════════════════════════════════════════════
-#  1. /start — BOSHLASH
+#  1. KIRISH SAHIFASI VA ASOSIY MENYU
 # ══════════════════════════════════════════════════════════════
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
+    """Kirish sahifasi — har safar ko'rsatiladi."""
     tg_id = message.from_user.id
-    user = await get_or_create_user(
+    await get_or_create_user(
         tg_id,
         username=message.from_user.username,
         full_name=message.from_user.full_name,
     )
 
-    url = f"{WEBHOOK_HOST}/app?tg_id={tg_id}"
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text="◆  Yangi obektivka yaratish",
-            web_app=WebAppInfo(url=url)
-        )],
-        [
-            InlineKeyboardButton(text="◷  Hisobim", callback_data="my_balance"),
-            InlineKeyboardButton(text="◳  Hujjatlarim", callback_data="my_docs"),
-        ],
-        [InlineKeyboardButton(text="✦  Hisobni to'ldirish", callback_data="topup_menu")],
+        [InlineKeyboardButton(text="Boshlash", callback_data="main_menu")],
     ])
 
     await message.answer(
-        f"<b>Obektivka</b>\n"
-        f"<i>Rasmiy ma'lumotnoma generatori</i>\n\n"
-        f"\u00a0\u00a0\u00a0Bir necha daqiqada to'liq\n"
-        f"\u00a0\u00a0\u00a0rasmiy hujjat — Word formatda,\n"
-        f"\u00a0\u00a0\u00a0ikkala alifboda.\n\n"
-        f"<i>narx</i>\u00a0\u00a0\u00a0\u00a0\u00a0<b>{price_text(DOC_PRICE)}</b> / hujjat\n"
-        f"<i>balans</i>\u00a0\u00a0\u00a0{balance_text(user)}\n\n"
-        f"<i>Boshlash uchun pastdagi tugmani bosing.</i>",
+        "<b>Assalomu alaykum!</b>\n\n"
+        "Yo'lchi bot sizga rasmiy obektivka hujjatini "
+        "bir necha daqiqada tayyorlab beradi.\n\n"
+        "💳  Word formatda tayyor hujjat\n"
+        "📄  Lotin va kirill alifbosida\n"
+        "⚡  Bir necha daqiqada tayyor\n\n"
+        "Hujjat rasmiy standartga to'liq mos va "
+        "chop etishga tayyor holatda beriladi.",
         reply_markup=kb,
     )
+
+
+@router.callback_query(F.data == "main_menu")
+async def show_main_menu(callback: CallbackQuery):
+    """Asosiy menyu — Boshlash bosilgandan keyin."""
+    tg_id = callback.from_user.id
+    await callback.answer()
+
+    user = await get_or_create_user(tg_id)
+    url = f"{WEBHOOK_HOST}/app?tg_id={tg_id}"
+
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📝 Obektivka yaratish", web_app=WebAppInfo(url=url))],
+        [InlineKeyboardButton(text="💰 Balansim", callback_data="my_balance")],
+        [InlineKeyboardButton(text="📄 Hujjatlarim", callback_data="my_docs")],
+    ])
+
+    await callback.message.answer(
+        f"<b>Tayyor!</b>\n\n"
+        f"Quyidagi tugmalardan birini tanlang.\n\n"
+        f"Sizning balansingiz: <b>{price_text(user.balance)}</b>",
+        reply_markup=kb,
+    )
+
+
+@router.callback_query(F.data == "back_main")
+async def back_to_main(callback: CallbackQuery):
+    await show_main_menu(callback)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -135,55 +136,43 @@ async def show_balance(callback: CallbackQuery):
     await callback.answer()
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✦  Hisobni to'ldirish", callback_data="topup_menu")],
-        [InlineKeyboardButton(text="←  Bosh menyu", callback_data="back_main")],
+        [InlineKeyboardButton(text="💳 To'ldirish", callback_data="topup_menu")],
+        [InlineKeyboardButton(text="← Ortga", callback_data="main_menu")],
     ])
 
     await callback.message.answer(
-        f"<b>Hisobim</b>\n"
-        f"<i>shaxsiy hisob holati</i>\n\n"
-        f"<i>joriy balans</i>\n"
-        f"{balance_text(user)}\n\n"
-        f"<i>yaratilgan hujjatlar</i>\n"
-        f"<b>{user.docs_count} ta</b>",
+        f"<b>Balansingiz</b>\n\n"
+        f"Hozirgi balans: <b>{price_text(user.balance)}</b>\n"
+        f"Yaratilgan hujjatlar: <b>{user.docs_count} ta</b>",
         reply_markup=kb,
     )
 
+
 @router.callback_query(F.data == "topup_menu")
 async def topup_menu(callback: CallbackQuery):
-    """Hisobni to'ldirish — ikki usul bir qatorda."""
     await callback.answer()
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(
-                text=f"◆  Karta  ·  {price_text(DOC_PRICE)}",
-                callback_data="p2p_pay"
-            ),
-            InlineKeyboardButton(
-                text=f"✦  Stars  ·  {STARS_PER_DOC} ⭐",
-                callback_data="topup_stars"
-            ),
+            InlineKeyboardButton(text=f"💳 Karta · {price_text(DOC_PRICE)}", callback_data="p2p_pay"),
+            InlineKeyboardButton(text=f"⭐ Stars · {STARS_PER_DOC}", callback_data="topup_stars"),
         ],
-        [InlineKeyboardButton(text="←  Bosh menyu", callback_data="back_main")],
+        [InlineKeyboardButton(text="← Ortga", callback_data="my_balance")],
     ])
 
     await callback.message.answer(
-        "<b>Hisobni to'ldirish</b>\n"
-        "<i>ikki usul — bitta narx</i>\n\n"
-        "\u00a0\u00a0\u00a0<b>Karta</b>  ·  admin tomonidan\n"
-        "\u00a0\u00a0\u00a0qo'lda tasdiqlanadi (5–15 daq.)\n\n"
-        "\u00a0\u00a0\u00a0<b>Stars</b>  ·  darhol avtomatik\n"
-        "\u00a0\u00a0\u00a0tasdiqlanadi\n\n"
-        f"<i>narx</i>  ·  <b>{price_text(DOC_PRICE)}</b>",
+        "<b>Hisobni to'ldirish</b>\n\n"
+        "Quyidagi usullardan birini tanlang.\n\n"
+        "Karta orqali to'lov admin tomonidan 5–15 daqiqada "
+        "tasdiqlanadi. Telegram Stars esa darhol tasdiqlanadi.",
         reply_markup=kb,
     )
+
 
 # ─── Telegram Stars bilan to'lov ───
 
 @router.callback_query(F.data == "topup_stars")
 async def topup_with_stars(callback: CallbackQuery):
-    """Telegram Stars invoice yaratish."""
     await callback.answer()
     await bot.send_invoice(
         chat_id=callback.from_user.id,
@@ -197,13 +186,11 @@ async def topup_with_stars(callback: CallbackQuery):
 
 @router.pre_checkout_query()
 async def process_pre_checkout(pre_checkout: PreCheckoutQuery):
-    """Stars to'lovini tasdiqlash."""
     await pre_checkout.answer(ok=True)
 
 
 @router.message(F.successful_payment)
 async def process_successful_payment(message: Message):
-    """Stars to'lovi muvaffaqiyatli bo'lganda."""
     tg_id = message.from_user.id
     payment = message.successful_payment
 
@@ -216,19 +203,15 @@ async def process_successful_payment(message: Message):
 
     user = await get_user(tg_id)
     await message.answer(
-        f"<b>To'lov qabul qilindi</b>\n"
-        f"<i>tranzaksiya muvaffaqiyatli yakunlandi</i>\n\n"
-        f"<i>qabul qilindi</i>\n"
-        f"<b>{STARS_PER_DOC} ⭐</b>\n\n"
-        f"<i>yangi balans</i>\n"
-        f"{balance_text(user)}\n\n"
-        f"<i>Endi obektivkangizni yaratishingiz mumkin.</i>"
+        f"<b>To'lov qabul qilindi!</b>\n\n"
+        f"Hisobingiz <b>{price_text(DOC_PRICE)}</b> miqdorida to'ldirildi. "
+        f"Endi obektivka yaratishingiz mumkin."
     )
 
     await _try_deliver_pending(tg_id)
 
 
-# ─── Click/Payme to'lov (webhook callback) ───
+# ─── Click/Payme webhook ───
 
 async def payment_webhook(request):
     try:
@@ -251,12 +234,8 @@ async def payment_webhook(request):
             try:
                 await bot.send_message(
                     tg_id,
-                    f"<b>Hisob to'ldirildi</b>\n"
-                    f"<i>tranzaksiya muvaffaqiyatli</i>\n\n"
-                    f"<i>qo'shildi</i>\n"
-                    f"<b>+ {price_text(amount)}</b>\n\n"
-                    f"<i>yangi balans</i>\n"
-                    f"{balance_text(user)}"
+                    f"<b>Hisob to'ldirildi!</b>\n\n"
+                    f"Balansingizga <b>{price_text(amount)}</b> qo'shildi."
                 )
                 await _try_deliver_pending(tg_id)
             except Exception:
@@ -270,7 +249,7 @@ async def payment_webhook(request):
 
 
 # ══════════════════════════════════════════════════════════════
-#  3. WEBAPP /submit — PREVIEW VA TO'LOV OQIMI
+#  3. WEBAPP /submit
 # ══════════════════════════════════════════════════════════════
 
 async def serve_app(request):
@@ -308,11 +287,9 @@ async def submit(request):
 
         loading_msg = await bot.send_message(
             tg_id,
-            "<b>Hujjat tayyorlanmoqda</b>\n"
-            "<i>bir necha soniya kuting</i>\n\n"
-            "\u00a0\u00a0\u00a0Ma'lumotlaringiz qabul qilindi.\n"
-            "\u00a0\u00a0\u00a0Word faylni shakllantiramiz va\n"
-            "\u00a0\u00a0\u00a0namuna ko'rinishini tayyorlaymiz."
+            "<b>Hujjat tayyorlanmoqda...</b>\n\n"
+            "Ma'lumotlaringiz qabul qilindi. Word fayl va namuna "
+            "ko'rinishini tayyorlash bir necha soniya vaqt oladi."
         )
 
         os.makedirs(TEMP_DIR, exist_ok=True)
@@ -339,24 +316,18 @@ async def submit(request):
         if user.has_enough_balance(DOC_PRICE):
             kb = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(
-                    text=f"◆  Hisobdan to'lash  ·  {price_text(DOC_PRICE)}",
+                    text=f"✓ Hisobdan to'lash · {price_text(DOC_PRICE)}",
                     callback_data="pay_from_balance"
                 )],
-                [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="cancel_doc")],
+                [InlineKeyboardButton(text="✕ Bekor qilish", callback_data="cancel_doc")],
             ])
         else:
             kb = InlineKeyboardMarkup(inline_keyboard=[
                 [
-                    InlineKeyboardButton(
-                        text=f"◆  Karta  ·  {price_text(DOC_PRICE)}",
-                        callback_data="p2p_pay"
-                    ),
-                    InlineKeyboardButton(
-                        text=f"✦  Stars  ·  {STARS_PER_DOC} ⭐",
-                        callback_data="topup_stars"
-                    ),
+                    InlineKeyboardButton(text=f"💳 Karta · {price_text(DOC_PRICE)}", callback_data="p2p_pay"),
+                    InlineKeyboardButton(text=f"⭐ Stars · {STARS_PER_DOC}", callback_data="topup_stars"),
                 ],
-                [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="cancel_doc")],
+                [InlineKeyboardButton(text="✕ Bekor qilish", callback_data="cancel_doc")],
             ])
 
         if preview_images:
@@ -364,18 +335,10 @@ async def submit(request):
             for i, img_bytes in enumerate(preview_images[:2]):
                 caption = None
                 if i == 0:
-                    script_label = "Кирилл" if script == "cyr" else "Lotin"
                     caption = (
-                        f"<b>Namuna tayyor</b>\n"
-                        f"<i>quyida hujjatingizning ko'rinishi</i>\n\n"
-                        f"<i>kim uchun</i>\n"
-                        f"<b>{data.get('fullname', '—')}</b>\n\n"
-                        f"<i>alifbo</i>\n"
-                        f"<b>{script_label}</b>\n\n"
-                        f"<i>narx</i>\n"
-                        f"<b>{price_text(DOC_PRICE)}</b>\n\n"
-                        f"<i>balans</i>\n"
-                        f"<b>{price_text(user.balance)}</b>"
+                        "<b>Namuna tayyor!</b>\n\n"
+                        "Yuqoridagi rasm sizning hujjatingizning "
+                        "ko'rinishi. Asl nusxani olish uchun to'lov qiling."
                     )
                 media_group.append(InputMediaPhoto(
                     media=BufferedInputFile(img_bytes, filename=f"preview_{i+1}.jpg"),
@@ -385,25 +348,15 @@ async def submit(request):
             await bot.send_media_group(tg_id, media=media_group)
             await bot.send_message(
                 tg_id,
-                "<b>Asl nusxani olish</b>\n"
-                "<i>to'lov usulini tanlang</i>\n\n"
-                "\u00a0\u00a0\u00a0Yuqoridagi rasmlar — namuna.\n"
-                "\u00a0\u00a0\u00a0To'lovdan so'ng sizga\n"
-                "\u00a0\u00a0\u00a0watermark<b>siz</b> Word fayl\n"
-                "\u00a0\u00a0\u00a0yuboriladi.",
+                "Asl nusxani olish uchun to'lov usulini tanlang:",
                 reply_markup=kb,
             )
         else:
             await bot.send_message(
                 tg_id,
-                f"<b>Hujjat tayyor</b>\n"
-                f"<i>to'lovdan so'ng yuboriladi</i>\n\n"
-                f"<i>kim uchun</i>\n"
-                f"<b>{data.get('fullname', '—')}</b>\n\n"
-                f"<i>narx</i>\n"
-                f"<b>{price_text(DOC_PRICE)}</b>\n\n"
-                f"<i>balans</i>\n"
-                f"<b>{price_text(user.balance)}</b>",
+                f"<b>Hujjat tayyor!</b>\n\n"
+                f"To'lovdan so'ng asl nusxa yuboriladi.\n\n"
+                f"Narx: <b>{price_text(DOC_PRICE)}</b>",
                 reply_markup=kb,
             )
 
@@ -415,11 +368,9 @@ async def submit(request):
             try:
                 await bot.send_message(
                     tg_id,
-                    f"<b>Xatolik yuz berdi</b>\n"
-                    f"<i>hujjatni tayyorlab bo'lmadi</i>\n\n"
-                    f"<i>sabab</i>\n"
-                    f"<code>{str(e)[:200]}</code>\n\n"
-                    f"<i>Iltimos, /start orqali qayta boshlang.</i>"
+                    "<b>Xatolik yuz berdi</b>\n\n"
+                    "Hujjatni tayyorlab bo'lmadi. Iltimos, /start "
+                    "orqali qayta urinib ko'ring."
                 )
             except Exception:
                 pass
@@ -438,11 +389,9 @@ async def pay_from_balance(callback: CallbackQuery):
     pending = _pending_docs.get(tg_id)
     if not pending:
         await callback.message.answer(
-            "<b>Hujjat topilmadi</b>\n"
-            "<i>kutayotgan namuna mavjud emas</i>\n\n"
-            "\u00a0\u00a0\u00a0Hujjat eskirgan yoki tizimdan\n"
-            "\u00a0\u00a0\u00a0o'chirilgan bo'lishi mumkin.\n\n"
-            "<i>Yangi obektivka yaratish uchun /start bosing.</i>"
+            "<b>Hujjat topilmadi</b>\n\n"
+            "Kutayotgan namuna mavjud emas. Yangi obektivka "
+            "yaratish uchun /start bosing."
         )
         return
 
@@ -450,14 +399,10 @@ async def pay_from_balance(callback: CallbackQuery):
     if not tx:
         user = await get_user(tg_id)
         await callback.message.answer(
-            f"<b>Mablag' yetarli emas</b>\n"
-            f"<i>balansingizni to'ldirishingiz kerak</i>\n\n"
-            f"<i>joriy balans</i>\n"
-            f"{balance_text(user)}\n\n"
-            f"<i>kerak</i>\n"
-            f"<b>{price_text(DOC_PRICE)}</b>\n\n"
-            f"<i>yetishmaydi</i>\n"
-            f"<b>{price_text(DOC_PRICE - user.balance)}</b>"
+            f"<b>Mablag' yetarli emas</b>\n\n"
+            f"Hozirgi balans: <b>{price_text(user.balance)}</b>\n"
+            f"Kerak: <b>{price_text(DOC_PRICE)}</b>\n"
+            f"Yetishmaydi: <b>{price_text(DOC_PRICE - user.balance)}</b>"
         )
         return
 
@@ -494,14 +439,11 @@ async def _deliver_document(tg_id: int, pending: dict):
             tg_id,
             document=BufferedInputFile(file_data, filename=f"{fullname}.docx"),
             caption=(
-                f"<b>Obektivkangiz tayyor</b>\n"
-                f"<i>asl nusxa, watermark yo'q</i>\n\n"
-                f"<i>format</i>\n"
-                f"<b>Word (.docx)</b>\n\n"
-                f"<i>alifbo</i>\n"
-                f"<b>{script_label}</b>\n\n"
-                f"<i>Hujjat «Hujjatlarim» bo'limida saqlandi —\n"
-                f"istalgan vaqt qayta yuklab olishingiz mumkin.</i>"
+                f"<b>Obektivkangiz tayyor!</b>\n\n"
+                f"Asl nusxa, watermarkasiz. Word formatda, "
+                f"{script_label} alifbosida.\n\n"
+                f"Hujjat arxivda saqlandi — istalgan vaqtda "
+                f"\"Hujjatlarim\" bo'limidan qayta yuklab olishingiz mumkin."
             ),
         )
 
@@ -523,22 +465,22 @@ async def _deliver_document(tg_id: int, pending: dict):
 
         user = await get_user(tg_id)
         if user:
+            kb = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="📝 Yangi obektivka", callback_data="main_menu")],
+            ])
             await bot.send_message(
                 tg_id,
-                f"<i>qoldiq balans</i>\n"
-                f"{balance_text(user)}"
+                f"Qoldiq balans: <b>{price_text(user.balance)}</b>",
+                reply_markup=kb,
             )
 
     except Exception as e:
         logger.error(f"Fayl berish xatosi: {e}", exc_info=True)
         await bot.send_message(
             tg_id,
-            f"<b>Faylni yuborib bo'lmadi</b>\n"
-            f"<i>texnik nosozlik yuz berdi</i>\n\n"
-            f"<i>sabab</i>\n"
-            f"<code>{str(e)[:200]}</code>\n\n"
-            f"<i>Hisobingizdan summa yechilmadi.\n"
-            f"Qayta urinib ko'ring.</i>"
+            "<b>Faylni yuborib bo'lmadi</b>\n\n"
+            "Texnik nosozlik yuz berdi. Hisobingizdan summa "
+            "yechilmadi. Qayta urinib ko'ring."
         )
 
 
@@ -553,18 +495,21 @@ async def cancel_doc(callback: CallbackQuery):
             pass
 
     await callback.answer("Bekor qilindi")
+
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")],
+    ])
+
     await callback.message.answer(
-        "<b>Bekor qilindi</b>\n"
-        "<i>hujjat yaratish to'xtatildi</i>\n\n"
-        "\u00a0\u00a0\u00a0Hech qanday summa yechilmadi.\n"
-        "\u00a0\u00a0\u00a0Istalgan vaqt qayta boshlashingiz\n"
-        "\u00a0\u00a0\u00a0mumkin.\n\n"
-        "<i>Yangi obektivka uchun /start bosing.</i>"
+        "<b>Bekor qilindi</b>\n\n"
+        "Hech qanday summa yechilmadi. Istalgan vaqtda "
+        "qaytadan urinib ko'rishingiz mumkin.",
+        reply_markup=kb,
     )
 
 
 # ══════════════════════════════════════════════════════════════
-#  5. ARXIV — "MENING HUJJATLARIM"
+#  5. HUJJATLARIM ARXIVI
 # ══════════════════════════════════════════════════════════════
 
 @router.callback_query(F.data == "my_docs")
@@ -583,38 +528,29 @@ async def send_docs_list(tg_id: int):
 
     if not docs:
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="◆  Birinchi hujjatni yaratish", callback_data="back_main")],
+            [InlineKeyboardButton(text="📝 Birinchi hujjatni yaratish", callback_data="main_menu")],
         ])
         await bot.send_message(
             tg_id,
-            "<b>Hujjatlarim</b>\n"
-            "<i>shaxsiy arxiv</i>\n\n"
-            "\u00a0\u00a0\u00a0Hozircha hech qanday hujjat\n"
-            "\u00a0\u00a0\u00a0yaratilmagan.\n\n"
-            "<i>Birinchi obektivkangizni yarating —\n"
-            "u shu yerda saqlanadi.</i>",
+            "<b>Hujjatlarim</b>\n\n"
+            "Hozircha hech qanday hujjat yaratilmagan. "
+            "Birinchi obektivkangizni yarating — u shu yerda saqlanadi.",
             reply_markup=kb,
         )
         return
 
-    text = (
-        f"<b>Hujjatlarim</b>\n"
-        f"<i>oxirgi {len(docs)} ta hujjat</i>\n\n"
-    )
+    text = f"<b>Hujjatlarim</b>\n\nOxirgi {len(docs)} ta hujjat:\n\n"
     buttons = []
     for i, doc in enumerate(docs, 1):
         date_str = fmt_date(doc.created_at)
         script_label = "Кирилл" if doc.script == "cyr" else "Lotin"
-        text += (
-            f"<b>{i}.  {doc.fullname or '—'}</b>\n"
-            f"\u00a0\u00a0\u00a0\u00a0<i>{date_str}  ·  {script_label}</i>\n\n"
-        )
+        text += f"<b>{i}. {doc.fullname or '—'}</b>\n{date_str} · {script_label}\n\n"
         buttons.append([InlineKeyboardButton(
-            text=f"⬇  {i}.  {doc.fullname or 'Hujjat'}",
+            text=f"⬇ {i}. {doc.fullname or 'Hujjat'}",
             callback_data=f"dl_doc_{doc.id}",
         )])
 
-    buttons.append([InlineKeyboardButton(text="←  Bosh menyu", callback_data="back_main")])
+    buttons.append([InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")])
 
     kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     await bot.send_message(tg_id, text, reply_markup=kb)
@@ -630,29 +566,20 @@ async def download_doc(callback: CallbackQuery):
     doc = next((d for d in docs if d.id == doc_id), None)
 
     if not doc:
-        await callback.message.answer(
-            "<b>Hujjat topilmadi</b>\n"
-            "<i>arxivda mavjud emas</i>"
-        )
+        await callback.message.answer("<b>Hujjat topilmadi</b>")
         return
 
     try:
         await bot.send_document(
             tg_id,
             document=doc.file_id,
-            caption=(
-                f"<b>{doc.fullname}</b>\n"
-                f"<i>{fmt_date(doc.created_at)}</i>"
-            ),
+            caption=f"<b>{doc.fullname}</b>\n{fmt_date(doc.created_at)}",
         )
     except Exception as e:
         logger.error(f"Arxivdan yuklab bo'lmadi: {e}")
         await callback.message.answer(
-            "<b>Faylni yuklab bo'lmadi</b>\n"
-            "<i>hujjat eskirgan bo'lishi mumkin</i>\n\n"
-            "\u00a0\u00a0\u00a0Telegram fayl serverida hujjat\n"
-            "\u00a0\u00a0\u00a0muddati o'tib ketgan.\n\n"
-            "<i>Yangisini yarating — /start</i>"
+            "<b>Faylni yuklab bo'lmadi</b>\n\n"
+            "Hujjat eskirgan bo'lishi mumkin. Yangisini yarating."
         )
 
 
@@ -665,44 +592,36 @@ async def cmd_balance(message: Message):
     user = await get_or_create_user(message.from_user.id)
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✦  Hisobni to'ldirish", callback_data="topup_menu")],
+        [InlineKeyboardButton(text="💳 To'ldirish", callback_data="topup_menu")],
+        [InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")],
     ])
 
     await message.answer(
-        f"<b>Hisobim</b>\n"
-        f"<i>shaxsiy hisob holati</i>\n\n"
-        f"<i>joriy balans</i>\n"
-        f"{balance_text(user)}\n\n"
-        f"<i>yaratilgan hujjatlar</i>\n"
-        f"<b>{user.docs_count} ta</b>",
+        f"<b>Balansingiz</b>\n\n"
+        f"Hozirgi balans: <b>{price_text(user.balance)}</b>\n"
+        f"Yaratilgan hujjatlar: <b>{user.docs_count} ta</b>",
         reply_markup=kb,
     )
 
 
 @router.message(Command("help"))
 async def cmd_help(message: Message):
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")],
+    ])
+
     await message.answer(
-        f"<b>Yordam</b>\n"
-        f"<i>bot bilan ishlash bo'yicha qo'llanma</i>\n\n"
-        f"<b>Buyruqlar</b>\n\n"
-        f"<i>/start</i>\n"
-        f"Bosh menyu va yangi hujjat yaratish\n\n"
-        f"<i>/balance</i>\n"
-        f"Hisobingizdagi mablag'\n\n"
-        f"<i>/docs</i>\n"
-        f"Yaratilgan hujjatlar arxivi\n\n"
-        f"<i>/help</i>\n"
-        f"Ushbu sahifa\n\n"
-        f"<b>Narxlar</b>\n\n"
-        f"<i>bitta obektivka</i>\n"
-        f"<b>{price_text(DOC_PRICE)}</b>"
+        f"<b>Yordam</b>\n\n"
+        f"Yo'lchi bot rasmiy obektivka hujjatini tayyorlaydi. "
+        f"Ma'lumotlarni to'ldirasiz, namunani ko'rasiz, to'lov "
+        f"qilasiz va tayyor Word faylni olasiz.\n\n"
+        f"<b>Buyruqlar:</b>\n"
+        f"/start — bosh menyu\n"
+        f"/balance — hisobingiz\n"
+        f"/docs — hujjatlaringiz\n\n"
+        f"Narx: <b>{price_text(DOC_PRICE)}</b> bir hujjat uchun.",
+        reply_markup=kb,
     )
-
-
-@router.callback_query(F.data == "back_main")
-async def back_to_main(callback: CallbackQuery):
-    await callback.answer()
-    await cmd_start(callback.message)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -720,15 +639,15 @@ async def main():
     app.router.add_post("/payment/callback", payment_webhook)
 
     await bot.set_webhook(
-    f"{WEBHOOK_HOST}/webhook",
-    allowed_updates=[
-        "message",
-        "callback_query",
-        "pre_checkout_query",
-        "successful_payment",
-    ],
-    drop_pending_updates=True,
-)
+        f"{WEBHOOK_HOST}/webhook",
+        allowed_updates=[
+            "message",
+            "callback_query",
+            "pre_checkout_query",
+            "successful_payment",
+        ],
+        drop_pending_updates=True,
+    )
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
     setup_application(app, dp, bot=bot)
 
