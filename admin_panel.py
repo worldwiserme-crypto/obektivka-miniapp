@@ -1,10 +1,5 @@
 """
-Obektivka Bot — Admin Panel (Guruh asosida)
-
-Xususiyatlar:
-  1. Guruh ichida to'lovni tasdiqlash (race-condition himoyasi)
-  2. Inline admin dashboard (/admin)
-  3. Broadcast tizimi (flood-safe)
+Yo'lchi Bot — Admin Panel (Premium UI)
 """
 
 import asyncio
@@ -32,7 +27,6 @@ logger = logging.getLogger(__name__)
 
 admin_router = Router(name="admin_panel")
 
-# Qayta ishlanayotgan to'lovlar — ikki marta bosishdan himoya
 _processing_payments: Set[int] = set()
 
 
@@ -45,7 +39,6 @@ def price_text(amount: int) -> str:
 # ══════════════════════════════════════════════════════════════
 
 class IsAdmin(BaseFilter):
-    """Foydalanuvchi admin ekanligini tekshiradi."""
     async def __call__(self, event: Message | CallbackQuery, bot: Bot) -> bool:
         user_id = event.from_user.id
 
@@ -87,24 +80,17 @@ async def send_receipt_to_admin_group(
     photo_file_id: str,
     amount: int,
 ) -> int | None:
-    """Chekni admin guruhiga yuborish."""
     if not ADMIN_GROUP_ID:
         logger.critical("ADMIN_GROUP_ID sozlanmagan!")
         return None
 
     caption = (
-        f"<b>Yangi to'lov cheki</b>\n"
-        f"<i>tasdiqlash kutilmoqda</i>\n\n"
-        f"<i>foydalanuvchi</i>\n"
-        f"<b>{user_full_name}</b>\n\n"
-        f"<i>id</i>\n"
-        f"<code>{user_id}</code>\n\n"
-        f"<i>username</i>\n"
-        f"@{username or '—'}\n\n"
-        f"<i>summa</i>\n"
-        f"<b>{price_text(amount)}</b>\n\n"
-        f"<i>vaqt</i>\n"
-        f"<b>{datetime.now().strftime('%d.%m.%Y  %H:%M')}</b>"
+        f"<b>Yangi to'lov cheki</b>\n\n"
+        f"Foydalanuvchi: <b>{user_full_name}</b>\n"
+        f"ID: <code>{user_id}</code>\n"
+        f"Username: @{username or '—'}\n"
+        f"Summa: <b>{price_text(amount)}</b>\n"
+        f"Vaqt: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
     )
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -128,7 +114,6 @@ async def send_receipt_to_admin_group(
 
 
 def _parse_payment_cb(data: str) -> tuple[str, int, int] | None:
-    """adm_approve:USER_ID:AMOUNT → ('approve', user_id, amount)"""
     try:
         parts = data.split(":")
         action = parts[0].replace("adm_", "")
@@ -139,7 +124,6 @@ def _parse_payment_cb(data: str) -> tuple[str, int, int] | None:
 
 @admin_router.callback_query(F.data.startswith("adm_approve:"), IsAdmin())
 async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
-    """Guruhda admin tasdiqlashni bosganda."""
     parsed = _parse_payment_cb(callback.data)
     if not parsed:
         await callback.answer("Noto'g'ri format", show_alert=True)
@@ -161,8 +145,8 @@ async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
             f"{callback.message.caption}\n\n"
             f"━━━━━━━━━━━━━\n"
             f"✅ <b>TASDIQLANDI</b>\n"
-            f"<i>admin</i>  ·  <b>{admin_mention}</b>\n"
-            f"<i>vaqt</i>  ·  <b>{datetime.now().strftime('%H:%M')}</b>"
+            f"Admin: <b>{admin_mention}</b>\n"
+            f"Vaqt: {datetime.now().strftime('%H:%M')}"
         )
 
         try:
@@ -188,20 +172,13 @@ async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
             )
             return
 
-        user = await get_user(user_id)
-        balance_str = price_text(user.balance) if user else price_text(amount)
-
         try:
             await bot.send_message(
                 chat_id=user_id,
                 text=(
-                    f"<b>To'lov tasdiqlandi</b>\n"
-                    f"<i>hisobingiz to'ldirildi</i>\n\n"
-                    f"<i>qo'shildi</i>\n"
-                    f"<b>+ {price_text(amount)}</b>\n\n"
-                    f"<i>yangi balans</i>\n"
-                    f"<b>{balance_str}</b>\n\n"
-                    f"<i>Obektivka yaratish uchun  ·  /start</i>"
+                    f"<b>To'lov tasdiqlandi!</b>\n\n"
+                    f"Hisobingiz <b>{price_text(amount)}</b> miqdorida "
+                    f"to'ldirildi. Endi obektivka yaratishingiz mumkin."
                 ),
             )
         except TelegramForbiddenError:
@@ -215,7 +192,6 @@ async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
 
 @admin_router.callback_query(F.data.startswith("adm_reject:"), IsAdmin())
 async def admin_reject_payment(callback: CallbackQuery, bot: Bot):
-    """Guruhda admin rad qilishni bosganda."""
     parsed = _parse_payment_cb(callback.data)
     if not parsed:
         await callback.answer("Noto'g'ri format", show_alert=True)
@@ -237,8 +213,8 @@ async def admin_reject_payment(callback: CallbackQuery, bot: Bot):
             f"{callback.message.caption}\n\n"
             f"━━━━━━━━━━━━━\n"
             f"❌ <b>RAD QILINDI</b>\n"
-            f"<i>admin</i>  ·  <b>{admin_mention}</b>\n"
-            f"<i>vaqt</i>  ·  <b>{datetime.now().strftime('%H:%M')}</b>"
+            f"Admin: <b>{admin_mention}</b>\n"
+            f"Vaqt: {datetime.now().strftime('%H:%M')}"
         )
 
         try:
@@ -251,13 +227,10 @@ async def admin_reject_payment(callback: CallbackQuery, bot: Bot):
             await bot.send_message(
                 chat_id=user_id,
                 text=(
-                    f"<b>To'lov tasdiqlanmadi</b>\n"
-                    f"<i>chek qabul qilinmadi</i>\n\n"
-                    f"<i>mumkin bo'lgan sabablar</i>\n"
-                    f"\u00a0\u00a0\u00a0Summa <b>{price_text(amount)}</b> emas\n"
-                    f"\u00a0\u00a0\u00a0Karta raqami boshqa\n"
-                    f"\u00a0\u00a0\u00a0Rasm aniq emas\n\n"
-                    f"<i>Qayta urinish  ·  /start</i>"
+                    f"<b>To'lov tasdiqlanmadi</b>\n\n"
+                    f"Chekingiz qabul qilinmadi. Sabablari: summa "
+                    f"noto'g'ri, karta raqami boshqa yoki rasm aniq emas.\n\n"
+                    f"Qaytadan urinib ko'ring."
                 ),
             )
         except TelegramForbiddenError:
@@ -270,11 +243,10 @@ async def admin_reject_payment(callback: CallbackQuery, bot: Bot):
 
 
 # ══════════════════════════════════════════════════════════════
-#  2. INLINE ADMIN DASHBOARD (/admin)
+#  2. ADMIN DASHBOARD
 # ══════════════════════════════════════════════════════════════
 
 async def _fetch_dashboard_stats() -> dict:
-    """Dashboard uchun statistikalarni olish."""
     async with get_session() as session:
         total_users = await session.scalar(select(func.count(User.tg_id)))
 
@@ -303,7 +275,7 @@ def _dashboard_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="📢 Broadcast", callback_data="adm_broadcast")],
         [InlineKeyboardButton(text="🔍 Foydalanuvchi qidirish", callback_data="adm_find_user")],
         [InlineKeyboardButton(text="🔄 Yangilash", callback_data="adm_refresh")],
-        [InlineKeyboardButton(text="🔙 Yopish", callback_data="adm_close")],
+        [InlineKeyboardButton(text="✕ Yopish", callback_data="adm_close")],
     ])
 
 
@@ -314,19 +286,12 @@ def _dashboard_text(stats: dict) -> str:
     total_docs_str = f"{stats['total_docs']:,}".replace(",", " ")
 
     return (
-        f"<b>⚙️ Admin Dashboard</b>\n"
-        f"<i>umumiy statistika</i>\n\n"
-        f"━━━━━━━━━━━━━━━\n\n"
-        f"<i>jami foydalanuvchilar</i>\n"
-        f"<b>👥 {total_users_str}</b>\n\n"
-        f"<i>to'lov qilganlar</i>\n"
-        f"<b>💳 {paid_users_str}</b>  ·  <i>{conversion:.1f}%</i>\n\n"
-        f"<i>umumiy tushum</i>\n"
-        f"<b>💰 {price_text(stats['total_revenue'])}</b>\n\n"
-        f"<i>yaratilgan hujjatlar</i>\n"
-        f"<b>📄 {total_docs_str}</b>\n\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"<i>yangilangan  ·  {datetime.now().strftime('%H:%M:%S')}</i>"
+        f"<b>Admin Dashboard</b>\n\n"
+        f"Jami foydalanuvchilar: <b>{total_users_str}</b>\n"
+        f"To'lov qilganlar: <b>{paid_users_str}</b> ({conversion:.1f}%)\n"
+        f"Umumiy tushum: <b>{price_text(stats['total_revenue'])}</b>\n"
+        f"Yaratilgan hujjatlar: <b>{total_docs_str}</b>\n\n"
+        f"<i>Yangilangan: {datetime.now().strftime('%H:%M:%S')}</i>"
     )
 
 
@@ -337,7 +302,7 @@ async def cmd_admin(message: Message):
         await message.answer(_dashboard_text(stats), reply_markup=_dashboard_keyboard())
     except Exception as e:
         logger.error(f"Dashboard xatosi: {e}", exc_info=True)
-        await message.answer("❌ Statistikani olishda xato yuz berdi.")
+        await message.answer("<b>Xato</b>\n\nStatistikani olishda muammo yuz berdi.")
 
 
 @admin_router.callback_query(F.data == "adm_refresh", IsAdmin())
@@ -366,8 +331,8 @@ async def find_user_start(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.set_state(AdminStates.find_user_waiting_id)
     await callback.message.answer(
-        "<b>🔍 Foydalanuvchi qidirish</b>\n\n"
-        "Telegram ID ni yuboring (faqat raqam):"
+        "<b>Foydalanuvchi qidirish</b>\n\n"
+        "Telegram ID ni yuboring (faqat raqam)."
     )
 
 
@@ -376,24 +341,24 @@ async def find_user_process(message: Message, state: FSMContext):
     await state.clear()
 
     if not message.text or not message.text.strip().isdigit():
-        await message.answer("❌ Noto'g'ri ID. Faqat raqam kiriting.")
+        await message.answer("<b>Noto'g'ri ID</b>\n\nFaqat raqam kiriting.")
         return
 
     user_id = int(message.text.strip())
     user = await get_user(user_id)
 
     if not user:
-        await message.answer(f"❌ Foydalanuvchi <code>{user_id}</code> topilmadi.")
+        await message.answer(f"<b>Topilmadi</b>\n\nFoydalanuvchi <code>{user_id}</code> mavjud emas.")
         return
 
     await message.answer(
-        f"<b>👤 Foydalanuvchi topildi</b>\n\n"
-        f"<i>id</i>\n<code>{user.tg_id}</code>\n\n"
-        f"<i>ism</i>\n<b>{user.full_name or '—'}</b>\n\n"
-        f"<i>username</i>\n@{user.username or '—'}\n\n"
-        f"<i>balans</i>\n<b>{price_text(user.balance)}</b>\n\n"
-        f"<i>hujjatlar</i>\n<b>{user.docs_count} ta</b>\n\n"
-        f"<i>ro'yxatdan o'tgan</i>\n<b>{user.created_at.strftime('%d.%m.%Y')}</b>"
+        f"<b>Foydalanuvchi topildi</b>\n\n"
+        f"ID: <code>{user.tg_id}</code>\n"
+        f"Ism: <b>{user.full_name or '—'}</b>\n"
+        f"Username: @{user.username or '—'}\n"
+        f"Balans: <b>{price_text(user.balance)}</b>\n"
+        f"Hujjatlar: <b>{user.docs_count} ta</b>\n"
+        f"Ro'yxatdan o'tgan: {user.created_at.strftime('%d.%m.%Y')}"
     )
 
 
@@ -411,11 +376,10 @@ async def broadcast_start(callback: CallbackQuery, state: FSMContext):
     ])
 
     await callback.message.answer(
-        "<b>📢 Broadcast yuborish</b>\n"
-        "<i>barcha foydalanuvchilarga xabar</i>\n\n"
-        "Yubormoqchi bo'lgan xabarni shu yerga yozing.\n"
-        "<i>Matn, rasm, video yoki fayl bo'lishi mumkin.</i>\n\n"
-        "<b>Eslatma:</b> Xabar aynan shu ko'rinishda yuboriladi.",
+        "<b>Broadcast yuborish</b>\n\n"
+        "Yubormoqchi bo'lgan xabarni shu yerga yozing. Matn, "
+        "rasm, video yoki fayl bo'lishi mumkin. Xabar aynan "
+        "shu ko'rinishda barcha foydalanuvchilarga yuboriladi.",
         reply_markup=kb,
     )
 
@@ -424,12 +388,11 @@ async def broadcast_start(callback: CallbackQuery, state: FSMContext):
 async def broadcast_cancel(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.answer("Bekor qilindi")
-    await callback.message.answer("❌ Broadcast bekor qilindi.")
+    await callback.message.answer("<b>Broadcast bekor qilindi</b>")
 
 
 @admin_router.message(AdminStates.broadcast_waiting_message, IsAdmin())
 async def broadcast_preview(message: Message, state: FSMContext):
-    """Adminga xabar preview-ni ko'rsatish."""
     await state.update_data(
         from_chat_id=message.chat.id,
         message_id=message.message_id,
@@ -442,15 +405,14 @@ async def broadcast_preview(message: Message, state: FSMContext):
     total_str = f"{total:,}".replace(",", " ")
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=f"✅ Yuborish ({total_str} ga)", callback_data="adm_broadcast_confirm")],
+        [InlineKeyboardButton(text=f"✓ Yuborish ({total_str} ga)", callback_data="adm_broadcast_confirm")],
         [InlineKeyboardButton(text="✕ Bekor qilish", callback_data="adm_broadcast_cancel")],
     ])
 
     await message.answer(
-        f"<b>Yuqoridagi xabar yuboriladi</b>\n\n"
-        f"<i>qabul qiluvchilar</i>\n"
-        f"<b>{total_str} foydalanuvchi</b>\n\n"
-        f"<i>Tasdiqlash uchun tugmani bosing.</i>",
+        f"<b>Tasdiqlash</b>\n\n"
+        f"Yuqoridagi xabar <b>{total_str}</b> foydalanuvchiga yuboriladi. "
+        f"Tasdiqlash uchun tugmani bosing.",
         reply_markup=kb,
     )
 
@@ -468,7 +430,7 @@ async def broadcast_execute(callback: CallbackQuery, state: FSMContext, bot: Bot
         return
 
     await callback.answer("Yuborish boshlandi...")
-    status_msg = await callback.message.answer("⏳ <b>Broadcast boshlandi...</b>")
+    status_msg = await callback.message.answer("<b>Broadcast boshlandi...</b>")
 
     async with get_session() as session:
         result = await session.execute(select(User.tg_id))
@@ -506,22 +468,22 @@ async def broadcast_execute(callback: CallbackQuery, state: FSMContext, bot: Bot
         if i % 25 == 0:
             try:
                 await status_msg.edit_text(
-                    f"⏳ <b>Broadcast davom etmoqda</b>\n\n"
-                    f"<i>jarayon</i>\n<b>{i} / {total}</b>\n\n"
-                    f"<i>yuborildi</i>  ·  <b>{sent}</b>\n"
-                    f"<i>bloklangan</i>  ·  <b>{blocked}</b>\n"
-                    f"<i>xato</i>  ·  <b>{failed}</b>"
+                    f"<b>Broadcast davom etmoqda</b>\n\n"
+                    f"Jarayon: <b>{i} / {total}</b>\n"
+                    f"Yuborildi: <b>{sent}</b>\n"
+                    f"Bloklangan: <b>{blocked}</b>\n"
+                    f"Xato: <b>{failed}</b>"
                 )
             except TelegramBadRequest:
                 pass
 
     try:
         await status_msg.edit_text(
-            f"<b>✅ Broadcast yakunlandi</b>\n\n"
-            f"<i>jami</i>\n<b>{total}</b>\n\n"
-            f"<i>yuborildi</i>\n<b>✓ {sent}</b>\n\n"
-            f"<i>bloklangan</i>\n<b>🚫 {blocked}</b>\n\n"
-            f"<i>xato</i>\n<b>⚠️ {failed}</b>"
+            f"<b>Broadcast yakunlandi!</b>\n\n"
+            f"Jami: <b>{total}</b>\n"
+            f"Yuborildi: <b>{sent}</b>\n"
+            f"Bloklangan: <b>{blocked}</b>\n"
+            f"Xato: <b>{failed}</b>"
         )
     except Exception:
         pass
