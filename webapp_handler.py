@@ -25,7 +25,7 @@ from aiogram.types import (
 from aiogram.enums import ParseMode
 
 from config import DOC_PRICE, TEMP_DIR, STARS_PER_DOC
-from database_async import get_or_create_user, get_session
+from database import get_or_create_user, get_session
 from generator import generate
 from preview import _generate_preview_sync  # sinxron funksiya — to_thread uchun
 
