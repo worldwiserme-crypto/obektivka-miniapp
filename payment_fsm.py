@@ -1,8 +1,5 @@
 """
-Obektivka Bot — P2P To'lov Tizimi (FSM)
-
-Yangilandi: Chek endi admin guruhiga yuboriladi (bitta admin emas).
-Tasdiqlash/rad qilish logikasi admin_panel.py ga ko'chirildi.
+Yo'lchi Bot — P2P To'lov Tizimi (Premium UI)
 """
 
 import logging
@@ -65,70 +62,20 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
     )
 
     cancel_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="p2p_cancel")],
+        [InlineKeyboardButton(text="✕ Bekor qilish", callback_data="p2p_cancel")],
     ])
 
     await callback.message.answer(
-        f"<b>Karta orqali to'lov</b>\n"
-        f"<i>quyidagi rekvizitlarga o'tkazma qiling</i>\n\n"
-        f"<i>summa</i>\n"
-        f"<b>{price_text(DOC_PRICE)}</b>\n\n"
-        f"<i>karta raqami</i>\n"
-        f"<code>{CARD_NUMBER}</code>\n\n"
-        f"<i>qabul qiluvchi</i>\n"
-        f"<b>{CARD_HOLDER}</b>\n\n"
-        f"\u00a0\u00a0\u00a0To'lovdan so'ng chek skrinshotini\n"
-        f"\u00a0\u00a0\u00a0shu chatga yuboring.\n\n"
-        f"<i>Tasdiqlash vaqti  ·  5–15 daqiqa</i>",
+        f"<b>Karta orqali to'lov</b>\n\n"
+        f"Quyidagi kartaga <b>{price_text(DOC_PRICE)}</b> miqdorida "
+        f"o'tkazma qiling va chek skrinshotini shu chatga yuboring.\n\n"
+        f"<code>{CARD_NUMBER}</code>\n"
+        f"{CARD_HOLDER}\n\n"
+        f"Admin tekshirib tasdiqlagach, hujjat avtomatik yuboriladi. "
+        f"Odatda bu 5–15 daqiqa vaqt oladi.",
         reply_markup=cancel_kb,
     )
-# ══════════════════════════════════════════════════════════════
-#  BALANS TO'LDIRISH (5k / 10k / 25k / 50k)
-# ══════════════════════════════════════════════════════════════
 
-@payment_router.callback_query(F.data.startswith("p2p_topup_"))
-async def start_p2p_topup(callback: CallbackQuery, state: FSMContext):
-    """
-    Balansni to'ldirish tugmalari: p2p_topup_5000, p2p_topup_10000, va h.k.
-    Istalgan summa bilan karta orqali to'lov oqimini boshlaydi.
-    """
-    tg_id = callback.from_user.id
-    await callback.answer()
-
-    # Callback'dan summani ajratib olish
-    try:
-        amount = int(callback.data.replace("p2p_topup_", ""))
-    except ValueError:
-        await callback.message.answer("❌ Noto'g'ri summa")
-        return
-
-    # FSM state'ga tanlangan summani saqlash
-    await state.set_state(PaymentState.waiting_for_receipt)
-    await state.update_data(
-        amount=amount,
-        user_fullname=callback.from_user.full_name or "—",
-        started_at=datetime.now().isoformat(),
-    )
-
-    cancel_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="p2p_cancel")],
-    ])
-
-    await callback.message.answer(
-        f"<b>Karta orqali to'lov</b>\n"
-        f"<i>balansni to'ldirish</i>\n\n"
-        f"<i>summa</i>\n"
-        f"<b>{price_text(amount)}</b>\n\n"
-        f"<i>karta raqami</i>\n"
-        f"<code>{CARD_NUMBER}</code>\n\n"
-        f"<i>qabul qiluvchi</i>\n"
-        f"<b>{CARD_HOLDER}</b>\n\n"
-        f"\u00a0\u00a0\u00a0Aynan <b>{price_text(amount)}</b> miqdorida\n"
-        f"\u00a0\u00a0\u00a0o'tkazma qiling va chek\n"
-        f"\u00a0\u00a0\u00a0skrinshotini shu chatga yuboring.\n\n"
-        f"<i>Tasdiqlash vaqti  ·  5–15 daqiqa</i>",
-        reply_markup=cancel_kb,
-    )
 
 # ══════════════════════════════════════════════════════════════
 #  CHEKNI QABUL QILISH
@@ -142,7 +89,6 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
 
     photo = message.photo[-1]
 
-    # Chekni admin guruhiga yuborish
     msg_id = await send_receipt_to_admin_group(
         bot=bot,
         user_id=tg_id,
@@ -154,41 +100,44 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
 
     if not msg_id:
         await message.answer(
-            "<b>Vaqtinchalik nosozlik</b>\n"
-            "<i>chekni yetkazib bo'lmadi</i>\n\n"
-            "\u00a0\u00a0\u00a0Iltimos, bir oz vaqtdan so'ng\n"
-            "\u00a0\u00a0\u00a0qayta urinib ko'ring."
+            "<b>Vaqtinchalik nosozlik</b>\n\n"
+            "Chekni yetkazib bo'lmadi. Iltimos, bir oz vaqtdan "
+            "so'ng qayta urinib ko'ring."
         )
         await state.clear()
         return
 
     await state.clear()
     await message.answer(
-        "<b>Chek qabul qilindi</b>\n"
-        "<i>tasdiqlash kutilmoqda</i>\n\n"
-        "\u00a0\u00a0\u00a0Admin to'lovingizni tekshirib,\n"
-        "\u00a0\u00a0\u00a0tasdiqlagach hisobingiz avtomatik\n"
-        "\u00a0\u00a0\u00a0to'ldiriladi.\n\n"
-        "<i>Odatda  ·  5–15 daqiqa</i>"
+        "<b>Chek qabul qilindi!</b>\n\n"
+        "To'lovingiz admin xodimlariga yuborildi. Tekshirish "
+        "odatda 5–15 daqiqa davom etadi.\n\n"
+        "Tasdiqlangach, sizga avtomatik xabar keladi va "
+        "hujjat darhol yuboriladi."
     )
 
 
 @payment_router.message(PaymentState.waiting_for_receipt)
 async def receipt_wrong_format(message: Message):
     await message.answer(
-        "<b>Faqat rasm yuboring</b>\n"
-        "<i>matn yoki fayl qabul qilinmaydi</i>\n\n"
-        "\u00a0\u00a0\u00a0To'lov chekining skrinshotini\n"
-        "\u00a0\u00a0\u00a0rasm sifatida shu chatga yuboring."
+        "<b>Faqat rasm yuboring</b>\n\n"
+        "To'lov chekining skrinshotini rasm sifatida "
+        "shu chatga yuboring. Matn yoki fayl qabul qilinmaydi."
     )
 
 
 @payment_router.callback_query(F.data == "p2p_cancel")
 async def cancel_payment(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await callback.answer("Bekor qilindi", show_alert=False)
+    await callback.answer("Bekor qilindi")
+
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")],
+    ])
+
     await callback.message.answer(
-        "<b>To'lov bekor qilindi</b>\n"
-        "<i>hech qanday summa yechilmadi</i>\n\n"
-        "<i>Qayta boshlash uchun /start bosing.</i>"
+        "<b>Bekor qilindi</b>\n\n"
+        "Hech qanday summa yechilmadi. Istalgan vaqtda "
+        "qaytadan urinib ko'rishingiz mumkin.",
+        reply_markup=kb,
     )
