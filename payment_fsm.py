@@ -54,7 +54,7 @@ _pending_docs: dict[int, dict] = {}
 #  TO'LOVNI BOSHLASH
 # ══════════════════════════════════════════════════════════════
 
-@payment_router.callback_query(F.data == "pay_p2p")
+@payment_router.callback_query(F.data == "p2p_pay")
 async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
     tg_id = callback.from_user.id
     await callback.answer()
