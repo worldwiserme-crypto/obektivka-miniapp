@@ -15,7 +15,7 @@ MIN_TOPUP = 5000            # Minimal to'ldirish summasi
 MAX_TOPUP = 500_000         # Maksimal to'ldirish summasi
 
 # ─── Telegram Stars (agar ishlatilsa) ───
-STARS_PER_DOC = 1           # 1 Star = 1 hujjat (oddiy narx)
+STARS_PER_DOC = 30          # ~5000 so'mga teng Stars miqdori
 
 # ─── Preview sozlamalari ───
 PREVIEW_DPI = 200
