@@ -82,7 +82,53 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
         f"<i>Tasdiqlash vaqti  ·  5–15 daqiqa</i>",
         reply_markup=cancel_kb,
     )
+# ══════════════════════════════════════════════════════════════
+#  BALANS TO'LDIRISH (5k / 10k / 25k / 50k)
+# ══════════════════════════════════════════════════════════════
 
+@payment_router.callback_query(F.data.startswith("p2p_topup_"))
+async def start_p2p_topup(callback: CallbackQuery, state: FSMContext):
+    """
+    Balansni to'ldirish tugmalari: p2p_topup_5000, p2p_topup_10000, va h.k.
+    Istalgan summa bilan karta orqali to'lov oqimini boshlaydi.
+    """
+    tg_id = callback.from_user.id
+    await callback.answer()
+
+    # Callback'dan summani ajratib olish
+    try:
+        amount = int(callback.data.replace("p2p_topup_", ""))
+    except ValueError:
+        await callback.message.answer("❌ Noto'g'ri summa")
+        return
+
+    # FSM state'ga tanlangan summani saqlash
+    await state.set_state(PaymentState.waiting_for_receipt)
+    await state.update_data(
+        amount=amount,
+        user_fullname=callback.from_user.full_name or "—",
+        started_at=datetime.now().isoformat(),
+    )
+
+    cancel_kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✕  Bekor qilish", callback_data="p2p_cancel")],
+    ])
+
+    await callback.message.answer(
+        f"<b>Karta orqali to'lov</b>\n"
+        f"<i>balansni to'ldirish</i>\n\n"
+        f"<i>summa</i>\n"
+        f"<b>{price_text(amount)}</b>\n\n"
+        f"<i>karta raqami</i>\n"
+        f"<code>{CARD_NUMBER}</code>\n\n"
+        f"<i>qabul qiluvchi</i>\n"
+        f"<b>{CARD_HOLDER}</b>\n\n"
+        f"\u00a0\u00a0\u00a0Aynan <b>{price_text(amount)}</b> miqdorida\n"
+        f"\u00a0\u00a0\u00a0o'tkazma qiling va chek\n"
+        f"\u00a0\u00a0\u00a0skrinshotini shu chatga yuboring.\n\n"
+        f"<i>Tasdiqlash vaqti  ·  5–15 daqiqa</i>",
+        reply_markup=cancel_kb,
+    )
 
 # ══════════════════════════════════════════════════════════════
 #  CHEKNI QABUL QILISH
