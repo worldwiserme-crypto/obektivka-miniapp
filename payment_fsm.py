@@ -1,14 +1,5 @@
 """
 Obektivka Bot — P2P To'lov Tizimi (FSM)
-
-Oqim:
-  1. "To'lov qilish" → karta raqami ko'rsatiladi → FSM: waiting_for_receipt
-  2. Foydalanuvchi chek (rasm) yuboradi → Admin'ga forward (✅/❌ tugmalar)
-  3. Admin tasdiqlaydi → fayl yuboriladi | Admin rad etadi → xabar beriladi
-
-Ulash:
-  from payment_fsm import payment_router
-  dp.include_router(payment_router)
 """
 
 import logging
@@ -27,7 +18,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from config import DOC_PRICE
-from database_async import get_or_create_user, get_session
+from database import get_or_create_user, get_user, topup_balance
 from models import User
 
 logger = logging.getLogger(__name__)
@@ -48,37 +39,26 @@ def price_text(amount: int) -> str:
 
 
 # ══════════════════════════════════════════════════════════════
-#  1. FSM STATE
+#  FSM STATE
 # ══════════════════════════════════════════════════════════════
 
 class PaymentState(StatesGroup):
     waiting_for_receipt = State()
 
 
-# ══════════════════════════════════════════════════════════════
-#  KUTAYOTGAN HUJJATLAR XOTIRASI
-#  (webapp_handler.py dagi _pending_docs bilan umumiy bo'lishi kerak.
-#   Production'da Redis yoki alohida modul orqali ulash tavsiya qilinadi.)
-# ══════════════════════════════════════════════════════════════
-
+# Kutayotgan hujjatlar xotirasi
 _pending_docs: dict[int, dict] = {}
 
 
 # ══════════════════════════════════════════════════════════════
-#  2. TO'LOVNI BOSHLASH — callback_data="pay_p2p"
+#  TO'LOVNI BOSHLASH
 # ══════════════════════════════════════════════════════════════
 
 @payment_router.callback_query(F.data == "pay_p2p")
 async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
-    """
-    Foydalanuvchi "To'lov qilish" tugmasini bosdi.
-    → Karta raqamini ko'rsatish
-    → FSM: waiting_for_receipt ga o'tkazish
-    """
     tg_id = callback.from_user.id
     await callback.answer()
 
-    # FSM ga to'lov ma'lumotlarini saqlash
     await state.set_state(PaymentState.waiting_for_receipt)
     await state.update_data(
         amount=DOC_PRICE,
@@ -87,10 +67,7 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
     )
 
     cancel_kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(
-            text="❌ Bekor qilish",
-            callback_data="p2p_cancel",
-        )],
+        [InlineKeyboardButton(text="❌ Bekor qilish", callback_data="p2p_cancel")],
     ])
 
     await callback.message.answer(
@@ -109,24 +86,17 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
 
 
 # ══════════════════════════════════════════════════════════════
-#  3. CHEKNI QABUL QILISH — rasm kelganda (FSM state ichida)
+#  CHEKNI QABUL QILISH
 # ══════════════════════════════════════════════════════════════
 
 @payment_router.message(PaymentState.waiting_for_receipt, F.photo)
 async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
-    """
-    Foydalanuvchi chek rasmini yubordi.
-    → Rasmni ADMIN ga forward qilish (✅/❌ tugmalar bilan)
-    → FSM ni tozalash
-    → Mijozga "kutayotgan" xabar berish
-    """
     tg_id = message.from_user.id
     fsm_data = await state.get_data()
     amount = fsm_data.get("amount", DOC_PRICE)
 
-    # Admin ID tekshirish
     if not ADMIN_ID:
-        logger.critical("ADMIN_ID sozlanmagan! .env faylda ADMIN_ID ni belgilang.")
+        logger.critical("ADMIN_ID sozlanmagan! Railway Variables'ga ADMIN_ID qo'shing.")
         await message.answer(
             "⚠️ <b>Tizimda vaqtinchalik nosozlik.</b>\n"
             "<i>Iltimos, keyinroq qayta urinib ko'ring.</i>"
@@ -134,10 +104,8 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
         await state.clear()
         return
 
-    # Eng katta o'lchamdagi rasm
     photo = message.photo[-1]
 
-    # ─── Admin uchun xabar ───
     admin_text = (
         f"🧾 <b>Yangi to'lov cheki</b>\n"
         f"{'━' * 30}\n\n"
@@ -150,18 +118,11 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
 
     admin_kb = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(
-                text="✅ Tasdiqlash",
-                callback_data=f"approve_pay:{tg_id}",
-            ),
-            InlineKeyboardButton(
-                text="❌ Rad qilish",
-                callback_data=f"reject_pay:{tg_id}",
-            ),
+            InlineKeyboardButton(text="✅ Tasdiqlash", callback_data=f"approve_pay:{tg_id}"),
+            InlineKeyboardButton(text="❌ Rad qilish", callback_data=f"reject_pay:{tg_id}"),
         ],
     ])
 
-    # ─── Adminga yuborish ───
     try:
         await bot.send_photo(
             chat_id=ADMIN_ID,
@@ -178,7 +139,6 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
         await state.clear()
         return
 
-    # ─── FSM tozalash + Mijozga xabar ───
     await state.clear()
     await message.answer(
         "✅ <b>Chekingiz qabul qilindi!</b>\n\n"
@@ -188,19 +148,14 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
     )
 
 
-# ─── Rasm emas, boshqa narsa yuborsa ───
-
 @payment_router.message(PaymentState.waiting_for_receipt)
 async def receipt_wrong_format(message: Message):
-    """Foydalanuvchi rasm o'rniga matn/sticker/boshqa yubordi."""
     await message.answer(
         "⚠️ <b>Faqat rasmni yuboring!</b>\n\n"
         "📸 <i>To'lov chekining skrinshotini rasmga olib,\n"
         "shu chatga yuboring.</i>"
     )
 
-
-# ─── Bekor qilish ───
 
 @payment_router.callback_query(F.data == "p2p_cancel")
 async def cancel_payment(callback: CallbackQuery, state: FSMContext):
@@ -213,22 +168,15 @@ async def cancel_payment(callback: CallbackQuery, state: FSMContext):
 
 
 # ══════════════════════════════════════════════════════════════
-#  4. ADMIN CALLBACK HANDLERS — Tasdiqlash / Rad qilish
+#  ADMIN: TASDIQLASH
 # ══════════════════════════════════════════════════════════════
 
 @payment_router.callback_query(F.data.startswith("approve_pay:"))
 async def admin_approve(callback: CallbackQuery, bot: Bot):
-    """
-    Admin chekni tasdiqladi.
-    → Foydalanuvchiga tayyor faylni yuborish
-    → Admin xabarini yangilash
-    """
-    # ─── Ruxsat tekshirish ───
     if callback.from_user.id != ADMIN_ID:
         await callback.answer("⛔ Sizda ruxsat yo'q!", show_alert=True)
         return
 
-    # ─── User ID ni olish ───
     try:
         user_tg_id = int(callback.data.split(":")[1])
     except (IndexError, ValueError):
@@ -237,7 +185,6 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
 
     await callback.answer("✅ Tasdiqlanmoqda...")
 
-    # ─── Admin xabarini yangilash ───
     try:
         updated_caption = (
             f"{callback.message.caption}\n\n"
@@ -245,14 +192,10 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
             f"👮 {callback.from_user.full_name}\n"
             f"🕐 {datetime.now().strftime('%H:%M:%S')}"
         )
-        await callback.message.edit_caption(
-            caption=updated_caption,
-            reply_markup=None,
-        )
+        await callback.message.edit_caption(caption=updated_caption, reply_markup=None)
     except Exception:
         pass
 
-    # ─── Faylni yuborish ───
     pending = _pending_docs.get(user_tg_id)
 
     if pending and os.path.exists(pending.get("docx_path", "")):
@@ -271,12 +214,10 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
                 caption=(
                     f"✅ <b>To'lov tasdiqlandi!</b>\n\n"
                     f"📎 <b>{fullname}</b>  •  {script_label}\n"
-                    f"<i>Word (.docx) formatida tayyor.</i>\n\n"
-                    f"💡 Bu hujjat «Mening hujjatlarim» bo'limida saqlanadi."
+                    f"<i>Word (.docx) formatida tayyor.</i>"
                 ),
             )
 
-            # Tozalash
             _pending_docs.pop(user_tg_id, None)
             try:
                 os.remove(docx_path)
@@ -294,25 +235,34 @@ async def admin_approve(callback: CallbackQuery, bot: Bot):
                 ),
             )
     else:
-        # Kutayotgan hujjat topilmasa — faqat balans to'ldirish
+        # Hujjat topilmasa — faqat balans to'ldirish
+        await topup_balance(
+            tg_id=user_tg_id,
+            amount=DOC_PRICE,
+            provider="p2p_card",
+            provider_tx_id=f"admin_{callback.from_user.id}_{int(datetime.now().timestamp())}",
+        )
+        user = await get_user(user_tg_id)
+        balance_str = price_text(user.balance) if user else price_text(DOC_PRICE)
+
         await bot.send_message(
             chat_id=user_tg_id,
             text=(
                 "✅ <b>To'lovingiz tasdiqlandi!</b>\n\n"
-                f"💰 <b>+{price_text(DOC_PRICE)}</b> balansingizga qo'shildi.\n\n"
+                f"💰 <b>+{price_text(DOC_PRICE)}</b> balansingizga qo'shildi.\n"
+                f"💳 Joriy balans: <b>{balance_str}</b>\n\n"
                 "<i>Hujjat olish uchun /start bosib,\n"
                 "obektivkani to'ldiring.</i>"
             ),
         )
 
 
+# ══════════════════════════════════════════════════════════════
+#  ADMIN: RAD QILISH
+# ══════════════════════════════════════════════════════════════
+
 @payment_router.callback_query(F.data.startswith("reject_pay:"))
 async def admin_reject(callback: CallbackQuery, bot: Bot):
-    """
-    Admin chekni rad qildi.
-    → Foydalanuvchiga sabablar bilan xabar
-    → Admin xabarini yangilash
-    """
     if callback.from_user.id != ADMIN_ID:
         await callback.answer("⛔ Sizda ruxsat yo'q!", show_alert=True)
         return
@@ -325,7 +275,6 @@ async def admin_reject(callback: CallbackQuery, bot: Bot):
 
     await callback.answer("❌ Rad qilindi")
 
-    # ─── Admin xabarini yangilash ───
     try:
         updated_caption = (
             f"{callback.message.caption}\n\n"
@@ -333,14 +282,10 @@ async def admin_reject(callback: CallbackQuery, bot: Bot):
             f"👮 {callback.from_user.full_name}\n"
             f"🕐 {datetime.now().strftime('%H:%M:%S')}"
         )
-        await callback.message.edit_caption(
-            caption=updated_caption,
-            reply_markup=None,
-        )
+        await callback.message.edit_caption(caption=updated_caption, reply_markup=None)
     except Exception:
         pass
 
-    # ─── Foydalanuvchiga xabar ───
     try:
         await bot.send_message(
             chat_id=user_tg_id,
