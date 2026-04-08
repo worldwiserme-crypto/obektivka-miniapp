@@ -406,8 +406,13 @@ async def pay_from_balance(callback: CallbackQuery):
         )
         return
 
-    await _deliver_document(tg_id, pending)
+    # Tugmalarni o'chirish — qayta bosilmasin
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+    except Exception:
+        pass
 
+    await _deliver_document(tg_id, pending)
 
 async def _try_deliver_pending(tg_id: int):
     pending = _pending_docs.get(tg_id)
