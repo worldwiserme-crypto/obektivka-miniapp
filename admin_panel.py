@@ -173,6 +173,9 @@ async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
             return
 
         try:
+            kb_user = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="📝 Obektivkani to'ldirish", callback_data="main_menu")],
+            ])
             await bot.send_message(
                 chat_id=user_id,
                 text=(
@@ -180,6 +183,7 @@ async def admin_approve_payment(callback: CallbackQuery, bot: Bot):
                     f"Hisobingiz <b>{price_text(amount)}</b> miqdorida "
                     f"to'ldirildi. Endi obektivka yaratishingiz mumkin."
                 ),
+                reply_markup=kb_user,
             )
         except TelegramForbiddenError:
             logger.warning(f"User {user_id} botni bloklagan.")
