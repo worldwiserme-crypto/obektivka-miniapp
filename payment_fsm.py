@@ -68,9 +68,11 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
         f"<b>Karta orqali to'lov</b>\n\n"
         f"Quyidagi kartaga <b>{price_text(DOC_PRICE)}</b> miqdorida "
-        f"o'tkazma qiling va chek skrinshotini shu chatga yuboring.\n\n"
+        f"o'tkazma qiling va chekni shu chatga yuboring.\n\n"
         f"<code>{CARD_NUMBER}</code>\n"
         f"{CARD_HOLDER}\n\n"
+        f"📷 Chek <b>rasmini</b> (screenshot) yoki <b>PDF faylini</b> yuboring. "
+        f"Bank ilovangizda screenshot ishlamasa, PDF sifatida yuklab olib jo'nating.\n\n"
         f"Admin tekshirib tasdiqlagach, hujjat avtomatik yuboriladi. "
         f"Odatda bu 5–15 daqiqa vaqt oladi.",
         reply_markup=cancel_kb,
@@ -82,7 +84,7 @@ async def start_p2p_payment(callback: CallbackQuery, state: FSMContext):
 # ══════════════════════════════════════════════════════════════
 
 @payment_router.message(PaymentState.waiting_for_receipt, F.photo)
-async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
+async def receive_receipt_photo(message: Message, state: FSMContext, bot: Bot):
     tg_id = message.from_user.id
     fsm_data = await state.get_data()
     amount = fsm_data.get("amount", DOC_PRICE)
@@ -94,10 +96,64 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
         user_id=tg_id,
         user_full_name=message.from_user.full_name or "—",
         username=message.from_user.username,
-        photo_file_id=photo.file_id,
+        file_id=photo.file_id,
+        file_type="photo",
         amount=amount,
     )
 
+    await _finalize_receipt(message, state, msg_id)
+
+
+@payment_router.message(PaymentState.waiting_for_receipt, F.document)
+async def receive_receipt_document(message: Message, state: FSMContext, bot: Bot):
+    tg_id = message.from_user.id
+    fsm_data = await state.get_data()
+    amount = fsm_data.get("amount", DOC_PRICE)
+
+    doc = message.document
+    
+    # Fayl tipini tekshirish — PDF, JPG, PNG ruxsat etiladi
+    allowed_mimes = {
+        "application/pdf",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+    }
+    
+    mime = (doc.mime_type or "").lower()
+    if mime not in allowed_mimes:
+        await message.answer(
+            "<b>Noto'g'ri fayl turi</b>\n\n"
+            "Faqat PDF yoki rasm (JPG, PNG) qabul qilinadi. "
+            "Bank ilovangizdan chek faylini yuklab olib, shu yerga yuboring."
+        )
+        return
+    
+    # Fayl hajmini tekshirish — 10 MB dan oshmasin
+    if doc.file_size and doc.file_size > 10 * 1024 * 1024:
+        await message.answer(
+            "<b>Fayl juda katta</b>\n\n"
+            "Chek hajmi 10 MB dan oshmasligi kerak."
+        )
+        return
+
+    msg_id = await send_receipt_to_admin_group(
+        bot=bot,
+        user_id=tg_id,
+        user_full_name=message.from_user.full_name or "—",
+        username=message.from_user.username,
+        file_id=doc.file_id,
+        file_type="document",
+        amount=amount,
+        file_name=doc.file_name,
+    )
+
+    await _finalize_receipt(message, state, msg_id)
+
+
+async def _finalize_receipt(message: Message, state: FSMContext, msg_id: int | None):
+    """Chek qabul qilingandan keyingi umumiy logika."""
     if not msg_id:
         await message.answer(
             "<b>Vaqtinchalik nosozlik</b>\n\n"
@@ -120,9 +176,10 @@ async def receive_receipt(message: Message, state: FSMContext, bot: Bot):
 @payment_router.message(PaymentState.waiting_for_receipt)
 async def receipt_wrong_format(message: Message):
     await message.answer(
-        "<b>Faqat rasm yuboring</b>\n\n"
-        "To'lov chekining skrinshotini rasm sifatida "
-        "shu chatga yuboring. Matn yoki fayl qabul qilinmaydi."
+        "<b>Chek qabul qilinmadi</b>\n\n"
+        "Iltimos, to'lov chekining <b>rasmini</b> (screenshot) yoki "
+        "<b>PDF faylini</b> yuboring. Bank ilovangizda screenshot olish "
+        "imkoni bo'lmasa, chekni PDF sifatida yuklab olib jo'nating."
     )
 
 
