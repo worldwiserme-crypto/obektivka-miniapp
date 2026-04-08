@@ -488,24 +488,36 @@ async def _deliver_document(tg_id: int, pending: dict):
 async def cancel_doc(callback: CallbackQuery):
     tg_id = callback.from_user.id
     pending = _pending_docs.pop(tg_id, None)
+
+    # Tugmalarni o'chirish — qayta bosilmasin
+    try:
+        await callback.message.edit_reply_markup(reply_markup=None)
+    except Exception:
+        pass
+
     if pending:
+        # Haqiqiy bekor qilish — fayl hali berilmagan edi
         try:
             os.remove(pending["docx_path"])
         except OSError:
             pass
-
-    await callback.answer("Bekor qilindi")
+        await callback.answer("Bekor qilindi")
+        text = (
+            "<b>Bekor qilindi</b>\n\n"
+            "Hujjat o'chirildi. Hech qanday summa yechilmadi."
+        )
+    else:
+        # Pending yo'q — fayl allaqachon berilgan yoki avval bekor qilingan
+        await callback.answer()
+        text = (
+            "<b>Bu amal allaqachon yakunlangan</b>\n\n"
+            "Yangi obektivka uchun bosh menyuga qayting."
+        )
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="← Bosh menyu", callback_data="main_menu")],
     ])
-
-    await callback.message.answer(
-        "<b>Bekor qilindi</b>\n\n"
-        "Hech qanday summa yechilmadi. Istalgan vaqtda "
-        "qaytadan urinib ko'rishingiz mumkin.",
-        reply_markup=kb,
-    )
+    await callback.message.answer(text, reply_markup=kb)
 
 
 # ══════════════════════════════════════════════════════════════
