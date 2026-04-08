@@ -77,20 +77,26 @@ async def send_receipt_to_admin_group(
     user_id: int,
     user_full_name: str,
     username: str | None,
-    photo_file_id: str,
+    file_id: str,
+    file_type: str,
     amount: int,
+    file_name: str | None = None,
 ) -> int | None:
     if not ADMIN_GROUP_ID:
         logger.critical("ADMIN_GROUP_ID sozlanmagan!")
         return None
 
+    file_label = "📄 PDF/Fayl" if file_type == "document" else "🖼 Rasm"
+    
     caption = (
         f"<b>Yangi to'lov cheki</b>\n\n"
         f"Foydalanuvchi: <b>{user_full_name}</b>\n"
         f"ID: <code>{user_id}</code>\n"
         f"Username: @{username or '—'}\n"
         f"Summa: <b>{price_text(amount)}</b>\n"
-        f"Vaqt: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
+        f"Format: {file_label}"
+        + (f" ({file_name})" if file_name else "")
+        + f"\nVaqt: {datetime.now().strftime('%d.%m.%Y %H:%M')}"
     )
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -101,12 +107,20 @@ async def send_receipt_to_admin_group(
     ])
 
     try:
-        msg = await bot.send_photo(
-            chat_id=ADMIN_GROUP_ID,
-            photo=photo_file_id,
-            caption=caption,
-            reply_markup=kb,
-        )
+        if file_type == "photo":
+            msg = await bot.send_photo(
+                chat_id=ADMIN_GROUP_ID,
+                photo=file_id,
+                caption=caption,
+                reply_markup=kb,
+            )
+        else:
+            msg = await bot.send_document(
+                chat_id=ADMIN_GROUP_ID,
+                document=file_id,
+                caption=caption,
+                reply_markup=kb,
+            )
         return msg.message_id
     except Exception as e:
         logger.error(f"Guruhga chek yuborib bo'lmadi: {e}", exc_info=True)
